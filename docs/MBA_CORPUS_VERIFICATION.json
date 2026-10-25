@@ -1,0 +1,45 @@
+{
+  "collection": "mba-mit-demo",
+  "approval_scope": "User approved in this chat, 2026-10-25, noncommercial shared local hackathon demo only",
+  "documents": [
+    {
+      "document_id": "2ff78c8e-16da-451d-b938-b9d534247a65",
+      "course": "15.390",
+      "title": "Course Introduction and Objectives & Viable Business Ideas",
+      "source_url": "https://ocw.mit.edu/courses/15-390-new-enterprises-spring-2013/5ebade7cc7014ae6958bd5c48e3ff670_MIT15_390S13_lec01.pdf",
+      "sha256": "93b4fad371dbb2ac42bea192b193d90147a2d77777c6df08e7122775558c2bf2",
+      "revision": 1,
+      "status": "INDEXED",
+      "approved": true,
+      "license": "CC-BY-NC-SA-4.0",
+      "chunks": 38,
+      "initial_ingestion_seconds": 3.017347
+    },
+    {
+      "document_id": "487244ea-7d17-438f-8e34-1b955fb39276",
+      "course": "15.902",
+      "title": "Budget and Aggregate Metrics",
+      "source_url": "https://ocw.mit.edu/courses/15-902-strategic-management-i-fall-2006/92d72792ae5e336ac5e6f11a3af4a399_bud_aggmet.pdf",
+      "sha256": "e9a3d3f190a025fa78b0cedf20ba1bc295ecffc5bdb2f3bb54f6098f21d4ffb9",
+      "revision": 1,
+      "status": "INDEXED",
+      "approved": true,
+      "license": "CC-BY-NC-SA-4.0",
+      "chunks": 12,
+      "initial_ingestion_seconds": 2.587514
+    },
+    {
+      "document_id": "802b3f49-c658-4481-b03a-b3bc98bd4e0f",
+      "course": "15.810",
+      "title": "Marketing Management \u2014 Course Introduction",
+      "source_url": "https://ocw.mit.edu/courses/15-810-marketing-management-fall-2010/49e7dcea0276228cc640de924be6c213_MIT15_810F10_lec01.pdf",
+      "sha256": "c9e8d081180e6b403392721bf39c485773e55076ec9b5c43ed12e2efa22c4524",
+      "revision": 1,
+      "status": "INDEXED",
+      "approved": true,
+      "license": "CC-BY-NC-SA-4.0",
+      "chunks": 11,
+      "initial_ingestion_seconds": 2.28761
+    }
+  ]
+}

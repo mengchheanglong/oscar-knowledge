@@ -16,6 +16,12 @@ def test_rrf_deduplicates_deterministically():
     assert rrf([["b"], ["a"]]) == [("a", 1 / 61), ("b", 1 / 61)]
 
 
+def test_weighted_rrf_keeps_broadened_keyword_candidates_but_prefers_semantic_agreement():
+    result = rrf([["lexical-only", "both"], ["semantic-only", "both"]], weights=[0.5, 1.0])
+    assert [key for key, _ in result] == ["both", "semantic-only", "lexical-only"]
+    assert result[0][1] == 1.5 / 62
+
+
 @pytest.mark.parametrize(
     "url",
     [

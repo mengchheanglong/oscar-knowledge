@@ -29,6 +29,7 @@ class Entry(BaseModel):
     approved: bool = False
     notes: str = ""
     ingestion_status: str = "DISCOVERED"
+    sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
 
 
 class Manifest(BaseModel):
@@ -36,12 +37,16 @@ class Manifest(BaseModel):
     entries: list[Entry] = Field(max_length=100)
 
 
-def download(url: str, target: Path, settings: Settings):
+def download(url: str, target: Path, settings: Settings, expected_sha256: str | None = None):
     import ipaddress
 
     parsed = urlsplit(url)
     if public_source_url(url) != url or parsed.hostname not in {"ocw.mit.edu"}:
         raise SourceError("DOWNLOAD_HOST_NOT_ALLOWED")
+    if expected_sha256 and target.exists():
+        if hashlib.sha256(target.read_bytes()).hexdigest() != expected_sha256:
+            raise SourceError("DOWNLOAD_CHECKSUM_MISMATCH")
+        return
     if not all(
         ipaddress.ip_address(item[4][0]).is_global
         for item in socket.getaddrinfo(parsed.hostname, 443)
@@ -62,6 +67,11 @@ def download(url: str, target: Path, settings: Settings):
                         if size > settings.max_file_bytes:
                             raise SourceError("DOWNLOAD_TOO_LARGE")
                         stream.write(part)
+        if (
+            expected_sha256
+            and hashlib.sha256(temporary.read_bytes()).hexdigest() != expected_sha256
+        ):
+            raise SourceError("DOWNLOAD_CHECKSUM_MISMATCH")
         temporary.replace(target)
     finally:
         temporary.unlink(missing_ok=True)
@@ -97,9 +107,11 @@ def import_manifest(db, path: Path, settings: Settings, download_approved=False)
             source = Path("data/raw") / (
                 hashlib.sha256(entry.download_url.encode()).hexdigest() + suffix
             )
-            download(entry.download_url, source, settings)
+            download(entry.download_url, source, settings, entry.sha256)
         else:
             continue
+        if entry.sha256 and hashlib.sha256(source.read_bytes()).hexdigest() != entry.sha256:
+            raise SourceError("SOURCE_CHECKSUM_MISMATCH")
         jobs.append(
             enqueue(
                 db,

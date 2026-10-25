@@ -7,12 +7,13 @@ entries:
   subject: Entrepreneurship
   course_page: https://ocw.mit.edu/courses/15-390-new-enterprises-spring-2013/
   download_url: https://ocw.mit.edu/courses/15-390-new-enterprises-spring-2013/5ebade7cc7014ae6958bd5c48e3ff670_MIT15_390S13_lec01.pdf
-  title: "New Enterprises \u2014 Lecture 1"
+  title: New Enterprises — Lecture 1
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -21,12 +22,13 @@ entries:
   subject: Strategy
   course_page: https://ocw.mit.edu/courses/15-902-strategic-management-i-fall-2006/
   download_url: https://ocw.mit.edu/courses/15-902-strategic-management-i-fall-2006/92d72792ae5e336ac5e6f11a3af4a399_bud_aggmet.pdf
-  title: "Strategic Management I \u2014 Bud AggMet"
+  title: Budget and Aggregate Metrics
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -35,12 +37,13 @@ entries:
   subject: Marketing
   course_page: https://ocw.mit.edu/courses/15-810-marketing-management-fall-2010/
   download_url: https://ocw.mit.edu/courses/15-810-marketing-management-fall-2010/49e7dcea0276228cc640de924be6c213_MIT15_810F10_lec01.pdf
-  title: "Marketing Management \u2014 Lecture 1"
+  title: Marketing Management — Lecture 1
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -48,13 +51,14 @@ entries:
   course_title: Entrepreneurial Finance
   subject: Corporate Finance
   course_page: https://ocw.mit.edu/courses/15-431-entrepreneurial-finance-spring-2011/
-  download_url: null
-  title: null
+  download_url: https://ocw.mit.edu/courses/15-431-entrepreneurial-finance-spring-2011/4a2e49e2bb9d4dbfe0bb7b89cccb1016_MIT15_431S11_lec01.pdf
+  title: Discounted Cash Flow and the Venture Capital Method
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -67,8 +71,11 @@ entries:
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest. Course explicitly
+    states lecture notes are not available; lecture summaries and case/assignment
+    material exist.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -76,13 +83,14 @@ entries:
   course_title: Economic Analysis for Business Decisions
   subject: Economics
   course_page: https://ocw.mit.edu/courses/15-010-economic-analysis-for-business-decisions-fall-2004/
-  download_url: null
-  title: null
+  download_url: https://ocw.mit.edu/courses/15-010-economic-analysis-for-business-decisions-fall-2004/dc3d1670caa6db2825016e62abac7474_prod_and_cost_i.pdf
+  title: Production and Cost I
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -95,8 +103,11 @@ entries:
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest. Reviewed HTML assignment
+    instructions; no lecture-note PDF was found in the inspected course menu. Not
+    imported.
   ingestion_status: DISCOVERED
 - collection: mba-business
   institution: MIT
@@ -104,11 +115,12 @@ entries:
   course_title: Entrepreneurial Sales
   subject: Sales
   course_page: https://ocw.mit.edu/courses/15-387-entrepreneurial-sales-spring-2015/
-  download_url: null
-  title: null
+  download_url: https://ocw.mit.edu/courses/15-387-entrepreneurial-sales-spring-2015/3733d6e53ccef030e8080c587a77aa4c_MIT15_387S15_Lecture1.pdf
+  title: 'Lecture 1: Introduction — Diver''s Delight'
   license: CC-BY-NC-SA-4.0 (resource exceptions require review)
   license_url: https://ocw.mit.edu/pages/privacy-and-terms-of-use/
   approved: false
-  notes: Official course page verified 2026-10-25. Review individual resources and
-    intended use before approval. No ZIP URL inferred.
+  notes: Official course/resource index reviewed 2026-10-25. Discovery only in this
+    reusable catalog; approval stays false. See docs/MBA_SOURCE_REVIEW.md and the
+    separate private, user-authorized noncommercial demo manifest.
   ingestion_status: DISCOVERED

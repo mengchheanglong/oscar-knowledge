@@ -1,5 +1,13 @@
 # Evaluation
 
+Real MIT passage labels and Hit/Recall/MRR@5 results are now available in
+[the readiness report](KNOWLEDGE_HACKATHON_READINESS.md#d-retrieval-evaluation).
+Use `knowledgectl eval-passages manifests/mba_retrieval_gold.json --mode hybrid`.
+It verifies the approved source hash, active revision, page and anchor before
+scoring, records actual fallback/locator behavior and evaluates unanswerable
+questions separately. Nongold candidates are unjudged; no universal precision
+or abstention guarantee follows from these labels.
+
 `fixtures/eval_questions.json` is versioned and contains 20 manually constructed
 question-to-source expectations across entrepreneurship, strategy, marketing,
 economics, finance and decision science. Gold canonical source keys resolve to

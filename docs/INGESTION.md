@@ -1,5 +1,12 @@
 # Ingestion and provenance
 
+The current three-resource MIT demonstration and its explicit noncommercial
+approval scope are documented in [MBA_SOURCE_REVIEW.md](MBA_SOURCE_REVIEW.md).
+Keep downloaded PDFs/extracted text under ignored `data/`. The reusable discovery
+manifest stays unapproved. Optional `sha256` pins reject changed local/downloaded
+bytes and reuse a verified cached download without network access; a hash is
+integrity metadata and never grants approval.
+
 Only authorized **curated shared** documents belong here. Do not import personal
 workspace records or MAVIS memory. `--approve` confirms sharing with every OSCAR
 user that can opt in to this collection. No permission is inferred from a filename.

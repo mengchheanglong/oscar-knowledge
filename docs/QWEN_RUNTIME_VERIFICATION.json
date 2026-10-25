@@ -5,11 +5,11 @@
   "dimensions": 1024,
   "model_path": "D:\\AI\\Ollama\\models",
   "model_bytes": 639150858,
-  "first_measured_seconds": 0.14300429995637387,
-  "single_warm_seconds": 0.025413200026378036,
-  "batch_2_seconds": 0.17052819998934865,
-  "batch_16_seconds": 0.3770786999957636,
-  "batch_16_embeddings_per_second": 42.43146059477705,
+  "first_measured_seconds": 0.14350469992496073,
+  "single_warm_seconds": 0.11923479998949915,
+  "batch_2_seconds": 0.2614039999898523,
+  "batch_16_seconds": 0.450838900054805,
+  "batch_16_embeddings_per_second": 35.489395431616494,
   "batch_order_cosines": [
     0.9999999999999999,
     1.0
@@ -31,7 +31,7 @@
         "parameter_size": "595.78M",
         "quantization_level": "Q8_0"
       },
-      "expires_at": "2319-02-04T10:47:09.394044007+07:00",
+      "expires_at": "2319-02-04T11:04:17.198078307+07:00",
       "size_vram": 1228857671,
       "context_length": 4096,
       "runner": "llamacpp"

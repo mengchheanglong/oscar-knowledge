@@ -1,0 +1,237 @@
+{
+  "name": "MIT OCW approved local demo, source-reviewed v2",
+  "review_notes": "Coding agent reviewed original extracted PDF pages and selected page images before running retrieval. Labels are not derived from Qwen rankings; they have not been independently human-adjudicated. Page numbers are physical PDF pages. Empty gold means unsupported by this three-document corpus. Table calculations on 15.902 pages 3,10,11 are excluded. v2 accepts the independently visually inspected framework slide on physical page 4 as an alternative to the duplicate framework list on page 6 for M01-M03. These are equivalent source passages, not ranking-based labels.",
+  "collection": "mba-mit-demo",
+  "sources": {
+    "15.390": {
+      "source_key": "https://ocw.mit.edu/courses/15-390-new-enterprises-spring-2013/5ebade7cc7014ae6958bd5c48e3ff670_MIT15_390S13_lec01.pdf",
+      "sha256": "93b4fad371dbb2ac42bea192b193d90147a2d77777c6df08e7122775558c2bf2"
+    },
+    "15.902": {
+      "source_key": "https://ocw.mit.edu/courses/15-902-strategic-management-i-fall-2006/92d72792ae5e336ac5e6f11a3af4a399_bud_aggmet.pdf",
+      "sha256": "e9a3d3f190a025fa78b0cedf20ba1bc295ecffc5bdb2f3bb54f6098f21d4ffb9"
+    },
+    "15.810": {
+      "source_key": "https://ocw.mit.edu/courses/15-810-marketing-management-fall-2010/49e7dcea0276228cc640de924be6c213_MIT15_810F10_lec01.pdf",
+      "sha256": "c9e8d081180e6b403392721bf39c485773e55076ec9b5c43ed12e2efa22c4524"
+    }
+  },
+  "questions": [
+    {
+      "id": "E01",
+      "query": "What should a startup business plan specify about capital and sales?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 8,
+          "anchor": "sales model"
+        }
+      ]
+    },
+    {
+      "id": "E02",
+      "query": "Why concentrate a new venture on one opportunity with limited resources?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 9,
+          "anchor": "limited resources"
+        }
+      ]
+    },
+    {
+      "id": "E03",
+      "query": "Which technological and market risks should a founder address?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 10,
+          "anchor": "technological and market"
+        }
+      ]
+    },
+    {
+      "id": "E04",
+      "query": "How should an entrepreneur analyze existing demand and alternatives?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 11,
+          "anchor": "size and shape"
+        }
+      ]
+    },
+    {
+      "id": "E05",
+      "query": "What are TAM and market penetration used to model?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 12,
+          "anchor": "Total Addressable Market"
+        }
+      ]
+    },
+    {
+      "id": "E06",
+      "query": "How narrow was the initial market in the Edison business example?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 13,
+          "anchor": "within 1 mile"
+        }
+      ]
+    },
+    {
+      "id": "E07",
+      "query": "Why target early adopters who can afford the offering?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 14,
+          "anchor": "early adopters"
+        }
+      ]
+    },
+    {
+      "id": "S01",
+      "query": "How do granular metrics differ from an aggregate scorecard?",
+      "gold": [
+        {
+          "course": "15.902",
+          "page": 2,
+          "anchor": "Granular Metrics"
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "query": "Which perspectives translate strategy into an actionable balanced scorecard?",
+      "gold": [
+        {
+          "course": "15.902",
+          "page": 4,
+          "anchor": "Financial Perspective"
+        }
+      ]
+    },
+    {
+      "id": "S03",
+      "query": "Why compare company profitability with its cost of capital?",
+      "gold": [
+        {
+          "course": "15.902",
+          "page": 6,
+          "anchor": "above its cost of"
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "query": "What distinguishes strategic funds from current-period budget expenses?",
+      "gold": [
+        {
+          "course": "15.902",
+          "page": 8,
+          "anchor": "beyond the current budget"
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "query": "Which three investment categories make up strategic funds?",
+      "gold": [
+        {
+          "course": "15.902",
+          "page": 9,
+          "anchor": "working capital"
+        }
+      ]
+    },
+    {
+      "id": "M01",
+      "query": "Which five Cs frame analysis of a market opportunity?",
+      "gold": [
+        {
+          "course": "15.810",
+          "page": 6,
+          "anchor": "5Cs",
+          "alternative_pages": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "M02",
+      "query": "What does STP mean for choosing and reaching customer segments?",
+      "gold": [
+        {
+          "course": "15.810",
+          "page": 6,
+          "anchor": "STP",
+          "alternative_pages": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "M03",
+      "query": "Which four marketing-program choices make up the four Ps?",
+      "gold": [
+        {
+          "course": "15.810",
+          "page": 6,
+          "anchor": "4Ps",
+          "alternative_pages": [
+            4
+          ]
+        }
+      ]
+    },
+    {
+      "id": "M04",
+      "query": "Which marketing ethics concerns involve privacy and vulnerable audiences?",
+      "gold": [
+        {
+          "course": "15.810",
+          "page": 9,
+          "anchor": "privacy issues"
+        }
+      ]
+    },
+    {
+      "id": "X01",
+      "query": "How can customer segmentation inform stakeholder value propositions?",
+      "gold": [
+        {
+          "course": "15.390",
+          "page": 10,
+          "anchor": "stakeholders"
+        },
+        {
+          "course": "15.810",
+          "page": 6,
+          "anchor": "Segmenting, Targeting, Positioning"
+        }
+      ]
+    },
+    {
+      "id": "U01",
+      "query": "What was Rentify's actual monthly revenue in September 2026?",
+      "gold": []
+    },
+    {
+      "id": "U02",
+      "query": "Which exact Kubernetes command deploys the OSCAR backend?",
+      "gold": []
+    },
+    {
+      "id": "U03",
+      "query": "What is Rentify's measured customer acquisition cost and churn rate?",
+      "gold": []
+    }
+  ]
+}

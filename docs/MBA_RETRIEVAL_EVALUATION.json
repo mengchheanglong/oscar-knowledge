@@ -1,0 +1,4738 @@
+{
+  "keyword": {
+    "dataset": "MIT OCW approved local demo, source-reviewed v2",
+    "requested_mode": "keyword",
+    "top_k": 5,
+    "questions": 20,
+    "answerable_questions": 17,
+    "unanswerable_questions": 3,
+    "gold_passage_judgments": 18,
+    "Hit@5": 0.7058823529411765,
+    "Recall@5": 0.6764705882352942,
+    "MRR@5": 0.34705882352941175,
+    "mean_seconds": 0.008438125008251519,
+    "p95_seconds": 0.015990399988368154,
+    "citation_locator_accuracy": 1.0,
+    "unanswerable_false_positive_rate": 0.6666666666666666,
+    "unanswerable_correct_rejection_rate": 0.3333333333333333,
+    "fallback_count": 0,
+    "precision_note": "Only gold passages and unanswerable questions are judged; other returned passages are unjudged, not automatically false positives.",
+    "rows": [
+      {
+        "id": "E01",
+        "query": "What should a startup business plan specify about capital and sales?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.2
+        },
+        "seconds": 0.016248000087216496,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 1,
+            "score": 1.2,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 3,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 5,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": true
+          }
+        ]
+      },
+      {
+        "id": "E02",
+        "query": "Why concentrate a new venture on one opportunity with limited resources?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.007781100110150874,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 1,
+            "score": 0.90000004,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "2a224ffd-479c-518e-8656-7eef54c6b102",
+            "course": "15.390",
+            "page": 9,
+            "rank": 2,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "1efa171a-0c92-53bd-9197-325e2b1219a9",
+            "course": "15.390",
+            "page": 25,
+            "rank": 3,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a6978990-c2df-5516-a5d6-69c40b71e38d",
+            "course": "15.390",
+            "page": 23,
+            "rank": 4,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 5,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E03",
+        "query": "Which technological and market risks should a founder address?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.2
+        },
+        "seconds": 0.008166800020262599,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 2,
+            "score": 0.90000004,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f93efa99-7b11-5b64-9ab1-062a7cbac1ed",
+            "course": "15.390",
+            "page": 10,
+            "rank": 5,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": true
+          }
+        ]
+      },
+      {
+        "id": "E04",
+        "query": "How should an entrepreneur analyze existing demand and alternatives?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.005333099979907274,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 1,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "27a3860f-cf1b-5ecb-9ea1-288feacadab2",
+            "course": "15.390",
+            "page": 11,
+            "rank": 2,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d6a9af87-b952-520b-94cc-4c76301e97c9",
+            "course": "15.390",
+            "page": 35,
+            "rank": 4,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E05",
+        "query": "What are TAM and market penetration used to model?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.25
+        },
+        "seconds": 0.007062599994242191,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.0,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 3,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 4,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 5,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E06",
+        "query": "How narrow was the initial market in the Edison business example?",
+        "answerable": true,
+        "metrics": {
+          "hit": 0,
+          "recall": 0.0,
+          "rr": 0
+        },
+        "seconds": 0.009502000059001148,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 4,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 5,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E07",
+        "query": "Why target early adopters who can afford the offering?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.011215799953788519,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 1,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 3,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 5,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S01",
+        "query": "How do granular metrics differ from an aggregate scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.01026899996213615,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 1.8000001,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "a1eeb6e9-1806-5cc0-90f0-a1919bd08b7a",
+            "course": "15.902",
+            "page": 1,
+            "rank": 2,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 3,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 4,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "68a32279-0cfe-57a6-b7c4-d748e60ed7de",
+            "course": "15.390",
+            "page": 27,
+            "rank": 5,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "query": "Which perspectives translate strategy into an actionable balanced scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.003448299947194755,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 1,
+            "score": 0.02,
+            "locator_valid": true,
+            "matches_gold": true
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "query": "Why compare company profitability with its cost of capital?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.006286800024099648,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 3.6000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 2,
+            "score": 1.9,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 1.0,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "79da7ce2-f4a9-5082-8f25-4c6cf508885e",
+            "course": "15.390",
+            "page": 19,
+            "rank": 4,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "ff793ad8-c3ff-54de-a631-75818e1150c9",
+            "course": "15.390",
+            "page": 21,
+            "rank": 5,
+            "score": 0.3,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "query": "What distinguishes strategic funds from current-period budget expenses?",
+        "answerable": true,
+        "metrics": {
+          "hit": 0,
+          "recall": 0.0,
+          "rr": 0
+        },
+        "seconds": 0.006461599958129227,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 1.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 1.3000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9c442952-edd6-57b0-9232-f9672a1bfbbd",
+            "course": "15.902",
+            "page": 10,
+            "rank": 3,
+            "score": 1.3000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "27a3860f-cf1b-5ecb-9ea1-288feacadab2",
+            "course": "15.390",
+            "page": 11,
+            "rank": 4,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 5,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "query": "Which three investment categories make up strategic funds?",
+        "answerable": true,
+        "metrics": {
+          "hit": 0,
+          "recall": 0.0,
+          "rr": 0
+        },
+        "seconds": 0.006652100011706352,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 1.4,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 3,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 4,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "2e71520f-044c-5245-9514-34b7447f296e",
+            "course": "15.390",
+            "page": 24,
+            "rank": 5,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M01",
+        "query": "Which five Cs frame analysis of a market opportunity?",
+        "answerable": true,
+        "metrics": {
+          "hit": 0,
+          "recall": 0.0,
+          "rr": 0
+        },
+        "seconds": 0.006778800045140088,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.8000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 3,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 5,
+            "score": 0.4,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M02",
+        "query": "What does STP mean for choosing and reaching customer segments?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.25
+        },
+        "seconds": 0.005921400035731494,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 2.6000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 1.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 3,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 4,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 5,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M03",
+        "query": "Which four marketing-program choices make up the four Ps?",
+        "answerable": true,
+        "metrics": {
+          "hit": 0,
+          "recall": 0.0,
+          "rr": 0
+        },
+        "seconds": 0.014375100028701127,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 4,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 5,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M04",
+        "query": "Which marketing ethics concerns involve privacy and vulnerable audiences?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.25
+        },
+        "seconds": 0.015990399988368154,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 1.1,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 4,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 5,
+            "score": 0.5,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "X01",
+        "query": "How can customer segmentation inform stakeholder value propositions?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 0.5,
+          "rr": 0.25
+        },
+        "seconds": 0.007563399965874851,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 3.0,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 1.7,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 3,
+            "score": 1.0,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 4,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.7,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U01",
+        "query": "What was Rentify's actual monthly revenue in September 2026?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.006215000059455633,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.2,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "48814718-a78a-5d8d-af01-496e0fcf0d45",
+            "course": "15.390",
+            "page": 36,
+            "rank": 3,
+            "score": 0.1,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U02",
+        "query": "Which exact Kubernetes command deploys the OSCAR backend?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.0053666000021621585,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": []
+      },
+      {
+        "id": "U03",
+        "query": "What is Rentify's measured customer acquisition cost and churn rate?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.008124599931761622,
+        "actual_mode": "keyword",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 5.2000003,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 2,
+            "score": 1.3000001,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 1.0,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.8,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 5,
+            "score": 0.6,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      }
+    ]
+  },
+  "semantic": {
+    "dataset": "MIT OCW approved local demo, source-reviewed v2",
+    "requested_mode": "semantic",
+    "top_k": 5,
+    "questions": 20,
+    "answerable_questions": 17,
+    "unanswerable_questions": 3,
+    "gold_passage_judgments": 18,
+    "Hit@5": 1,
+    "Recall@5": 0.9705882352941176,
+    "MRR@5": 1.0,
+    "mean_seconds": 0.5693146299978252,
+    "p95_seconds": 0.7668245000531897,
+    "citation_locator_accuracy": 1.0,
+    "unanswerable_false_positive_rate": 1.0,
+    "unanswerable_correct_rejection_rate": 0.0,
+    "fallback_count": 0,
+    "precision_note": "Only gold passages and unanswerable questions are judged; other returned passages are unjudged, not automatically false positives.",
+    "rows": [
+      {
+        "id": "E01",
+        "query": "What should a startup business plan specify about capital and sales?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.5770101000089198,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 1,
+            "score": 0.6511398249031203,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "3e1dec83-0429-5a62-b265-9a2a1fef3c67",
+            "course": "15.390",
+            "page": 17,
+            "rank": 2,
+            "score": 0.6278861747330965,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "79da7ce2-f4a9-5082-8f25-4c6cf508885e",
+            "course": "15.390",
+            "page": 19,
+            "rank": 3,
+            "score": 0.5768016210548464,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 4,
+            "score": 0.40124092076168305,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 5,
+            "score": 0.3889492319438259,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E02",
+        "query": "Why concentrate a new venture on one opportunity with limited resources?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.44403580005746335,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "2a224ffd-479c-518e-8656-7eef54c6b102",
+            "course": "15.390",
+            "page": 9,
+            "rank": 1,
+            "score": 0.6740635478875374,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 2,
+            "score": 0.5328211901740554,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 3,
+            "score": 0.49841794324456745,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 4,
+            "score": 0.40328463335545195,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.39927655436890597,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E03",
+        "query": "Which technological and market risks should a founder address?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.42411680007353425,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "f93efa99-7b11-5b64-9ab1-062a7cbac1ed",
+            "course": "15.390",
+            "page": 10,
+            "rank": 1,
+            "score": 0.6403291868575802,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 2,
+            "score": 0.5287684270783527,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 3,
+            "score": 0.4719671325703595,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 4,
+            "score": 0.394375264644648,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.3506874608676731,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E04",
+        "query": "How should an entrepreneur analyze existing demand and alternatives?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.7314337999559939,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "27a3860f-cf1b-5ecb-9ea1-288feacadab2",
+            "course": "15.390",
+            "page": 11,
+            "rank": 1,
+            "score": 0.5875968232635846,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 2,
+            "score": 0.5609227418899696,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 3,
+            "score": 0.5556289355091347,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 4,
+            "score": 0.5298593920553328,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.5157557456056626,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E05",
+        "query": "What are TAM and market penetration used to model?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6204428999917582,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 1,
+            "score": 0.6370397426462882,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.4931395813233711,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.4424551633160754,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.4277387006438925,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.41572362218250736,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E06",
+        "query": "How narrow was the initial market in the Edison business example?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6181671000085771,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 1,
+            "score": 0.5962436658113835,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80ce4d32-7080-5511-b1a3-43b21997f8a4",
+            "course": "15.390",
+            "page": 4,
+            "rank": 2,
+            "score": 0.5722087624944145,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 3,
+            "score": 0.5362906775648577,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.4348185477231553,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 5,
+            "score": 0.43079819084336746,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E07",
+        "query": "Why target early adopters who can afford the offering?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.8004805999808013,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 1,
+            "score": 0.5879566458347386,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "9e053a96-8da4-56f5-9510-a6d66f671ee2",
+            "course": "15.390",
+            "page": 31,
+            "rank": 2,
+            "score": 0.4830068720907945,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 3,
+            "score": 0.43434549672442735,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 4,
+            "score": 0.42124484244720195,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 5,
+            "score": 0.4063613247325434,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S01",
+        "query": "How do granular metrics differ from an aggregate scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6601064999122173,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 0.5800124442629788,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "a1eeb6e9-1806-5cc0-90f0-a1919bd08b7a",
+            "course": "15.902",
+            "page": 1,
+            "rank": 2,
+            "score": 0.4997361747916914,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 3,
+            "score": 0.3976672518355846,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.3930362411113406,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "304a6beb-846a-53b2-8290-497af6e53430",
+            "course": "15.390",
+            "page": 28,
+            "rank": 5,
+            "score": 0.3508007557632644,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "query": "Which perspectives translate strategy into an actionable balanced scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6677799000171944,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 1,
+            "score": 0.8099747383685374,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 2,
+            "score": 0.6273146751165383,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 3,
+            "score": 0.46148212141440914,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.41402823852147397,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 5,
+            "score": 0.37883250186890516,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "query": "Why compare company profitability with its cost of capital?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.7642601999687031,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 1,
+            "score": 0.6257204376805245,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.4909809221006547,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.4496450140120145,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.4122920211466634,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 5,
+            "score": 0.4099841591720623,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "query": "What distinguishes strategic funds from current-period budget expenses?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6188335999613628,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 1,
+            "score": 0.8362440986141266,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 2,
+            "score": 0.6951439169993857,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 3,
+            "score": 0.6384736148276827,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.3844831631104324,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.353659027233729,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "query": "Which three investment categories make up strategic funds?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6097458999138325,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 1,
+            "score": 0.7199633431358188,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 2,
+            "score": 0.6718094167084573,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 3,
+            "score": 0.5340637446102984,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.3771898160885948,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.369772326045417,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M01",
+        "query": "Which five Cs frame analysis of a market opportunity?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.7668245000531897,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 1,
+            "score": 0.7033302299189019,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.5668929477397922,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 3,
+            "score": 0.5642033585774848,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.46136331327936997,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "2a224ffd-479c-518e-8656-7eef54c6b102",
+            "course": "15.390",
+            "page": 9,
+            "rank": 5,
+            "score": 0.44806103660136465,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M02",
+        "query": "What does STP mean for choosing and reaching customer segments?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.5853047999553382,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 1,
+            "score": 0.6059192997457694,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.5243369537378156,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.4248778313544118,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.39778846568213,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 5,
+            "score": 0.36478478241194345,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M03",
+        "query": "Which four marketing-program choices make up the four Ps?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.6810985000338405,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 1,
+            "score": 0.5824671937662244,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.5764927751758718,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.47896776104745087,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.430441378766922,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 5,
+            "score": 0.3988755943066885,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M04",
+        "query": "Which marketing ethics concerns involve privacy and vulnerable audiences?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.38531040004454553,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 1,
+            "score": 0.7249866247240903,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.46293719223333474,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 3,
+            "score": 0.4280101914369405,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "6fd5c800-bd09-57ad-a30f-e311c00e7b9d",
+            "course": "15.390",
+            "page": 29,
+            "rank": 4,
+            "score": 0.37371677912972967,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9e053a96-8da4-56f5-9510-a6d66f671ee2",
+            "course": "15.390",
+            "page": 31,
+            "rank": 5,
+            "score": 0.3367513618917569,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "X01",
+        "query": "How can customer segmentation inform stakeholder value propositions?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 0.5,
+          "rr": 1.0
+        },
+        "seconds": 0.40151620004326105,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 1,
+            "score": 0.5366681174435819,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.5211720802495632,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.5052294887944314,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 4,
+            "score": 0.4962906241417072,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.47339415550233277,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U01",
+        "query": "What was Rentify's actual monthly revenue in September 2026?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3453395999968052,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 1,
+            "score": 0.3963889237990029,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 2,
+            "score": 0.354627851479271,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 3,
+            "score": 0.34930093892801783,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 4,
+            "score": 0.3399702096056535,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 5,
+            "score": 0.28193987256109354,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U02",
+        "query": "Which exact Kubernetes command deploys the OSCAR backend?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3204315999755636,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 1,
+            "score": 0.3170080468363816,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "cae5624c-ac61-5364-8480-9db2d20cfe4a",
+            "course": "15.810",
+            "page": 10,
+            "rank": 2,
+            "score": 0.2459067712052484,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.2415975938323045,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "18d89d34-8726-5bbd-b2a0-ff1d783f2e29",
+            "course": "15.390",
+            "page": 38,
+            "rank": 4,
+            "score": 0.23606341207594483,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 5,
+            "score": 0.23028725385665894,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U03",
+        "query": "What is Rentify's measured customer acquisition cost and churn rate?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3640538000036031,
+        "actual_mode": "semantic",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.4205483056095223,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 2,
+            "score": 0.36695510257798825,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 3,
+            "score": 0.3617314068630718,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 4,
+            "score": 0.35478979157303336,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.35420102936629827,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      }
+    ]
+  },
+  "hybrid": {
+    "dataset": "MIT OCW approved local demo, source-reviewed v2",
+    "requested_mode": "hybrid",
+    "top_k": 5,
+    "questions": 20,
+    "answerable_questions": 17,
+    "unanswerable_questions": 3,
+    "gold_passage_judgments": 18,
+    "Hit@5": 1,
+    "Recall@5": 0.9705882352941176,
+    "MRR@5": 0.9411764705882353,
+    "mean_seconds": 0.35385567500488835,
+    "p95_seconds": 0.4103820000309497,
+    "citation_locator_accuracy": 1.0,
+    "unanswerable_false_positive_rate": 1.0,
+    "unanswerable_correct_rejection_rate": 0.0,
+    "fallback_count": 0,
+    "precision_note": "Only gold passages and unanswerable questions are judged; other returned passages are unjudged, not automatically false positives.",
+    "rows": [
+      {
+        "id": "E01",
+        "query": "What should a startup business plan specify about capital and sales?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.5172539999475703,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 1,
+            "score": 0.023856129190115,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "3e1dec83-0429-5a62-b265-9a2a1fef3c67",
+            "course": "15.390",
+            "page": 17,
+            "rank": 2,
+            "score": 0.02337540906965872,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 3,
+            "score": 0.022767857142857142,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 4,
+            "score": 0.019969278033794162,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 5,
+            "score": 0.019176136363636364,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E02",
+        "query": "Why concentrate a new venture on one opportunity with limited resources?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.4103820000309497,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "2a224ffd-479c-518e-8656-7eef54c6b102",
+            "course": "15.390",
+            "page": 9,
+            "rank": 1,
+            "score": 0.02445795875198308,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 2,
+            "score": 0.02370478983382209,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a6978990-c2df-5516-a5d6-69c40b71e38d",
+            "course": "15.390",
+            "page": 23,
+            "rank": 3,
+            "score": 0.022964015151515152,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.018521462639109698,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.011904761904761904,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E03",
+        "query": "Which technological and market risks should a founder address?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.34016450005583465,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "f93efa99-7b11-5b64-9ab1-062a7cbac1ed",
+            "course": "15.390",
+            "page": 10,
+            "rank": 1,
+            "score": 0.024085750315258513,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 2,
+            "score": 0.022539288668320924,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 3,
+            "score": 0.021686969361387965,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 4,
+            "score": 0.020277777777777777,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.019701213818860877,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E04",
+        "query": "How should an entrepreneur analyze existing demand and alternatives?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.32664730004034936,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "27a3860f-cf1b-5ecb-9ea1-288feacadab2",
+            "course": "15.390",
+            "page": 11,
+            "rank": 1,
+            "score": 0.02445795875198308,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 2,
+            "score": 0.023119392684610076,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 3,
+            "score": 0.023076923076923078,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.022429261559696344,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "68a32279-0cfe-57a6-b7c4-d748e60ed7de",
+            "course": "15.390",
+            "page": 27,
+            "rank": 5,
+            "score": 0.022278314310798946,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E05",
+        "query": "What are TAM and market penetration used to model?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3381471000611782,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 1,
+            "score": 0.02420594262295082,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.02382133995037221,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 3,
+            "score": 0.022767857142857142,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.022689474934663816,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.02263099219620959,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E06",
+        "query": "How narrow was the initial market in the Edison business example?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.33423479995690286,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 1,
+            "score": 0.023746383799421407,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 2,
+            "score": 0.02228327228327228,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 3,
+            "score": 0.022095959595959596,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.021953405017921146,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.02054240032382109,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E07",
+        "query": "Why target early adopters who can afford the offering?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3407535000005737,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 1,
+            "score": 0.02459016393442623,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 2,
+            "score": 0.022847301951779565,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.022770398481973434,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.021326013513513514,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 5,
+            "score": 0.01868686868686869,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S01",
+        "query": "How do granular metrics differ from an aggregate scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.39884410006925464,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 0.02459016393442623,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "a1eeb6e9-1806-5cc0-90f0-a1919bd08b7a",
+            "course": "15.902",
+            "page": 1,
+            "rank": 2,
+            "score": 0.024193548387096774,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 3,
+            "score": 0.023561507936507936,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "68a32279-0cfe-57a6-b7c4-d748e60ed7de",
+            "course": "15.390",
+            "page": 27,
+            "rank": 4,
+            "score": 0.02073365231259968,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "query": "Which perspectives translate strategy into an actionable balanced scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3267150000901893,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 1,
+            "score": 0.03278688524590164,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 2,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 3,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.015625,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "query": "Why compare company profitability with its cost of capital?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.33684689993970096,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 1,
+            "score": 0.02445795875198308,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.024325753569539928,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.023809523809523808,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 4,
+            "score": 0.022426868905742147,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "79da7ce2-f4a9-5082-8f25-4c6cf508885e",
+            "course": "15.390",
+            "page": 19,
+            "rank": 5,
+            "score": 0.0221850613154961,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "query": "What distinguishes strategic funds from current-period budget expenses?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3337292999494821,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 1,
+            "score": 0.02420594262295082,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.02393753200204813,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 3,
+            "score": 0.02382133995037221,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.02093114241001565,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.020476190476190478,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "query": "Which three investment categories make up strategic funds?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.34059809998143464,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 1,
+            "score": 0.02420594262295082,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 2,
+            "score": 0.024065540194572452,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 3,
+            "score": 0.02393753200204813,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.022233930453108536,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.021351575456053068,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M01",
+        "query": "Which five Cs frame analysis of a market opportunity?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.3346525999950245,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.024325753569539928,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.023448773448773448,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.023337887067395265,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.022527472527472527,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.02195225916453538,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M02",
+        "query": "What does STP mean for choosing and reaching customer segments?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.40546119993086904,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 1,
+            "score": 0.023969200198708396,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.023941532258064516,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.02393753200204813,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.023581336696090797,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 5,
+            "score": 0.0221850613154961,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M03",
+        "query": "Which four marketing-program choices make up the four Ps?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.31226710008922964,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.024069737184491284,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.023481973434535106,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.023449131513647643,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.02222222222222222,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.02177468820282151,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M04",
+        "query": "Which marketing ethics concerns involve privacy and vulnerable audiences?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3358489000238478,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 1,
+            "score": 0.02420594262295082,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.024193548387096774,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 3,
+            "score": 0.02296037296037296,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 4,
+            "score": 0.020579710144927536,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 5,
+            "score": 0.020510835913312694,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "X01",
+        "query": "How can customer segmentation inform stakeholder value propositions?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 0.5,
+          "rr": 1.0
+        },
+        "seconds": 0.33392150001600385,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 1,
+            "score": 0.02420594262295082,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.024193548387096774,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.024069737184491284,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 4,
+            "score": 0.023200757575757576,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.022843822843822845,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U01",
+        "query": "What was Rentify's actual monthly revenue in September 2026?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3341555999359116,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.021530054644808744,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.01917562724014337,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 3,
+            "score": 0.01639344262295082,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 5,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U02",
+        "query": "Which exact Kubernetes command deploys the OSCAR backend?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.33314599993173033,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 1,
+            "score": 0.01639344262295082,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "cae5624c-ac61-5364-8480-9db2d20cfe4a",
+            "course": "15.810",
+            "page": 10,
+            "rank": 2,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "18d89d34-8726-5bbd-b2a0-ff1d783f2e29",
+            "course": "15.390",
+            "page": 38,
+            "rank": 4,
+            "score": 0.015625,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U03",
+        "query": "What is Rentify's measured customer acquisition cost and churn rate?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3433440000517294,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.02459016393442623,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.02222222222222222,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 3,
+            "score": 0.021418879627834852,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 4,
+            "score": 0.019428152492668622,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.018806959403479703,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      }
+    ]
+  },
+  "hybrid_before_weight_change": {
+    "dataset": "MIT OCW approved local demo, source-reviewed v2",
+    "requested_mode": "hybrid",
+    "top_k": 5,
+    "questions": 20,
+    "answerable_questions": 17,
+    "unanswerable_questions": 3,
+    "gold_passage_judgments": 18,
+    "Hit@5": 1,
+    "Recall@5": 0.9705882352941176,
+    "MRR@5": 0.7941176470588235,
+    "mean_seconds": 0.3642871249932796,
+    "p95_seconds": 0.41429169999901205,
+    "citation_locator_accuracy": 1.0,
+    "unanswerable_false_positive_rate": 1.0,
+    "unanswerable_correct_rejection_rate": 0.0,
+    "fallback_count": 0,
+    "precision_note": "Only gold passages and unanswerable questions are judged; other returned passages are unjudged, not automatically false positives.",
+    "rows": [
+      {
+        "id": "E01",
+        "query": "What should a startup business plan specify about capital and sales?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.5127283000620082,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 1,
+            "score": 0.03131881575727918,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "3e1dec83-0429-5a62-b265-9a2a1fef3c67",
+            "course": "15.390",
+            "page": 17,
+            "rank": 2,
+            "score": 0.030621785881252923,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 3,
+            "score": 0.029910714285714284,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 4,
+            "score": 0.02803379416282642,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 5,
+            "score": 0.026988636363636364,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E02",
+        "query": "Why concentrate a new venture on one opportunity with limited resources?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.41429169999901205,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "2a224ffd-479c-518e-8656-7eef54c6b102",
+            "course": "15.390",
+            "page": 9,
+            "rank": 1,
+            "score": 0.03252247488101534,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 2,
+            "score": 0.03128054740957967,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a6978990-c2df-5516-a5d6-69c40b71e38d",
+            "course": "15.390",
+            "page": 23,
+            "rank": 3,
+            "score": 0.030776515151515152,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.025278219395866455,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 5,
+            "score": 0.01639344262295082,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E03",
+        "query": "Which technological and market risks should a founder address?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.35318439989350736,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "f93efa99-7b11-5b64-9ab1-062a7cbac1ed",
+            "course": "15.390",
+            "page": 10,
+            "rank": 1,
+            "score": 0.03177805800756621,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 2,
+            "score": 0.028949545078577336,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 3,
+            "score": 0.028381642512077296,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.027637721755368813,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.027222222222222224,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E04",
+        "query": "How should an entrepreneur analyze existing demand and alternatives?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3358846999472007,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "27a3860f-cf1b-5ecb-9ea1-288feacadab2",
+            "course": "15.390",
+            "page": 11,
+            "rank": 1,
+            "score": 0.03252247488101534,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 2,
+            "score": 0.03076923076923077,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.03036576949620428,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "f963f8e2-356e-5fe6-9e57-5cc52fdb0866",
+            "course": "15.390",
+            "page": 22,
+            "rank": 4,
+            "score": 0.03036576949620428,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "68a32279-0cfe-57a6-b7c4-d748e60ed7de",
+            "course": "15.390",
+            "page": 27,
+            "rank": 5,
+            "score": 0.029631255487269532,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E05",
+        "query": "What are TAM and market penetration used to model?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.34778900002129376,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 1,
+            "score": 0.032018442622950824,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.0315136476426799,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.030886196246139225,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.029910714285714284,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.029877369007803793,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E06",
+        "query": "How narrow was the initial market in the Edison business example?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.36505220003891736,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 1,
+            "score": 0.031099324975891997,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.030017921146953404,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 3,
+            "score": 0.02904040404040404,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.0287391216352965,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e0dd3cf6-95e0-57ae-bb94-da56d0f83e0f",
+            "course": "15.390",
+            "page": 8,
+            "rank": 5,
+            "score": 0.028693528693528692,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "E07",
+        "query": "Why target early adopters who can afford the offering?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.4124370999634266,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "15c6314b-dc49-5bb8-83d2-3b43ce058dc4",
+            "course": "15.390",
+            "page": 14,
+            "rank": 1,
+            "score": 0.03278688524590164,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.030834914611005692,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.030309988518943745,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 4,
+            "score": 0.029138513513513514,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 5,
+            "score": 0.026262626262626265,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S01",
+        "query": "How do granular metrics differ from an aggregate scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.36402810004074126,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 1,
+            "score": 0.03278688524590164,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "a1eeb6e9-1806-5cc0-90f0-a1919bd08b7a",
+            "course": "15.902",
+            "page": 1,
+            "rank": 2,
+            "score": 0.03225806451612903,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 3,
+            "score": 0.03149801587301587,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "68a32279-0cfe-57a6-b7c4-d748e60ed7de",
+            "course": "15.390",
+            "page": 27,
+            "rank": 4,
+            "score": 0.028309409888357256,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S02",
+        "query": "Which perspectives translate strategy into an actionable balanced scorecard?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3701656999764964,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 1,
+            "score": 0.03278688524590164,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "f54352ed-47c1-5a94-9059-3a8d1e836dca",
+            "course": "15.902",
+            "page": 5,
+            "rank": 2,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 3,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 4,
+            "score": 0.015625,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S03",
+        "query": "Why compare company profitability with its cost of capital?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.3834035999607295,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.03252247488101534,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 2,
+            "score": 0.03252247488101534,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 3,
+            "score": 0.031746031746031744,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "79da7ce2-f4a9-5082-8f25-4c6cf508885e",
+            "course": "15.390",
+            "page": 19,
+            "rank": 4,
+            "score": 0.029877369007803793,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d200f0c8-ebe3-5476-a411-a45a4f18f3f9",
+            "course": "15.810",
+            "page": 3,
+            "rank": 5,
+            "score": 0.02946912242686891,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S04",
+        "query": "What distinguishes strategic funds from current-period budget expenses?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.3357321999501437,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 1,
+            "score": 0.032018442622950824,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.03200204813108039,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 3,
+            "score": 0.0315136476426799,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.02797339593114241,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.02761904761904762,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "S05",
+        "query": "Which three investment categories make up strategic funds?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 1.0
+        },
+        "seconds": 0.32872370001859963,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "0bd24c70-f7e5-597c-9236-f2ccf9fc195b",
+            "course": "15.902",
+            "page": 9,
+            "rank": 1,
+            "score": 0.032018442622950824,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.03200204813108039,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b64ad6f3-90a5-52d4-9ec2-e6265e042644",
+            "course": "15.902",
+            "page": 8,
+            "rank": 3,
+            "score": 0.03200204813108039,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "a67a5db3-10c8-59ed-a0a8-bd937a59132c",
+            "course": "15.390",
+            "page": 34,
+            "rank": 4,
+            "score": 0.029083245521601686,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "9db8fa69-f209-55f8-83bf-0b993124dbec",
+            "course": "15.810",
+            "page": 7,
+            "rank": 5,
+            "score": 0.028814262023217248,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M01",
+        "query": "Which five Cs frame analysis of a market opportunity?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.35225290001835674,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.03252247488101534,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 2,
+            "score": 0.031024531024531024,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.0304147465437788,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.029709507042253523,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 5,
+            "score": 0.02967032967032967,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M02",
+        "query": "What does STP mean for choosing and reaching customer segments?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.3333333333333333
+        },
+        "seconds": 0.3258462999947369,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.03200204813108039,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.03177805800756621,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 3,
+            "score": 0.031754032258064516,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 4,
+            "score": 0.031544957774465976,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "e1c9ce7d-6c60-5a8d-a36e-71968f916ac6",
+            "course": "15.902",
+            "page": 2,
+            "rank": 5,
+            "score": 0.029877369007803793,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M03",
+        "query": "Which four marketing-program choices make up the four Ps?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.3333333333333333
+        },
+        "seconds": 0.3343956000171602,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.032266458495966696,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.0315136476426799,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 3,
+            "score": 0.030834914611005692,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 4,
+            "score": 0.030158730158730156,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.02862400327131466,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "M04",
+        "query": "Which marketing ethics concerns involve privacy and vulnerable audiences?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 1.0,
+          "rr": 0.5
+        },
+        "seconds": 0.4112792999949306,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 1,
+            "score": 0.03225806451612903,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "800035cf-6fa7-56ca-a5b1-74d154b7a0a1",
+            "course": "15.810",
+            "page": 9,
+            "rank": 2,
+            "score": 0.032018442622950824,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 3,
+            "score": 0.030886196246139225,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.02786377708978328,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "62040cb7-e324-5075-b7a1-17ee116a158a",
+            "course": "15.390",
+            "page": 12,
+            "rank": 5,
+            "score": 0.02782608695652174,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "X01",
+        "query": "How can customer segmentation inform stakeholder value propositions?",
+        "answerable": true,
+        "metrics": {
+          "hit": 1,
+          "recall": 0.5,
+          "rr": 0.3333333333333333
+        },
+        "seconds": 0.331155400024727,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.032266458495966696,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "bf7058eb-47c4-53dc-8d0e-36bf9e50f78d",
+            "course": "15.810",
+            "page": 5,
+            "rank": 2,
+            "score": 0.03225806451612903,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "695d6f29-3215-5304-839b-6f3b5e7f2ef5",
+            "course": "15.810",
+            "page": 6,
+            "rank": 3,
+            "score": 0.032018442622950824,
+            "locator_valid": true,
+            "matches_gold": true
+          },
+          {
+            "chunk_id": "185679b5-9e49-5214-bb07-5fedcbe0300f",
+            "course": "15.810",
+            "page": 2,
+            "rank": 4,
+            "score": 0.030798389007344232,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "e4653bc7-d970-5c41-81d0-66d43523403d",
+            "course": "15.390",
+            "page": 18,
+            "rank": 5,
+            "score": 0.030536130536130537,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U01",
+        "query": "What was Rentify's actual monthly revenue in September 2026?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3379488999489695,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.029726775956284153,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "87414312-65d2-55e2-a6b8-d09febfa3233",
+            "course": "15.902",
+            "page": 11,
+            "rank": 2,
+            "score": 0.02724014336917563,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 3,
+            "score": 0.01639344262295082,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "0f5523cb-2c24-5afc-9a33-a898390417ea",
+            "course": "15.390",
+            "page": 13,
+            "rank": 4,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 5,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U02",
+        "query": "Which exact Kubernetes command deploys the OSCAR backend?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.3245689000468701,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "c9cf33d8-ab5c-55c0-a8a6-e76a3f26ebe7",
+            "course": "15.902",
+            "page": 7,
+            "rank": 1,
+            "score": 0.01639344262295082,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "cae5624c-ac61-5364-8480-9db2d20cfe4a",
+            "course": "15.810",
+            "page": 10,
+            "rank": 2,
+            "score": 0.016129032258064516,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "b7ed1352-e07e-50c8-8f63-cd13284c3876",
+            "course": "15.810",
+            "page": 4,
+            "rank": 3,
+            "score": 0.015873015873015872,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "18d89d34-8726-5bbd-b2a0-ff1d783f2e29",
+            "course": "15.390",
+            "page": 38,
+            "rank": 4,
+            "score": 0.015625,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "142a79ec-ac22-5528-89a1-d257eaa1896d",
+            "course": "15.902",
+            "page": 4,
+            "rank": 5,
+            "score": 0.015384615384615385,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      },
+      {
+        "id": "U03",
+        "query": "What is Rentify's measured customer acquisition cost and churn rate?",
+        "answerable": false,
+        "metrics": null,
+        "seconds": 0.344874499947764,
+        "actual_mode": "hybrid",
+        "fallback_reason": null,
+        "results": [
+          {
+            "chunk_id": "80201f47-167e-562c-bd4c-38e3ae57db62",
+            "course": "15.902",
+            "page": 3,
+            "rank": 1,
+            "score": 0.03278688524590164,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "819c983c-810f-55e8-9c96-a73679fe5cee",
+            "course": "15.902",
+            "page": 3,
+            "rank": 2,
+            "score": 0.030158730158730156,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "46db96af-c33d-5179-a71c-f3d4900af8aa",
+            "course": "15.390",
+            "page": 26,
+            "rank": 3,
+            "score": 0.027912386121341344,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "d40b981e-67fe-5bfb-8444-ce33a35eee44",
+            "course": "15.902",
+            "page": 6,
+            "rank": 4,
+            "score": 0.02749266862170088,
+            "locator_valid": true,
+            "matches_gold": false
+          },
+          {
+            "chunk_id": "152deb20-fb2c-5ca0-9ae3-325c9a9d30af",
+            "course": "15.810",
+            "page": 5,
+            "rank": 5,
+            "score": 0.025849212924606464,
+            "locator_valid": true,
+            "matches_gold": false
+          }
+        ]
+      }
+    ]
+  }
+}

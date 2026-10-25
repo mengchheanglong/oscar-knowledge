@@ -31,6 +31,9 @@ found in the available workspace (dependency/runtime directories excluded).
 6. A transaction inserts a complete revision and activates it atomically.
 7. Authenticated retrieval scopes collection + approval + active revision before
    FTS or vector ranking, then optionally combines candidate lists with RRF.
+   When the original FTS query has no hits and is broadened to OR terms, that
+   weaker keyword pool has RRF weight 0.5; ordinary keyword and semantic pools
+   retain weight 1. The small real-corpus evaluation records the measured effect.
 8. OSCAR opt-in HTTP client validates a bounded response and maps external evidence
    to a separate assistant evidence type. Legacy workspace retrieval is unchanged.
 

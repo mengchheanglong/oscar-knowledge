@@ -16,6 +16,9 @@ def test_cli_help_and_explicit_approval(tmp_path):
         "reindex",
         "query",
         "eval",
+        "eval-passages",
+        "create-collection",
+        "reembed",
     ]:
         result = runner.invoke(cli, [command, "--help"])
         assert result.exit_code == 0, result.output

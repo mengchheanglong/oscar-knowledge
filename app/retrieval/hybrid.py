@@ -12,13 +12,16 @@ from app.embeddings.provider import provider
 from app.security import public_source_url
 
 
-def rrf(pools, k=60):
+def rrf(pools, k=60, weights=None):
+    weights = weights or [1.0] * len(pools)
+    if len(weights) != len(pools):
+        raise ValueError("RRF_WEIGHT_COUNT")
     scores: dict[str, float] = {}
-    for pool in pools:
+    for pool, weight in zip(pools, weights, strict=True):
         seen = set()
         for rank, key in enumerate(pool, 1):
             if key not in seen:
-                scores[key] = scores.get(key, 0) + 1 / (k + rank)
+                scores[key] = scores.get(key, 0) + weight / (k + rank)
                 seen.add(key)
     return sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
 
@@ -57,6 +60,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
     pools = []
     rows_by_id = {}
     scores_by_id = {}
+    broad_keyword = False
     limit = min(100, max(request.top_k * 5, 30))
     if mode in {"keyword", "hybrid"}:
         query = func.websearch_to_tsquery("english", request.query)
@@ -72,6 +76,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
             # only to a bounded indexed disjunction, never to unrelated documents.
             terms = re.findall(r"[^\W_]{2,}", request.query, flags=re.UNICODE)[:32]
             if terms:
+                broad_keyword = True
                 broad_query = func.websearch_to_tsquery("english", " OR ".join(terms))
                 broad_score = func.ts_rank_cd(Chunk.search_vector, broad_query)
                 rows = db.execute(
@@ -143,7 +148,13 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
                 rows_by_id[str(row[0].id)] = row
                 if mode == "semantic":
                     scores_by_id[str(row[0].id)] = float(row[3])
-    ranked = rrf(pools) if mode == "hybrid" else [(key, scores_by_id[key]) for key in pools[0]]
+    # An OR-broadened query has weaker lexical agreement than the original FTS
+    # query. Keep those candidates but reduce their influence in hybrid fusion.
+    ranked = (
+        rrf(pools, weights=[0.5, 1.0] if broad_keyword else None)
+        if mode == "hybrid"
+        else [(key, scores_by_id[key]) for key in pools[0]]
+    )
     results: list[Evidence] = []
     counts: Counter = Counter()
     for key, score_value in ranked:
@@ -191,7 +202,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
         score_semantics={
             "keyword": "PostgreSQL ts_rank_cd; not a probability",
             "semantic": "cosine similarity; not a probability",
-            "hybrid": "RRF sum(1/(60+rank)); not a probability",
+            "hybrid": "RRF sum(weight/(60+rank)); broadened keyword weight=0.5, otherwise weights=1; not a probability",
         }[mode],
         results=results,
     )

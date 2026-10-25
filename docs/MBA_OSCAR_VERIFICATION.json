@@ -1,0 +1,78 @@
+{
+  "live_generation": true,
+  "generation_model": [
+    "deepseek-flash"
+  ],
+  "project_context": "Existing authorized Rentify project; private records remain in OSCAR, not the curated collection",
+  "checks": [
+    {
+      "scenario": "business-model",
+      "seconds": 5.665,
+      "external_citations": 3,
+      "cited_courses": [
+        "15.390",
+        "15.810"
+      ],
+      "current_grounding": "current MIT citations validated"
+    },
+    {
+      "scenario": "pricing",
+      "seconds": 4.386,
+      "external_citations": 2,
+      "cited_courses": [
+        "15.390",
+        "15.810"
+      ],
+      "current_grounding": "current MIT citations validated"
+    },
+    {
+      "scenario": "strategy",
+      "seconds": 4.243,
+      "external_citations": 1,
+      "cited_courses": [
+        "15.390"
+      ],
+      "current_grounding": "current MIT citations validated"
+    },
+    {
+      "scenario": "finance",
+      "seconds": 4.779,
+      "external_citations": 0,
+      "cited_courses": [],
+      "current_grounding": "LIMITED: no current MIT citation; inspect unsupported concepts"
+    },
+    {
+      "scenario": "growth",
+      "seconds": 4.547,
+      "external_citations": 0,
+      "cited_courses": [],
+      "current_grounding": "LIMITED: no current MIT citation; inspect unsupported concepts"
+    }
+  ],
+  "browser_composer": {
+    "courseKnowledgeCheckbox": true,
+    "normalFrontendSend": true,
+    "sourceInspectorVerified": true
+  },
+  "outage_checks": [
+    {
+      "includeKnowledge": true,
+      "seconds": 4.381,
+      "unavailableNotice": true,
+      "externalCitations": 0
+    },
+    {
+      "includeKnowledge": false,
+      "seconds": 5.88,
+      "unavailableNotice": false,
+      "externalCitations": 0
+    }
+  ],
+  "outage_read_checks": {
+    "tasks": "PASS",
+    "goals": "PASS",
+    "MAVIS": "PASS",
+    "projectSearch": "PASS"
+  },
+  "manual_review": "Current cited business-model, pricing, strategy and focused browser-composer answers were reviewed against source pages. Finance and growth follow-ups omitted current MIT citations and are not accepted as fully grounded. Citation metadata correctness is not semantic claim validation. Initial historical-marker reuse was observed, mitigated and regression-tested; saved failed attempts were retained."
+}

@@ -20,6 +20,29 @@ from app.retrieval.hybrid import retrieve
 cli = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 
 
+@cli.command("create-collection")
+def create_collection(slug: str, title: str):
+    """Create an explicitly allowlisted curated shared collection; no private ACL claim."""
+    import re
+
+    settings = get_settings()
+    if (
+        not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,99}", slug)
+        or slug not in settings.allowed_collections
+    ):
+        raise typer.BadParameter("COLLECTION_NOT_ALLOWED")
+    if not title.strip() or len(title) > 300:
+        raise typer.BadParameter("INVALID_COLLECTION_TITLE")
+    with session() as db:
+        existing = db.scalar(select(Collection).where(Collection.slug == slug))
+        if existing:
+            typer.echo("UNCHANGED")
+            return
+        db.add(Collection(slug=slug, title=title.strip(), visibility="CURATED_SHARED"))
+        db.commit()
+        typer.echo("CREATED")
+
+
 @cli.command()
 def doctor():
     """Check explicit migrations, database and local service configuration."""
@@ -292,6 +315,30 @@ def evaluate(path: Path, mode: str = "keyword"):
             }
         )
     )
+
+
+@cli.command("eval-passages")
+def evaluate_real_passages(
+    path: Path,
+    mode: str = "hybrid",
+    output: Path | None = None,
+):
+    """Evaluate hash-pinned PDF passage labels, including explicit unanswerable queries."""
+    from app.evaluation import PassageDataset, evaluate_passages
+
+    if mode not in {"keyword", "semantic", "hybrid"}:
+        raise typer.BadParameter("INVALID_RETRIEVAL_MODE")
+    if path.stat().st_size > 1_000_000:
+        raise typer.BadParameter("EVALUATION_DATASET_TOO_LARGE")
+    dataset = PassageDataset.model_validate_json(path.read_text(encoding="utf-8"))
+    with session() as db:
+        report = evaluate_passages(
+            db, dataset, get_settings(), cast(Literal["keyword", "semantic", "hybrid"], mode)
+        )
+    if output:
+        output.parent.mkdir(parents=True, exist_ok=True)
+        output.write_text(json.dumps(report, indent=2), encoding="utf-8")
+    typer.echo(json.dumps({key: value for key, value in report.items() if key != "rows"}, indent=2))
 
 
 def main():

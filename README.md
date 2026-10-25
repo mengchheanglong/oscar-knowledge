@@ -10,6 +10,11 @@ Local Qwen embeddings are installed and verified on this Windows machine. See
 [implementation and verification report](docs/QWEN_IMPLEMENTATION_REPORT.md).
 The checked-in default remains `disabled`; provider selection is explicit.
 
+The current local MIT demo, measured real-source retrieval results, startup and
+remaining grounding limits are documented in
+[KNOWLEDGE_HACKATHON_READINESS.md](docs/KNOWLEDGE_HACKATHON_READINESS.md).
+Health check: `scripts/hackathon.ps1`; existing-machine startup: add `-Start`.
+
 ## Windows PowerShell
 
 Run from this directory. Docker Desktop must be running; Python 3.13 and pnpm/Node
