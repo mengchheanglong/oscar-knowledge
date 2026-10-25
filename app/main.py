@@ -4,13 +4,15 @@ import uuid
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
+from starlette.concurrency import run_in_threadpool
 
 from app.api.schemas import RetrievalRequest, RetrievalResponse
 from app.config import get_settings
-from app.db.models import Collection
+from app.db.models import Chunk, Collection, Document, LibraryBook
 from app.db.session import session
 from app.retrieval.hybrid import retrieve
+from app.security import private_subject
 
 app = FastAPI(title="OSCAR Knowledge", version="0.1.0")
 bearer = HTTPBearer(auto_error=False)
@@ -55,7 +57,7 @@ def ready():
         with session() as db:
             version = db.scalar(text("SELECT version_num FROM alembic_version"))
             vector = db.scalar(text("SELECT 1 FROM pg_extension WHERE extname = 'vector'"))
-            if version != "0002" or not vector:
+            if version != "0005" or not vector:
                 raise ValueError("MIGRATION_REQUIRED")
     except Exception:
         raise HTTPException(503, "NOT_READY") from None
@@ -63,10 +65,22 @@ def ready():
 
 
 @app.post("/internal/v1/retrieve", response_model=RetrievalResponse, dependencies=[Depends(auth)])
-def retrieval(body: RetrievalRequest):
+async def retrieval(body: RetrievalRequest, request: Request):
     try:
-        with session() as db:
-            return retrieve(db, body, get_settings())
+        settings = get_settings()
+        subject = None
+        if set(body.collection_ids) & set(settings.private_collections):
+            subject = private_subject(
+                request.headers.get("X-OSCAR-Private-Scope"),
+                await request.body(),
+                settings.private_scope_secret.get_secret_value(),
+            )
+
+        def scoped_retrieve():
+            with session() as db:
+                return retrieve(db, body, settings, subject=subject)
+
+        return await run_in_threadpool(scoped_retrieve)
     except PermissionError:
         raise HTTPException(403, "COLLECTION_NOT_ALLOWED") from None
     except Exception:
@@ -87,3 +101,53 @@ def collections():
             return [{"id": c.slug, "title": c.title, "description": c.description} for c in rows]
     except Exception:
         raise HTTPException(503, "CATALOG_UNAVAILABLE") from None
+
+
+@app.post("/internal/v1/library/collections", dependencies=[Depends(auth)])
+async def library_collections(request: Request):
+    """User-scoped counts only; no private titles, paths or owner identifiers."""
+    settings = get_settings()
+    try:
+        subject = private_subject(
+            request.headers.get("X-OSCAR-Private-Scope"),
+            await request.body(),
+            settings.private_scope_secret.get_secret_value(),
+        )
+    except PermissionError:
+        raise HTTPException(403, "PRIVATE_SCOPE_REQUIRED") from None
+
+    def scoped_counts():
+        with session() as db:
+            result = []
+            active_chunks = (
+                select(Chunk.id)
+                .join(Document, Chunk.document_id == Document.id)
+                .where(
+                    Document.book_id == LibraryBook.id,
+                    Document.book_generation == LibraryBook.active_generation,
+                    Document.approved.is_(True),
+                    Document.status != "DELETED",
+                    Chunk.revision == Document.active_revision,
+                )
+                .exists()
+            )
+            for slug in settings.private_collections:
+                count = db.scalar(
+                    select(func.count())
+                    .select_from(LibraryBook)
+                    .join(Collection)
+                    .where(
+                        Collection.slug == slug,
+                        Collection.visibility == "PRIVATE",
+                        LibraryBook.owner_id == subject,
+                        LibraryBook.visibility == "PRIVATE",
+                        LibraryBook.approved.is_(True),
+                        LibraryBook.active_generation > 0,
+                        LibraryBook.status.in_(["INDEXED", "PARTIALLY_INDEXED"]),
+                        active_chunks,
+                    )
+                )
+                result.append({"id": slug, "indexed_books": count or 0})
+            return result
+
+    return await run_in_threadpool(scoped_counts)

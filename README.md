@@ -2,6 +2,12 @@
 
 Development uses `main` directly, consistently with OSCAR backend and frontend.
 
+The private Windows library is connected to OSCAR. See the
+[local library integration guide](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
+for current coverage, manual incremental commands, private scope, OCR limits and
+the remaining oversized compilation ranges. Source PDFs and private reports stay
+outside Git.
+
 Independent, evidence-only retrieval service. Python 3.12+ (verified locally on
 3.13), FastAPI, SQLAlchemy/Alembic, PostgreSQL 17 and pgvector. No answer generation,
 memory writes, project tables, or background agent framework. Embeddings are

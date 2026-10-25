@@ -38,6 +38,8 @@ class Document(Base):
     __table_args__ = (UniqueConstraint("collection_id", "canonical_key"),)
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True, default=uuid.uuid4)
     collection_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("collections.id"), index=True)
+    book_id: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("library_books.id"), index=True)
+    book_generation: Mapped[int | None] = mapped_column(Integer)
     canonical_key: Mapped[str] = mapped_column(String(500))
     source_url: Mapped[str | None] = mapped_column(Text)
     local_path: Mapped[str] = mapped_column(Text)
@@ -116,3 +118,19 @@ class ChunkEmbedding(Base):
     embedding_1024: Mapped[list[float] | None] = mapped_column(Vector(1024))
     embedding_1536: Mapped[list[float] | None] = mapped_column(Vector(1536))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class LibraryBook(Base):
+    __tablename__ = "library_books"
+    id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)
+    collection_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("collections.id"), index=True)
+    title: Mapped[str] = mapped_column(String(500))
+    author: Mapped[str | None] = mapped_column(String(300))
+    edition: Mapped[str | None] = mapped_column(String(200))
+    approved: Mapped[bool] = mapped_column(default=False)
+    visibility: Mapped[str] = mapped_column(String(30), default="PRIVATE")
+    owner_id: Mapped[uuid.UUID | None] = mapped_column(UUID)
+    active_generation: Mapped[int] = mapped_column(default=0)
+    source_sha256: Mapped[str | None] = mapped_column(String(64))
+    preparation_sha256: Mapped[str | None] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(30), default="CATALOGED")

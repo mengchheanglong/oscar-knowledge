@@ -10,6 +10,9 @@ class Filters(BaseModel):
     course: list[str] = Field(default_factory=list, max_length=20)
     document_ids: list[UUID] = Field(default_factory=list, max_length=20)
     publication_year: list[int] = Field(default_factory=list, max_length=20)
+    title: list[str] = Field(default_factory=list, max_length=20)
+    author: list[str] = Field(default_factory=list, max_length=20)
+    source_type: list[str] = Field(default_factory=list, max_length=20)
 
 
 class RetrievalRequest(BaseModel):
@@ -31,6 +34,13 @@ class RetrievalRequest(BaseModel):
 
 
 class Evidence(BaseModel):
+    extraction: str | None = None
+    review_required: bool = False
+    coverage_note: str | None = None
+    book_id: UUID | None = None
+    author: str | None = None
+    edition: str | None = None
+    chapter: str | None = None
     chunk_id: UUID
     document_id: UUID
     source_type: Literal["EXTERNAL_KNOWLEDGE"] = "EXTERNAL_KNOWLEDGE"

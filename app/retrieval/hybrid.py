@@ -1,12 +1,12 @@
 from collections import Counter
 import re
 
-from sqlalchemy import func, select
+from sqlalchemy import and_, false, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Evidence, RetrievalRequest, RetrievalResponse
 from app.config import Settings
-from app.db.models import Chunk, ChunkEmbedding, Collection, Document
+from app.db.models import Chunk, ChunkEmbedding, Collection, Document, LibraryBook
 from app.embeddings.base import EmbeddingError
 from app.embeddings.provider import provider
 from app.security import public_source_url
@@ -26,16 +26,50 @@ def rrf(pools, k=60, weights=None):
     return sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
 
 
-def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
-    if not set(request.collection_ids) <= set(settings.allowed_collections):
+def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subject=None):
+    shared = set(settings.allowed_collections) - set(settings.private_collections)
+    private = set(settings.private_collections)
+    if not set(request.collection_ids) <= shared | private:
         raise PermissionError("COLLECTION_NOT_ALLOWED")
+    if set(request.collection_ids) & private and subject is None:
+        raise PermissionError("PRIVATE_SCOPE_REQUIRED")
+    if (
+        set(request.collection_ids) & private
+        and settings.embedding_provider == "openai"
+        and request.mode != "keyword"
+    ):
+        raise PermissionError("PRIVATE_LOCAL_EMBEDDINGS_REQUIRED")
+    public_access = and_(Collection.slug.in_(shared), Collection.visibility == "CURATED_SHARED")
+    private_access = (
+        and_(
+            Collection.slug.in_(private),
+            Collection.visibility == "PRIVATE",
+            LibraryBook.visibility == "PRIVATE",
+            LibraryBook.owner_id == subject,
+            Document.book_id.is_not(None),
+        )
+        if subject
+        else false()
+    )
     conditions = [
         Collection.slug.in_(request.collection_ids),
-        Collection.visibility == "CURATED_SHARED",
+        or_(public_access, private_access),
         Document.approved.is_(True),
         Document.status != "DELETED",
         Chunk.revision == Document.active_revision,
         Chunk.collection_id == Document.collection_id,
+        or_(
+            Document.book_id.is_(None),
+            and_(
+                LibraryBook.approved.is_(True),
+                LibraryBook.status.in_(["INDEXED", "PARTIALLY_INDEXED"]),
+                or_(
+                    and_(LibraryBook.visibility == "CURATED_SHARED", public_access), private_access
+                ),
+                LibraryBook.collection_id == Document.collection_id,
+                LibraryBook.active_generation == Document.book_generation,
+            ),
+        ),
     ]
     filters = request.filters
     for values, filter_column in (
@@ -43,6 +77,9 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
         (filters.course, Document.course_code),
         (filters.document_ids, Document.id),
         (filters.publication_year, Document.publication_year),
+        (filters.title, Document.title),
+        (filters.author, Document.author),
+        (filters.source_type, Document.content_type),
     ):
         if values:
             conditions.append(filter_column.in_(values))
@@ -50,6 +87,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
         select(Chunk, Document, Collection.slug)
         .join(Document, Chunk.document_id == Document.id)
         .join(Collection, Document.collection_id == Collection.id)
+        .outerjoin(LibraryBook, Document.book_id == LibraryBook.id)
         .where(*conditions)
     )
     embedder = provider(settings) if request.mode != "keyword" else None
@@ -159,13 +197,28 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
     counts: Counter = Counter()
     for key, score_value in ranked:
         chunk, doc, slug, _ = rows_by_id[key]
-        if counts[doc.id] >= 3:
+        db.refresh(doc)
+        book_record = (
+            db.get(LibraryBook, doc.book_id, populate_existing=True) if doc.book_id else None
+        )
+        if not doc.approved or doc.status == "DELETED" or chunk.revision != doc.active_revision:
             continue
-        counts[doc.id] += 1
+        if doc.book_id and (
+            not book_record
+            or not book_record.approved
+            or book_record.status not in {"INDEXED", "PARTIALLY_INDEXED"}
+            or book_record.active_generation != doc.book_generation
+            or (book_record.visibility == "PRIVATE" and str(book_record.owner_id) != subject)
+        ):
+            continue
+        diversity_key = doc.book_id or doc.id
+        if counts[diversity_key] >= 3:
+            continue
+        counts[diversity_key] += 1
         locators = []
         if chunk.page_start is not None:
             locators.append(
-                f"Page {chunk.page_start}"
+                f"{'PDF page' if doc.book_id and doc.content_type == '.pdf' else 'Page'} {chunk.page_start}"
                 + (f"–{chunk.page_end}" if chunk.page_end != chunk.page_start else "")
             )
         if chunk.heading_path:
@@ -178,6 +231,23 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
                 document_id=doc.id,
                 collection_id=slug,
                 title=doc.title,
+                book_id=doc.book_id,
+                author=doc.author,
+                edition=chunk.source_metadata.get("edition"),
+                chapter=chunk.heading_path if doc.book_id else None,
+                extraction=chunk.source_metadata.get("extraction"),
+                review_required=chunk.source_metadata.get("extraction") == "LOCAL_TESSERACT_OCR"
+                or bool(
+                    chunk.source_metadata.get("formula_review_required")
+                    and re.search(
+                        r"\b(quant|quantitative|statistics|mathematics|accounting)\b",
+                        doc.title,
+                        re.I,
+                    )
+                ),
+                coverage_note="Some image-only pages remain unindexed; consult original PDF."
+                if book_record and book_record.status == "PARTIALLY_INDEXED"
+                else None,
                 course_code=doc.course_code,
                 institution=doc.institution,
                 locator=" / ".join(locators) or None,

@@ -14,6 +14,8 @@ class Settings(BaseSettings):
         "postgresql+psycopg://knowledge:local_knowledge_only@127.0.0.1:43114/knowledge"
     )
     service_token: SecretStr = SecretStr("")
+    private_scope_secret: SecretStr = SecretStr("")
+    private_collections: list[str] = ["personal-library", "social-systems"]
     allowed_collections: list[str] = ["mba-business"]
     embedding_provider: Literal["disabled", "openai", "ollama"] = "disabled"
     embedding_api_key: SecretStr = SecretStr("")
@@ -42,6 +44,13 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_embeddings(self):
+        private_key = self.private_scope_secret.get_secret_value()
+        if private_key and (
+            len(private_key) < 32 or private_key == self.service_token.get_secret_value()
+        ):
+            raise ValueError(
+                "Private scope key must be separate from the service token and at least 32 characters"
+            )
         if self.embedding_dimensions not in {1024, 1536}:
             raise ValueError("Supported embedding dimensions are 1024 and 1536")
         if self.embedding_provider == "openai":

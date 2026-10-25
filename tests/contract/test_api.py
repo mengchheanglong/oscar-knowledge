@@ -55,3 +55,27 @@ def test_scope_is_enforced_before_database(client):
         ).status_code
         == 403
     )
+
+
+def test_service_token_alone_cannot_access_private_metadata_or_evidence(client):
+    headers = {"Authorization": "Bearer test-token"}
+    assert (
+        client.post(
+            "/internal/v1/retrieve",
+            json={"query": "systems", "collection_ids": ["personal-library"]},
+            headers=headers,
+        ).status_code
+        == 403
+    )
+    assert (
+        client.post("/internal/v1/library/collections", content="{}", headers=headers).status_code
+        == 403
+    )
+    assert (
+        client.post(
+            "/internal/v1/retrieve",
+            json={"query": "systems", "owner_id": "someone"},
+            headers=headers,
+        ).status_code
+        == 422
+    )

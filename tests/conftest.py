@@ -42,7 +42,9 @@ def db():
         pytest.fail("Refusing integration tests outside a *_test database")
     engine = create_engine(url)
     with engine.begin() as connection:
-        connection.execute(text("TRUNCATE chunk_embeddings, ingestion_jobs, chunks, documents"))
+        connection.execute(
+            text("TRUNCATE chunk_embeddings, ingestion_jobs, chunks, documents, library_books")
+        )
     with Session(engine, expire_on_commit=False) as session:
         yield session
     engine.dispose()

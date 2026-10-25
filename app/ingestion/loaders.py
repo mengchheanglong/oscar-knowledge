@@ -11,7 +11,19 @@ from bs4 import BeautifulSoup
 from app.config import Settings
 
 PARSER_VERSION = "segments-v1"
-SUPPORTED = {".pdf", ".docx", ".txt", ".md", ".html", ".htm", ".srt", ".vtt", ".csv", ".xlsx"}
+SUPPORTED = {
+    ".pdf",
+    ".docx",
+    ".txt",
+    ".md",
+    ".html",
+    ".htm",
+    ".srt",
+    ".vtt",
+    ".csv",
+    ".xlsx",
+    ".bookpart",
+}
 
 
 class SourceError(ValueError):
@@ -99,10 +111,32 @@ def load(path: Path, settings: Settings) -> list[ExtractedSegment]:
         if len(result) > 50000 or total_chars > settings.max_extract_chars:
             raise SourceError("EXTRACTION_LIMIT")
 
-    if suffix == ".pdf":
+    if suffix == ".bookpart":
+        import json
+
+        if path.stat().st_size > 3 * 1024 * 1024:
+            raise SourceError("BOOKPART_BYTE_LIMIT")
+        data = json.loads(path.read_text(encoding="utf-8"))
+        if data.get("format") != "oscar-bookpart-v1" or not 1 <= len(data["pages"]) <= 8:
+            raise SourceError("BOOKPART_INVALID")
+        for item in data["pages"]:
+            if item["page"] is not None and (not isinstance(item["page"], int) or item["page"] < 1):
+                raise SourceError("BOOKPART_INVALID")
+            add(
+                ExtractedSegment(
+                    item["text"],
+                    heading_path=item.get("chapter"),
+                    page_start=item["page"],
+                    page_end=item["page"],
+                    metadata={**data["metadata"], **item.get("metadata", {})},
+                )
+            )
+    elif suffix == ".pdf":
         import pymupdf
 
-        if not path.read_bytes()[:1024].lstrip().startswith(b"%PDF-"):
+        with path.open("rb") as source:
+            signature = source.read(1024)
+        if not signature.lstrip().startswith(b"%PDF-"):
             raise SourceError("INVALID_PDF")
         with pymupdf.open(path) as pdf:
             if pdf.needs_pass or pdf.page_count > 2000:

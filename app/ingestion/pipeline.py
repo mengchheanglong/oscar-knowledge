@@ -64,7 +64,7 @@ def enqueue(db: Session, path: Path, collection: str, *, approved=False, **metad
             canonical_key=key,
             local_path=str(path),
             title=metadata.pop("title", path.stem),
-            content_type=path.suffix.lower(),
+            content_type=metadata.pop("content_type", path.suffix.lower()),
             approved=approved,
             **metadata,
         )
@@ -193,7 +193,13 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
             job.completed_at = now
             db.commit()
             return "UNCHANGED"
-        segments = list(chunk_segments(extract_bounded(path, settings)))
+        # Generated book parts are a bounded JSON envelope (<=8 segments, <=3 MiB),
+        # not an untrusted PDF/Office parser. Their loader enforces the same total
+        # character/chunk budgets without spawning a process for each tiny part.
+        extracted = (
+            load(path, settings) if path.suffix == ".bookpart" else extract_bounded(path, settings)
+        )
+        segments = list(chunk_segments(extracted))
         if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
             raise SourceError("SOURCE_CHANGED_DURING_EXTRACTION")
         if len(segments) > 5000:

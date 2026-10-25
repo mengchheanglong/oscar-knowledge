@@ -15,9 +15,11 @@ from app.db.session import session
 from app.ingestion.loaders import SUPPORTED
 from app.ingestion.manifest import import_manifest as submit_manifest
 from app.ingestion.pipeline import enqueue, process_job
+from app.library.cli import library_cli
 from app.retrieval.hybrid import retrieve
 
 cli = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
+cli.add_typer(library_cli, name="library")
 
 
 @cli.command("create-collection")
@@ -50,7 +52,7 @@ def doctor():
 
     try:
         ready()
-        typer.echo("Database: ready (migration 0002)")
+        typer.echo("Database: ready (migration 0005)")
     except Exception:
         typer.echo(
             "NOT_READY: check DB, alembic upgrade head and KNOWLEDGE_SERVICE_TOKEN", err=True
