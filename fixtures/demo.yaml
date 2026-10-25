@@ -1,0 +1,74 @@
+version: 1
+entries:
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-PRICING
+  course_title: Pricing experiments
+  subject: Marketing
+  course_page: https://example.org/oscar-demo/pricing
+  local_file: pricing.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-STRATEGY
+  course_title: Competitive positioning
+  subject: Strategy
+  course_page: https://example.org/oscar-demo/strategy
+  local_file: strategy.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-ENTREPRENEURSHIP
+  course_title: Network effects
+  subject: Entrepreneurship
+  course_page: https://example.org/oscar-demo/entrepreneurship
+  local_file: entrepreneurship.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-ECONOMICS
+  course_title: Elasticity and demand
+  subject: Economics
+  course_page: https://example.org/oscar-demo/economics
+  local_file: economics.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-FINANCE
+  course_title: Cash runway and valuation
+  subject: Corporate Finance
+  course_page: https://example.org/oscar-demo/finance
+  local_file: finance.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.
+- collection: mba-business
+  institution: OSCAR synthetic fixtures (not MIT)
+  course_code: DEMO-DECISIONS
+  course_title: Experiments and uncertainty
+  subject: Decision Science
+  course_page: https://example.org/oscar-demo/decisions
+  local_file: decisions.md
+  license: CC0-1.0
+  license_url: https://creativecommons.org/publicdomain/zero/1.0/
+  approved: true
+  notes: Original synthetic demonstration text dedicated to CC0. Not an actual university
+    source.

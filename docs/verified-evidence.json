@@ -1,0 +1,27 @@
+{
+  "retrieval_mode_used": "keyword",
+  "score_semantics": "PostgreSQL ts_rank_cd; not a probability",
+  "results": [
+    {
+      "chunk_id": "e669b4eb-dbb4-5bac-9521-3943916428e0",
+      "document_id": "c496e55e-4ddb-4fc2-8151-201f957e2d51",
+      "source_type": "EXTERNAL_KNOWLEDGE",
+      "collection_id": "mba-business",
+      "title": "Pricing experiments",
+      "course_code": "DEMO-PRICING",
+      "institution": "OSCAR synthetic fixtures (not MIT)",
+      "locator": "Pricing experiments",
+      "locator_missing": false,
+      "page_start": null,
+      "page_end": null,
+      "start_ms": null,
+      "end_ms": null,
+      "source_url": "https://example.org/oscar-demo/pricing",
+      "revision": 1,
+      "text": "# Pricing experiments\n\nSubscription pricing uses customer willingness to pay, segment needs and contribution margin. Rentify can test a basic and premium subscription with clear limits. Measure conversion, retention and support costs before expanding a pricing experiment.",
+      "snippet": "# Pricing experiments\n\nSubscription pricing uses customer willingness to pay, segment needs and contribution margin. Rentify can test a basic and premium subscription with clear limits. Measure conversion, retention and support costs before",
+      "rank": 1,
+      "score": 0.16324787
+    }
+  ]
+}

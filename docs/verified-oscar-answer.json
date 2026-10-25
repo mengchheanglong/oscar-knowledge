@@ -1,0 +1,23 @@
+{
+  "verification": "Real knowledge HTTP and OSCAR PostgreSQL persistence; scripted DeepSeek transport, no live model call",
+  "question": "subscription pricing",
+  "answer": "Scripted demo: test basic and premium subscriptions, then measure conversion and retention [Evidence #1]. Invalid source [Evidence #99].",
+  "citations": [
+    {
+      "score": 0.16324787,
+      "title": "Pricing experiments",
+      "chunkId": "e669b4eb-dbb4-5bac-9521-3943916428e0",
+      "locator": "Pricing experiments",
+      "snippet": "# Pricing experiments\n\nSubscription pricing uses customer willingness to pay, segment needs and contribution margin. Rentify can test a basic and premium subscription with clear limits. Measure conversion, retention and support costs before",
+      "revision": 1,
+      "sourceId": "c496e55e-4ddb-4fc2-8151-201f957e2d51",
+      "sourceUrl": "https://example.org/oscar-demo/pricing",
+      "courseCode": "DEMO-PRICING",
+      "documentId": "c496e55e-4ddb-4fc2-8151-201f957e2d51",
+      "sourceType": "EXTERNAL_KNOWLEDGE",
+      "institution": "OSCAR synthetic fixtures (not MIT)",
+      "collectionId": "mba-business",
+      "evidenceNumber": 1
+    }
+  ]
+}

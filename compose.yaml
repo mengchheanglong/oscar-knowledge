@@ -1,0 +1,63 @@
+name: oscar-knowledge
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.2-pg17-bookworm
+    environment:
+      POSTGRES_DB: knowledge
+      POSTGRES_USER: knowledge
+      POSTGRES_PASSWORD: local_knowledge_only
+    ports: ['127.0.0.1:43114:5432']
+    volumes: [knowledge-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U knowledge -d knowledge']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  postgres-test:
+    profiles: [test]
+    image: pgvector/pgvector:0.8.2-pg17-bookworm
+    environment:
+      POSTGRES_DB: knowledge_test
+      POSTGRES_USER: knowledge_test
+      POSTGRES_PASSWORD: local_knowledge_test_only
+    ports: ['127.0.0.1:43115:5432']
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U knowledge_test -d knowledge_test']
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  api:
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    profiles: [app]
+    build: .
+    env_file: .env
+    environment:
+      KNOWLEDGE_DATABASE_URL: postgresql+psycopg://knowledge:local_knowledge_only@postgres:5432/knowledge
+    ports: ['127.0.0.1:8010:8010']
+    read_only: true
+    tmpfs: [/tmp]
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: ['CMD', 'python', '-c', "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8010/health/ready')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  worker:
+    mem_limit: 512m
+    cpus: 1.0
+    pids_limit: 128
+    profiles: [worker]
+    build: .
+    env_file: .env
+    environment:
+      KNOWLEDGE_DATABASE_URL: postgresql+psycopg://knowledge:local_knowledge_only@postgres:5432/knowledge
+    command: ['knowledgectl', 'worker']
+    volumes: ['./data:/app/data']
+    depends_on:
+      postgres: {condition: service_healthy}
+volumes:
+  knowledge-data:

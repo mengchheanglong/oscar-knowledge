@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "name": "synthetic-business-v1",
+  "questions": [
+    {
+      "query": "subscription pricing",
+      "source_keys": [
+        "https://example.org/oscar-demo/pricing#pricing.md"
+      ]
+    },
+    {
+      "query": "willingness to pay",
+      "source_keys": [
+        "https://example.org/oscar-demo/pricing#pricing.md"
+      ]
+    },
+    {
+      "query": "conversion retention support costs",
+      "source_keys": [
+        "https://example.org/oscar-demo/pricing#pricing.md"
+      ]
+    },
+    {
+      "query": "competitive positioning",
+      "source_keys": [
+        "https://example.org/oscar-demo/strategy#strategy.md"
+      ]
+    },
+    {
+      "query": "defensible advantage",
+      "source_keys": [
+        "https://example.org/oscar-demo/strategy#strategy.md"
+      ]
+    },
+    {
+      "query": "switching costs",
+      "source_keys": [
+        "https://example.org/oscar-demo/strategy#strategy.md"
+      ]
+    },
+    {
+      "query": "network effects",
+      "source_keys": [
+        "https://example.org/oscar-demo/entrepreneurship#entrepreneurship.md"
+      ]
+    },
+    {
+      "query": "cold start",
+      "source_keys": [
+        "https://example.org/oscar-demo/entrepreneurship#entrepreneurship.md"
+      ]
+    },
+    {
+      "query": "marketplace transactions",
+      "source_keys": [
+        "https://example.org/oscar-demo/entrepreneurship#entrepreneurship.md"
+      ]
+    },
+    {
+      "query": "price elasticity",
+      "source_keys": [
+        "https://example.org/oscar-demo/economics#economics.md"
+      ]
+    },
+    {
+      "query": "elastic demand",
+      "source_keys": [
+        "https://example.org/oscar-demo/economics#economics.md"
+      ]
+    },
+    {
+      "query": "opportunity cost",
+      "source_keys": [
+        "https://example.org/oscar-demo/economics#economics.md"
+      ]
+    },
+    {
+      "query": "cash runway",
+      "source_keys": [
+        "https://example.org/oscar-demo/finance#finance.md"
+      ]
+    },
+    {
+      "query": "discounted cash flow",
+      "source_keys": [
+        "https://example.org/oscar-demo/finance#finance.md"
+      ]
+    },
+    {
+      "query": "contribution margin",
+      "source_keys": [
+        "https://example.org/oscar-demo/finance#finance.md"
+      ]
+    },
+    {
+      "query": "decision trees",
+      "source_keys": [
+        "https://example.org/oscar-demo/decisions#decisions.md"
+      ]
+    },
+    {
+      "query": "sensitivity analysis",
+      "source_keys": [
+        "https://example.org/oscar-demo/decisions#decisions.md"
+      ]
+    },
+    {
+      "query": "controlled experiment",
+      "source_keys": [
+        "https://example.org/oscar-demo/decisions#decisions.md"
+      ]
+    },
+    {
+      "query": "Rentify premium subscription",
+      "source_keys": [
+        "https://example.org/oscar-demo/pricing#pricing.md"
+      ]
+    },
+    {
+      "query": "customer lifetime value",
+      "source_keys": [
+        "https://example.org/oscar-demo/finance#finance.md"
+      ]
+    }
+  ]
+}
