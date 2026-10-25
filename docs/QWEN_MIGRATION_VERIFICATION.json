@@ -1,0 +1,25 @@
+{
+  "documents": {
+    "preexisting_rows_checked": 6,
+    "unchanged_fields": [
+      "id",
+      "active_revision",
+      "content_sha256",
+      "source_url",
+      "title",
+      "course_code",
+      "license_type"
+    ]
+  },
+  "chunks": {
+    "preexisting_rows_checked": 6,
+    "unchanged_fields": [
+      "id",
+      "document_id",
+      "revision",
+      "embedding",
+      "embedding_identity"
+    ]
+  },
+  "backup": "D:/AI/Ollama/backups/knowledge-before-qwen-0002.dump"
+}

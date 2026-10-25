@@ -36,6 +36,7 @@ services:
     env_file: .env
     environment:
       KNOWLEDGE_DATABASE_URL: postgresql+psycopg://knowledge:local_knowledge_only@postgres:5432/knowledge
+      KNOWLEDGE_OLLAMA_BASE_URL: ${KNOWLEDGE_DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     ports: ['127.0.0.1:8010:8010']
     read_only: true
     tmpfs: [/tmp]
@@ -55,6 +56,7 @@ services:
     env_file: .env
     environment:
       KNOWLEDGE_DATABASE_URL: postgresql+psycopg://knowledge:local_knowledge_only@postgres:5432/knowledge
+      KNOWLEDGE_OLLAMA_BASE_URL: ${KNOWLEDGE_DOCKER_OLLAMA_BASE_URL:-http://host.docker.internal:11434}
     command: ['knowledgectl', 'worker']
     volumes: ['./data:/app/data']
     depends_on:

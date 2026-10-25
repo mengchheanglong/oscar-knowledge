@@ -1,4 +1,5 @@
 {
+  "fallback_reason": null,
   "retrieval_mode_used": "keyword",
   "score_semantics": "PostgreSQL ts_rank_cd; not a probability",
   "results": [

@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.api.schemas import Evidence, RetrievalRequest, RetrievalResponse
 from app.config import Settings
-from app.db.models import Chunk, Collection, Document
+from app.db.models import Chunk, ChunkEmbedding, Collection, Document
+from app.embeddings.base import EmbeddingError
 from app.embeddings.provider import provider
 from app.security import public_source_url
 
@@ -34,22 +35,25 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
         Chunk.collection_id == Document.collection_id,
     ]
     filters = request.filters
-    for values, column in (
+    for values, filter_column in (
         (filters.subject, Document.subject),
         (filters.course, Document.course_code),
         (filters.document_ids, Document.id),
         (filters.publication_year, Document.publication_year),
     ):
         if values:
-            conditions.append(column.in_(values))
+            conditions.append(filter_column.in_(values))
     base = (
         select(Chunk, Document, Collection.slug)
         .join(Document, Chunk.document_id == Document.id)
         .join(Collection, Document.collection_id == Collection.id)
         .where(*conditions)
     )
-    embedder = provider(settings)
-    mode = request.mode if embedder else "keyword"
+    embedder = provider(settings) if request.mode != "keyword" else None
+    if request.mode == "semantic" and not embedder:
+        raise EmbeddingError("EMBEDDING_DISABLED")
+    mode = request.mode if embedder or request.mode == "keyword" else "keyword"
+    fallback_reason = "EMBEDDING_DISABLED" if mode != request.mode else None
     pools = []
     rows_by_id = {}
     scores_by_id = {}
@@ -83,22 +87,57 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
     if mode in {"semantic", "hybrid"}:
         assert embedder is not None
         try:
-            vector = embedder.embed([request.query])[0]
-        except (ValueError, KeyError, IndexError):
+            vector = embedder.embed_query(request.query)
+            identity = embedder.identity
+        except (ValueError, KeyError, IndexError) as exc:
             if mode != "hybrid":
-                raise ValueError("EMBEDDING_UNAVAILABLE") from None
+                raise EmbeddingError("EMBEDDING_UNAVAILABLE") from None
             mode = "keyword"
+            fallback_reason = (
+                str(exc) if isinstance(exc, EmbeddingError) else "EMBEDDING_UNAVAILABLE"
+            )
         else:
-            distance = Chunk.embedding.cosine_distance(vector)
-            rows = db.execute(
-                base.add_columns((1 - distance).label("score"))
-                .where(
-                    Chunk.embedding.is_not(None),
-                    Chunk.embedding_identity == embedder.identity,
+            column = (
+                ChunkEmbedding.embedding_1024
+                if embedder.dimensions == 1024
+                else ChunkEmbedding.embedding_1536
+            )
+            distance = column.cosine_distance(vector)
+            rows = list(
+                db.execute(
+                    base.join(ChunkEmbedding, ChunkEmbedding.chunk_id == Chunk.id)
+                    .add_columns((1 - distance).label("score"))
+                    .where(
+                        column.is_not(None),
+                        ChunkEmbedding.identity == identity,
+                        ChunkEmbedding.dimensions == embedder.dimensions,
+                    )
+                    .order_by(distance, Chunk.id)
+                    .limit(limit)
+                ).all()
+            )
+            if embedder.dimensions == 1536 and embedder.legacy_identity:
+                legacy_distance = Chunk.embedding.cosine_distance(vector)
+                # Legacy raw OpenAI vectors are usable only for their exact original
+                # endpoint/model, and only when a new matching row is absent.
+                exists = (
+                    select(ChunkEmbedding.chunk_id)
+                    .where(ChunkEmbedding.chunk_id == Chunk.id, ChunkEmbedding.identity == identity)
+                    .exists()
                 )
-                .order_by(distance, Chunk.id)
-                .limit(limit)
-            ).all()
+                rows += list(
+                    db.execute(
+                        base.add_columns((1 - legacy_distance).label("score"))
+                        .where(
+                            Chunk.embedding.is_not(None),
+                            Chunk.embedding_identity == embedder.legacy_identity,
+                            ~exists,
+                        )
+                        .order_by(legacy_distance, Chunk.id)
+                        .limit(limit)
+                    ).all()
+                )
+                rows = sorted(rows, key=lambda row: (-float(row[3]), str(row[0].id)))[:limit]
             pools.append([str(row[0].id) for row in rows])
             for row in rows:
                 rows_by_id[str(row[0].id)] = row
@@ -148,6 +187,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings):
             break
     return RetrievalResponse(
         retrieval_mode_used=mode,
+        fallback_reason=fallback_reason,
         score_semantics={
             "keyword": "PostgreSQL ts_rank_cd; not a probability",
             "semantic": "cosine similarity; not a probability",

@@ -4,11 +4,13 @@ from typing import Literal, cast
 from pathlib import Path
 
 import typer
-from sqlalchemy import select
+from sqlalchemy import select, func
 
 from app.api.schemas import RetrievalRequest
 from app.config import get_settings
-from app.db.models import Collection, Document, IngestionJob
+from app.db.models import Chunk, ChunkEmbedding, Collection, Document, IngestionJob
+from app.embeddings.provider import provider
+from app.ingestion.reembedding import enqueue_reembed
 from app.db.session import session
 from app.ingestion.loaders import SUPPORTED
 from app.ingestion.manifest import import_manifest as submit_manifest
@@ -24,15 +26,58 @@ def doctor():
     from app.main import ready
 
     try:
-        typer.echo(ready())
-        typer.echo(
-            "Embeddings: configured"
-            if get_settings().embedding_api_key.get_secret_value()
-            else "Embeddings: disabled (keyword only)"
-        )
+        ready()
+        typer.echo("Database: ready (migration 0002)")
     except Exception:
         typer.echo(
             "NOT_READY: check DB, alembic upgrade head and KNOWLEDGE_SERVICE_TOKEN", err=True
+        )
+        raise typer.Exit(1) from None
+    settings = get_settings()
+    typer.echo(f"Embedding provider: {settings.embedding_provider}")
+    typer.echo(f"Model: {settings.embedding_model}; dimensions: {settings.embedding_dimensions}")
+    embedder = provider(settings)
+    if not embedder:
+        typer.echo("Runtime: disabled (keyword only); compatible vectors: 0")
+        return
+    try:
+        identity = embedder.identity
+        if settings.embedding_provider == "ollama":
+            import httpx
+            import time
+            from app.embeddings.ollama_provider import OllamaEmbedding
+
+            assert isinstance(embedder, OllamaEmbedding)
+            with httpx.Client(follow_redirects=False, trust_env=False) as client:
+                embedder._verify_revision(client, time.monotonic() + 3)
+        typer.echo(
+            "Runtime: reachable"
+            if settings.embedding_provider == "ollama"
+            else "Runtime: explicitly configured (no paid probe)"
+        )
+        with session() as db:
+            count = (
+                db.scalar(
+                    select(func.count())
+                    .select_from(ChunkEmbedding)
+                    .join(Chunk, Chunk.id == ChunkEmbedding.chunk_id)
+                    .join(Document, Document.id == Chunk.document_id)
+                    .join(Collection, Collection.id == Document.collection_id)
+                    .where(
+                        ChunkEmbedding.identity == identity,
+                        Chunk.revision == Document.active_revision,
+                        Document.approved.is_(True),
+                        Document.status != "DELETED",
+                        Collection.slug.in_(settings.allowed_collections),
+                    )
+                )
+                or 0
+            )
+        typer.echo(f"Indexed compatible vectors: {count}")
+    except Exception:
+        typer.echo(
+            "Runtime: unreachable or incompatible model; keyword retrieval remains available",
+            err=True,
         )
         raise typer.Exit(1) from None
 
@@ -173,8 +218,41 @@ def query(
         typer.echo(result.model_dump_json(indent=2))
 
 
+@cli.command()
+def reembed(
+    collection: str = "mba-business",
+    document_id: uuid.UUID | None = None,
+    limit: int = typer.Option(100, min=1, max=1000),
+    queue_only: bool = False,
+):
+    """Embed active stored chunks with the selected model; preserve IDs and old vectors."""
+    settings = get_settings()
+    if settings.embedding_provider == "disabled":
+        raise typer.BadParameter("Select an embedding provider explicitly before re-embedding")
+    if collection not in settings.allowed_collections:
+        raise typer.BadParameter("COLLECTION_NOT_ALLOWED")
+    with session() as db:
+        statement = (
+            select(Document.id)
+            .join(Collection, Collection.id == Document.collection_id)
+            .where(
+                Collection.slug == collection,
+                Document.approved.is_(True),
+                Document.status != "DELETED",
+                Document.active_revision > 0,
+            )
+        )
+        if document_id:
+            statement = statement.where(Document.id == document_id)
+        ids = list(db.scalars(statement.order_by(Document.id).limit(limit)))
+        for doc_id in ids:
+            job = enqueue_reembed(db, doc_id, settings)
+            outcome = "QUEUED" if queue_only else process_job(db, job.id, settings)
+            typer.echo(f"{doc_id} {job.id} {outcome}")
+
+
 @cli.command("eval")
-def evaluate(path: Path):
+def evaluate(path: Path, mode: str = "keyword"):
     """Evaluate explicit gold canonical keys; fixture scores are not corpus benchmarks."""
     dataset = json.loads(path.read_text(encoding="utf-8"))
     hits, recall, reciprocal = [], [], []
@@ -190,7 +268,11 @@ def evaluate(path: Path):
                     "GOLD_SOURCES_NOT_INDEXED: import fixtures/demo.yaml first"
                 )
             response = retrieve(
-                db, RetrievalRequest(query=item["query"], mode="keyword"), get_settings()
+                db,
+                RetrievalRequest(
+                    query=item["query"], mode=cast(Literal["keyword", "semantic", "hybrid"], mode)
+                ),
+                get_settings(),
             )
             found = [r.document_id for r in response.results]
             hits.append(int(bool(set(found) & gold)))
@@ -203,6 +285,7 @@ def evaluate(path: Path):
             {
                 "dataset": dataset["name"],
                 "questions": len(hits),
+                "mode": mode,
                 "Hit@6": sum(hits) / len(hits),
                 "Recall@6": sum(recall) / len(recall),
                 "MRR@6": sum(reciprocal) / len(reciprocal),

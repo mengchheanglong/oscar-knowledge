@@ -106,3 +106,13 @@ class IngestionJob(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ChunkEmbedding(Base):
+    __tablename__ = "chunk_embeddings"
+    chunk_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("chunks.id"), primary_key=True)
+    identity: Mapped[str] = mapped_column(String(300), primary_key=True)
+    dimensions: Mapped[int] = mapped_column()
+    embedding_1024: Mapped[list[float] | None] = mapped_column(Vector(1024))
+    embedding_1536: Mapped[list[float] | None] = mapped_column(Vector(1536))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

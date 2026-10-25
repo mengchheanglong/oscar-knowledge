@@ -8,6 +8,8 @@ the actual document UUIDs after `import-manifest fixtures/demo.yaml`.
 ```powershell
 .\.venv\Scripts\knowledgectl.exe import-manifest fixtures/demo.yaml
 .\.venv\Scripts\knowledgectl.exe eval fixtures/eval_questions.json
+.\.venv\Scripts\knowledgectl.exe eval fixtures/eval_questions.json --mode semantic
+.\.venv\Scripts\knowledgectl.exe eval fixtures/eval_questions.json --mode hybrid
 ```
 
 The CLI reports document-level Hit@6, Recall@6 and MRR@6. It refuses evaluation
@@ -16,6 +18,10 @@ documents; reciprocal rank uses the first matching chunk's result rank. This
 dataset validates routing, keyword ranking and provenance on original synthetic
 notes. It is intentionally easy and is **not evidence of real MBA-corpus quality**.
 Scores from an actual run are recorded in IMPLEMENTATION_REPORT.md.
+Local Qwen with/without query instructions and measured latencies are recorded in
+[QWEN_SERVICE_VERIFICATION.json](QWEN_SERVICE_VERIFICATION.json). This comparison
+uses real embeddings on the same small synthetic dataset and establishes no
+university-corpus or general quality improvement.
 
 Real corpus evaluation requires curator-approved documents and a separate gold
 set with physical PDF pages and expected passages. Compare keyword/exact vector/

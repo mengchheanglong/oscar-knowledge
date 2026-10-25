@@ -53,6 +53,7 @@ class Evidence(BaseModel):
 
 
 class RetrievalResponse(BaseModel):
+    fallback_reason: str | None = None
     retrieval_mode_used: Literal["keyword", "semantic", "hybrid"]
     score_semantics: str
     results: list[Evidence]

@@ -1,0 +1,103 @@
+{
+  "generation": "none; retrieval only",
+  "corpus": "original synthetic CC0 notes",
+  "ingestion": {
+    "outcome": "INDEXED",
+    "seconds": 2.2684230000013486
+  },
+  "fixture_evaluation": {
+    "keyword": {
+      "questions": 20,
+      "Hit@6": 1.0,
+      "Recall@6": 1.0,
+      "MRR@6": 1.0,
+      "mean_seconds": 0.004195890011033043,
+      "max_seconds": 0.008415499934926629,
+      "fallbacks": []
+    },
+    "semantic": {
+      "questions": 20,
+      "Hit@6": 1.0,
+      "Recall@6": 1.0,
+      "MRR@6": 0.9666666666666666,
+      "mean_seconds": 0.33890914503135716,
+      "max_seconds": 0.4137370000826195,
+      "fallbacks": []
+    },
+    "hybrid": {
+      "questions": 20,
+      "Hit@6": 1.0,
+      "Recall@6": 1.0,
+      "MRR@6": 1.0,
+      "mean_seconds": 0.35291074999258853,
+      "max_seconds": 0.41602440003771335,
+      "fallbacks": []
+    },
+    "semantic_without_instruction": {
+      "questions": 20,
+      "Hit@6": 1.0,
+      "Recall@6": 1.0,
+      "MRR@6": 0.8875,
+      "mean_seconds": 0.3518061049922835,
+      "max_seconds": 0.40139909996651113,
+      "fallbacks": []
+    }
+  },
+  "alternate_instruction_reembedding_seconds": 2.6465010999236256,
+  "reembedding_preserved_document_ids_revisions_hashes_and_legacy_columns": true,
+  "offline_check": {
+    "method": "real refused connection to local port 9",
+    "mode": "keyword",
+    "reason": "EMBEDDING_TIMEOUT"
+  },
+  "http_retrieval": {
+    "semantic": {
+      "seconds": 0.2291701000649482,
+      "result": {
+        "chunk_id": "b17a554a-6d30-578a-8783-714e9409a5b6",
+        "document_id": "90472392-534e-47ea-a213-e1a5f9a04c39",
+        "source_type": "EXTERNAL_KNOWLEDGE",
+        "collection_id": "mba-business",
+        "title": "Local Qwen warehouse verification",
+        "course_code": "LOCAL-QWEN-TEST",
+        "institution": null,
+        "locator": "Warehouse replenishment",
+        "locator_missing": false,
+        "page_start": null,
+        "page_end": null,
+        "start_ms": null,
+        "end_ms": null,
+        "source_url": null,
+        "revision": 1,
+        "text": "# Warehouse replenishment\n\nOriginal CC0 verification note, authored for this local acceptance check. The reorder point equals expected demand during supplier lead time plus safety stock. For daily demand of 12 cartons, lead time of 5 days and safety stock of 15 cartons, reorder when inventory reaches 75 cartons.",
+        "snippet": "# Warehouse replenishment\n\nOriginal CC0 verification note, authored for this local acceptance check. The reorder point equals expected demand during supplier lead time plus safety stock. For daily demand of 12 cartons, lead time of 5 days a",
+        "rank": 1,
+        "score": 0.6644340555538664
+      }
+    },
+    "hybrid": {
+      "seconds": 0.22603450005408376,
+      "result": {
+        "chunk_id": "b17a554a-6d30-578a-8783-714e9409a5b6",
+        "document_id": "90472392-534e-47ea-a213-e1a5f9a04c39",
+        "source_type": "EXTERNAL_KNOWLEDGE",
+        "collection_id": "mba-business",
+        "title": "Local Qwen warehouse verification",
+        "course_code": "LOCAL-QWEN-TEST",
+        "institution": null,
+        "locator": "Warehouse replenishment",
+        "locator_missing": false,
+        "page_start": null,
+        "page_end": null,
+        "start_ms": null,
+        "end_ms": null,
+        "source_url": null,
+        "revision": 1,
+        "text": "# Warehouse replenishment\n\nOriginal CC0 verification note, authored for this local acceptance check. The reorder point equals expected demand during supplier lead time plus safety stock. For daily demand of 12 cartons, lead time of 5 days and safety stock of 15 cartons, reorder when inventory reaches 75 cartons.",
+        "snippet": "# Warehouse replenishment\n\nOriginal CC0 verification note, authored for this local acceptance check. The reorder point equals expected demand during supplier lead time plus safety stock. For daily demand of 12 cartons, lead time of 5 days a",
+        "rank": 1,
+        "score": 0.03278688524590164
+      }
+    }
+  }
+}

@@ -5,12 +5,40 @@ from sqlalchemy import select
 
 from app.api.schemas import Filters, RetrievalRequest
 from app.config import Settings
-from app.db.models import Chunk, Document, IngestionJob
+from app.db.models import Chunk, ChunkEmbedding, Document, IngestionJob
 from app.embeddings.provider import OpenAICompatible
 from app.ingestion.pipeline import enqueue, process_job
 from app.retrieval.hybrid import retrieve
 
 pytestmark = pytest.mark.integration
+
+
+def test_unchanged_import_does_not_resurrect_concurrently_deleted_document(
+    db, tmp_path, monkeypatch
+):
+    from sqlalchemy.orm import Session
+
+    path = tmp_path / "note.md"
+    path.write_text("# Pricing\n\nAn original pricing note.")
+    first = enqueue(db, path, "mba-business", approved=True)
+    assert process_job(db, first.id, Settings()) == "INDEXED"
+    second = enqueue(db, path, "mba-business", approved=True)
+
+    class ConcurrentDelete:
+        batch_results = []
+
+        @property
+        def identity(self):
+            with Session(db.get_bind()) as other:
+                doc = other.get(Document, first.document_id)
+                doc.status = "DELETED"
+                other.commit()
+            return None
+
+    monkeypatch.setattr("app.ingestion.pipeline.provider", lambda settings: ConcurrentDelete())
+    assert process_job(db, second.id, Settings()) == "FAILED"
+    assert db.get(Document, first.document_id).status == "DELETED"
+    assert db.get(Document, first.document_id).active_revision == 1
 
 
 def test_atomic_revisions_idempotency_failure_and_restart(db, tmp_path):
@@ -90,7 +118,7 @@ def test_collection_approval_deletion_and_filters(db, tmp_path):
 def test_real_pgvector_model_filter_and_hybrid(db, tmp_path, monkeypatch):
     path = tmp_path / "lecture.md"
     path.write_text("# Network\n\nNetwork effects create value for customers.")
-    settings = Settings(embedding_api_key="fake-never-used")
+    settings = Settings(embedding_provider="openai", embedding_api_key="fake-never-used")
     vector = [1.0] + [0.0] * 1535
     monkeypatch.setattr(OpenAICompatible, "embed", lambda self, texts: [vector for _ in texts])
     job = enqueue(db, path, "mba-business", approved=True)
@@ -99,8 +127,8 @@ def test_real_pgvector_model_filter_and_hybrid(db, tmp_path, monkeypatch):
         result = retrieve(db, RetrievalRequest(query="network", mode=mode), settings)
         assert result.retrieval_mode_used == mode
         assert len(result.results) == 1
-    chunk = db.scalar(select(Chunk))
-    chunk.embedding_identity = "incompatible-model"
+    chunk = db.scalar(select(ChunkEmbedding))
+    chunk.identity = "incompatible-model"
     db.commit()
     assert not retrieve(db, RetrievalRequest(query="network", mode="semantic"), settings).results
 

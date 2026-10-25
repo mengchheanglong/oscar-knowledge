@@ -26,7 +26,8 @@ found in the available workspace (dependency/runtime directories excluded).
 3. A spawned parser process emits segments with pages/headings/times/row IDs.
 4. Deterministic bounded chunks preserve segment provenance. Nearby text in one
    section is combined; PDF page boundaries and catalog rows remain separate.
-5. Optional embedding batches validate model, order, count and finite 1536-vectors.
+5. Explicit disabled/OpenAI/Ollama selection; batches validate model, order, count,
+   finite nonzero vectors and provider dimensions (1536 OpenAI, 1024 local Qwen).
 6. A transaction inserts a complete revision and activates it atomically.
 7. Authenticated retrieval scopes collection + approval + active revision before
    FTS or vector ranking, then optionally combines candidate lists with RRF.
@@ -44,12 +45,28 @@ accounting. Never activate partial chunks; old revision remains queryable after
 parser/provider/storage failure. Explicit deletes and withdrawn approval always
 override revision availability. Old revisions count against storage quota.
 
-Embeddings are limited to 256 chunks/document, 32 inputs/batch, three attempts,
-20-second HTTP timeouts, one concurrent provider request per worker. Job leases
-default to 900 seconds; bounded parser/provider execution fits that lease for the
-MVP. Operators must limit concurrent worker processes. There is no automatic
-infinite retry loop. A changed model identity triggers a new revision; query
-vectors only compare against the exact configured endpoint/model/dimension identity.
+Embeddings are limited to 256 chunks/document, 16 inputs/batch by default (max 32),
+three attempts, 15-second request timeouts and a 600-second document budget.
+Local queries have a two-second embedding budget, including lock contention and
+retries. One process-local semaphore serializes local inference; run one ingestion
+worker process to bound GPU pressure. This is not a cross-process scheduler.
+Job leases default to 900 seconds. HTTP transport timeouts bound individual I/O;
+the operation deadline is checked between requests/retries. Native Ollama can
+continue already submitted work after a client timeout. No infinite retry loop.
+
+Migration 0002 adds `chunk_embeddings`, keyed by chunk ID and model identity,
+with separate typed 1024/1536 columns and a dimension/column check. The legacy
+`chunks.embedding vector(1536)` and its identity remain untouched. Exact cosine
+queries select only the matching identity, dimension and typed column. Original
+OpenAI identities remain queryable for their exact endpoint/model configuration.
+Identity includes provider, model, digest/revision, dimensions, raw preprocessing,
+query instruction hash and endpoint identity (local aliases share one identity).
+
+`reembed` reads active stored text, adds missing model vectors atomically, and
+preserves chunk IDs, revisions, locators and source hashes without downloading.
+Changing models during ordinary source import can create a new revision; use
+`reembed` for a source-preserving model migration. Failed re-embedding keeps the
+old vectors and active revision. Final activation rechecks approval and job lease.
 
 ## Deployment and security
 

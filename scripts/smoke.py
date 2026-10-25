@@ -21,7 +21,7 @@ def main():
             json={
                 "query": "subscription pricing",
                 "collection_ids": ["mba-business"],
-                "mode": "hybrid",
+                "mode": "keyword",
                 "top_k": 4,
             },
         )
@@ -37,13 +37,14 @@ def main():
                 "Authorization": "Bearer " + settings.service_token.get_secret_value(),
             },
             json={
-                "query": "How should Rentify test its subscription pricing, using the synthetic course notes?"
+                "query": "How should Rentify test its subscription pricing, using the synthetic course notes?",
+                "mode": "keyword",
             },
         )
         natural.raise_for_status()
         assert natural.json()["results"][0]["course_code"] == "DEMO-PRICING"
         Path("docs/verified-evidence.json").write_text(json.dumps(data, indent=2), encoding="utf-8")
-        print("PASS: readiness, auth, real HTTP keyword fallback, fixture provenance and locator")
+        print("PASS: readiness, auth, real HTTP keyword retrieval, fixture provenance and locator")
 
 
 if __name__ == "__main__":

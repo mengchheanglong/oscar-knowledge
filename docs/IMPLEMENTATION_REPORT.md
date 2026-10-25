@@ -1,5 +1,9 @@
 # Implementation and verification — 2026-10-25
 
+This records the initial implementation. The subsequent local Qwen installation,
+additive migration 0002, live inference and latest checks are documented in
+[QWEN_IMPLEMENTATION_REPORT.md](QWEN_IMPLEMENTATION_REPORT.md).
+
 Implemented an independent sibling directory `oscar-knowledge`, with its own DB,
 explicit Alembic schema, ingestion jobs, parsers, optional embedding provider,
 keyword/vector/hybrid evidence retrieval, authenticated HTTP API and CLI. Added

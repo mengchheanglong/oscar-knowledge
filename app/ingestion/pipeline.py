@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings, get_settings
 from app.db.models import Chunk, Collection, Document, IngestionJob
 from app.embeddings.provider import provider
+from app.embeddings.storage import store_vectors
 from app.ingestion.chunking import chunk_segments
 from app.ingestion.loaders import PARSER_VERSION, SourceError, load
 
@@ -118,18 +119,31 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
     if job.status == "SUCCEEDED" and not force:
         db.rollback()
         return "SUCCEEDED"
-    job.status, job.stage = "PROCESSING", "extract"
+    job.status, job.stage = (
+        "PROCESSING",
+        "reembed" if job.checkpoint.get("operation") == "reembed" else "extract",
+    )
     job.attempts += 1
     job.started_at = now
     job.completed_at = None
-    job.checkpoint = {**job.checkpoint, "restart": "from_source", "parser": PARSER_VERSION}
+    job.checkpoint = {
+        **job.checkpoint,
+        "restart": "from_source",
+        "parser": PARSER_VERSION,
+        "lease_token": str(uuid.uuid4()),
+    }
+    lease_token = job.checkpoint["lease_token"]
     db.commit()
     doc = db.get(Document, job.document_id)
     assert doc is not None
     embedder = None
     stage = "extract"
     try:
-        # Transaction-scoped document lock prevents overlapping activation across jobs.
+        if job.checkpoint.get("operation") == "reembed":
+            from app.ingestion.reembedding import perform_reembedding
+
+            return perform_reembedding(db, job, settings)
+        # Snapshot under a short lock, then release it before parsing/inference.
         doc = db.scalar(select(Document).where(Document.id == doc.id).with_for_update())
         assert doc is not None
         if not doc.approved or doc.status == "DELETED":
@@ -137,7 +151,9 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
         path = Path(doc.local_path)
         if path.is_symlink() or path.stat().st_size > settings.max_file_bytes:
             raise SourceError("FILE_TOO_LARGE_OR_UNSAFE")
+        starting_revision = doc.active_revision
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        db.commit()
         embedder = provider(settings)
         identity = embedder.identity if embedder else None
         if (
@@ -146,6 +162,30 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
             and doc.parser_version == PARSER_VERSION
             and doc.embedding_identity == identity
         ):
+            doc = db.scalar(
+                select(Document)
+                .where(Document.id == doc.id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            job = db.scalar(
+                select(IngestionJob)
+                .where(IngestionJob.id == job_id)
+                .with_for_update()
+                .execution_options(populate_existing=True)
+            )
+            assert doc is not None and job is not None
+            if job.checkpoint.get("lease_token") != lease_token:
+                raise SourceError("JOB_LEASE_LOST")
+            if (
+                not doc.approved
+                or doc.status == "DELETED"
+                or doc.active_revision != starting_revision
+                or doc.local_path != str(path)
+                or doc.content_sha256 != digest
+                or doc.embedding_identity != identity
+            ):
+                raise SourceError("DOCUMENT_CHANGED_DURING_INDEXING")
             for name, value in job.checkpoint.get("metadata", {}).items():
                 setattr(doc, name, value)
             doc.status = "INDEXED"
@@ -154,47 +194,76 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
             db.commit()
             return "UNCHANGED"
         segments = list(chunk_segments(extract_bounded(path, settings)))
-        # Serialize global quota accounting before any new revision is inserted.
+        if hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+            raise SourceError("SOURCE_CHANGED_DURING_EXTRACTION")
+        if len(segments) > 5000:
+            raise SourceError("CHUNK_LIMIT")
+        if embedder and len(segments) > settings.embedding_max_document_chunks:
+            raise SourceError("EMBEDDING_DOCUMENT_BUDGET")
+        stage = "embed" if embedder else "index"
+        job.stage, job.progress = stage, 30
+        db.commit()
+        vectors: list[list[float] | None] = (
+            list(embedder.embed_documents([s.text for s in segments]))
+            if embedder
+            else [None] * len(segments)
+        )
+        doc = db.scalar(
+            select(Document)
+            .where(Document.id == doc.id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        assert doc is not None
+        job = db.scalar(
+            select(IngestionJob)
+            .where(IngestionJob.id == job_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        assert job is not None
+        if job.checkpoint.get("lease_token") != lease_token:
+            raise SourceError("JOB_LEASE_LOST")
+        if (
+            not doc.approved
+            or doc.status == "DELETED"
+            or doc.active_revision != starting_revision
+            or doc.local_path != str(path)
+        ):
+            raise SourceError("DOCUMENT_CHANGED_DURING_INDEXING")
         db.execute(text("SELECT pg_advisory_xact_lock(7643921)"))
         used = db.scalar(select(func.coalesce(func.sum(Chunk.char_count), 0))) or 0
         if used + sum(len(s.text) for s in segments) > settings.max_storage_chars:
             raise SourceError("STORAGE_QUOTA")
-        if len(segments) > 5000:
-            raise SourceError("CHUNK_LIMIT")
-        if embedder and len(segments) > 256:
-            raise SourceError("EMBEDDING_DOCUMENT_BUDGET")
-        stage = "embed" if embedder else "index"
-        vectors: list[list[float] | None] = (
-            list(embedder.embed([s.text for s in segments])) if embedder else [None] * len(segments)
-        )
         revision = doc.active_revision + 1
         if embedder:
             job.checkpoint = {**job.checkpoint, "embedding_batches": embedder.batch_results}
+        new_chunks = []
         for ordinal, (segment, vector) in enumerate(zip(segments, vectors, strict=True)):
-            db.add(
-                Chunk(
-                    id=uuid.uuid5(
-                        doc.id, f"{revision}:{ordinal}:{digest}:{PARSER_VERSION}:{identity}"
-                    ),
-                    document_id=doc.id,
-                    collection_id=doc.collection_id,
-                    revision=revision,
-                    ordinal=ordinal,
-                    text=segment.text,
-                    char_count=len(segment.text),
-                    token_estimate=(len(segment.text) + 3) // 4,
-                    heading_path=segment.heading_path,
-                    page_start=segment.page_start,
-                    page_end=segment.page_end,
-                    start_ms=segment.start_ms,
-                    end_ms=segment.end_ms,
-                    source_metadata=segment.metadata,
-                    embedding=vector,
-                    embedding_identity=identity,
-                )
+            chunk = Chunk(
+                id=uuid.uuid5(doc.id, f"{revision}:{ordinal}:{digest}:{PARSER_VERSION}:{identity}"),
+                document_id=doc.id,
+                collection_id=doc.collection_id,
+                revision=revision,
+                ordinal=ordinal,
+                text=segment.text,
+                char_count=len(segment.text),
+                token_estimate=(len(segment.text) + 3) // 4,
+                heading_path=segment.heading_path,
+                page_start=segment.page_start,
+                page_end=segment.page_end,
+                start_ms=segment.start_ms,
+                end_ms=segment.end_ms,
+                source_metadata=segment.metadata,
+                embedding=None,
+                embedding_identity=None,
             )
+            db.add(chunk)
+            new_chunks.append(chunk)
         # Flush all chunks before atomically activating their revision.
         db.flush()
+        if embedder:
+            store_vectors(db, new_chunks, vectors, embedder, settings)
         doc.active_revision, doc.content_sha256 = revision, digest
         for name, value in job.checkpoint.get("metadata", {}).items():
             setattr(doc, name, value)
@@ -208,6 +277,8 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
         db.rollback()
         job = db.get(IngestionJob, job_id)
         assert job is not None
+        if job.checkpoint.get("lease_token") != lease_token:
+            return "BUSY"
         doc = db.get(Document, job.document_id)
         assert doc is not None
         code = (

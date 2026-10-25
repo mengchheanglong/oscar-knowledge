@@ -4,6 +4,12 @@ Existing backend and frontend stay independently deployed. No change is made to
 OSCAR embedding settings, workspace ingestion/search, MAVIS, existing migrations,
 Compose identity, model choice or generation provider.
 
+The Knowledge service can now use local Qwen through Ollama independently of
+OSCAR's generation provider. No OpenAI embedding key is needed in local mode.
+DeepSeek generation still uses OSCAR's existing provider credentials. A verified
+live DeepSeek conversation with Qwen-indexed citations is recorded in
+[the Qwen report](QWEN_IMPLEMENTATION_REPORT.md).
+
 Add to the **backend's private environment**, then restart its local process:
 
 ```dotenv

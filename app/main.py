@@ -55,7 +55,7 @@ def ready():
         with session() as db:
             version = db.scalar(text("SELECT version_num FROM alembic_version"))
             vector = db.scalar(text("SELECT 1 FROM pg_extension WHERE extname = 'vector'"))
-            if version != "0001" or not vector:
+            if version != "0002" or not vector:
                 raise ValueError("MIGRATION_REQUIRED")
     except Exception:
         raise HTTPException(503, "NOT_READY") from None

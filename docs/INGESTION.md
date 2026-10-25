@@ -15,6 +15,14 @@ New-Item -ItemType Directory -Force data/inbox
 .\.venv\Scripts\knowledgectl.exe sources
 ```
 
+For a model change, use `knowledgectl reembed --collection mba-business` instead
+of `reindex`: it embeds stored active chunks without source access and preserves
+IDs/revisions/provenance. Add `--document-id <UUID>` to select one source,
+`--queue-only` for worker execution, and `--limit 100` for bounded source batches.
+Repeating it skips compatible vectors. Jobs expose target identity, revision,
+successful batch counts and vectors added. Failures restart at source level;
+individual batch outputs are not checkpointed. See [local Qwen](LOCAL_QWEN.md).
+
 For proper titles, public URLs, institution, subject, licensing and course fields,
 copy `fixtures/demo.yaml` into a curator-owned manifest directory and edit entries.
 Local files must resolve below that manifest directory. Never put private absolute

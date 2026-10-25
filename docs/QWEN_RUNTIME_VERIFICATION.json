@@ -1,0 +1,40 @@
+{
+  "runtime": "Ollama",
+  "model": "qwen3-embedding:0.6b",
+  "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+  "dimensions": 1024,
+  "model_path": "D:\\AI\\Ollama\\models",
+  "model_bytes": 639150858,
+  "first_measured_seconds": 0.14300429995637387,
+  "single_warm_seconds": 0.025413200026378036,
+  "batch_2_seconds": 0.17052819998934865,
+  "batch_16_seconds": 0.3770786999957636,
+  "batch_16_embeddings_per_second": 42.43146059477705,
+  "batch_order_cosines": [
+    0.9999999999999999,
+    1.0
+  ],
+  "model_files_unchanged_by_inference": true,
+  "loaded_models": [
+    {
+      "name": "qwen3-embedding:0.6b",
+      "model": "qwen3-embedding:0.6b",
+      "size": 1228857671,
+      "digest": "ac6da0dfba84a81fdbfbaf330198c33cd77c4cdfc53e8bc50eb581914a15621d",
+      "details": {
+        "parent_model": "",
+        "format": "gguf",
+        "family": "qwen3",
+        "families": [
+          "qwen3"
+        ],
+        "parameter_size": "595.78M",
+        "quantization_level": "Q8_0"
+      },
+      "expires_at": "2319-02-04T10:47:09.394044007+07:00",
+      "size_vram": 1228857671,
+      "context_length": 4096,
+      "runner": "llamacpp"
+    }
+  ]
+}

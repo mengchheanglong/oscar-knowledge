@@ -5,6 +5,11 @@ Independent, evidence-only retrieval service. Python 3.12+ (verified locally on
 memory writes, project tables, or background agent framework. Embeddings are
 optional and separately configured. Synthetic fixtures need no provider credentials.
 
+Local Qwen embeddings are installed and verified on this Windows machine. See
+[Local Qwen operation](docs/LOCAL_QWEN.md) and the
+[implementation and verification report](docs/QWEN_IMPLEMENTATION_REPORT.md).
+The checked-in default remains `disabled`; provider selection is explicit.
+
 ## Windows PowerShell
 
 Run from this directory. Docker Desktop must be running; Python 3.13 and pnpm/Node
@@ -86,9 +91,10 @@ Filters accept `subject`, `course`, `document_ids`, and `publication_year` array
 Collection IDs are public slugs, restricted by the configured service allowlist.
 Query limit 4,000 chars; top-k 1–20; request body 32 KiB; candidate pool ≤100 per
 retrieval path; per-document diversity cap 3. Scores are ranks/similarities, never
-probabilities. Without credentials, semantic/hybrid requests explicitly return
-`retrieval_mode_used: keyword`. A hybrid embedding failure falls back to keyword;
-an explicitly configured semantic-only provider failure returns 503.
+probabilities. Keyword search needs no model. Disabled embeddings or a provider
+failure make hybrid return `retrieval_mode_used: keyword` with `fallback_reason`.
+Explicit semantic requests return 503 when the provider is disabled/unavailable.
+Local Ollama needs no embedding API key; explicitly selected OpenAI requires one.
 
 ## OSCAR demo
 
