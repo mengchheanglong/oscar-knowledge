@@ -12,7 +12,12 @@ Local Qwen embeddings are installed and verified on this Windows machine. See
 [implementation and verification report](docs/QWEN_IMPLEMENTATION_REPORT.md).
 The checked-in default remains `disabled`; provider selection is explicit.
 
-The current local MIT demo, measured real-source retrieval results, startup and
+The approved 22-major study library is now available in shared `mba-majors`:
+1,374 documents and 36,722 locally embedded passages. See
+[MBA major library readiness](docs/MBA_MAJORS_READINESS.md) for usage, import
+integrity, live chat checks and scope. Enable **Course knowledge** in OSCAR chat.
+
+The earlier local MIT demo, measured real-source retrieval results, startup and
 remaining grounding limits are documented in
 [KNOWLEDGE_HACKATHON_READINESS.md](docs/KNOWLEDGE_HACKATHON_READINESS.md).
 Health check: `scripts/hackathon.ps1`; existing-machine startup: add `-Start`.
