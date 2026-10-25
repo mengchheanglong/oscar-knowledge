@@ -9,6 +9,11 @@ strategy. Use the reviewed scenarios below and inspect the sources live.
 
 ## A. Repository Status
 
+Subsequent user workflow direction: **use main directly for all OSCAR repositories**.
+The Knowledge validation changes below were fast-forwarded onto main after the
+original verification, and AGENTS.md now records that workflow. The table is the
+historical validation snapshot, not a requirement to keep using develop.
+
 Verification snapshot before this task's final local commits:
 
 | Repository | Branch | Starting commit | Changes in this task |

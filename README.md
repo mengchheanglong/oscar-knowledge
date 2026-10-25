@@ -1,5 +1,7 @@
 # OSCAR Knowledge
 
+Development uses `main` directly, consistently with OSCAR backend and frontend.
+
 Independent, evidence-only retrieval service. Python 3.12+ (verified locally on
 3.13), FastAPI, SQLAlchemy/Alembic, PostgreSQL 17 and pgvector. No answer generation,
 memory writes, project tables, or background agent framework. Embeddings are
