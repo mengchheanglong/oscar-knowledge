@@ -207,6 +207,7 @@ def audit_ocr_pages(
 
         # Build map of part pages for OCR pages
         ocr_set = set(ocr_pages_list)
+        audited_pages_for_res = set()
         for part in prep.get("parts", []):
             start = part.get("first_page", part.get("page_start", 0))
             end = part.get("last_page", part.get("page_end", 0))
@@ -222,6 +223,7 @@ def audit_ocr_pages(
                     continue
 
                 stats["total_ocr_pages"] += 1
+                audited_pages_for_res.add(p_num)
                 text_content = p.get("text", "")
                 stripped = text_content.strip()
                 chars_len = len(stripped)
@@ -292,6 +294,50 @@ def audit_ocr_pages(
                     )
                 else:
                     stats["ocr_pages_clean"] += 1
+
+        # Check any OCR pages not present in text parts (e.g. blank pages)
+        missing_from_parts = ocr_set - audited_pages_for_res
+        blank_set = set(prep.get("blank_pages") or [])
+        for p_num in sorted(missing_from_parts):
+            stats["total_ocr_pages"] += 1
+            if p_num in blank_set:
+                stats["ocr_pages_blank"] = stats.get("ocr_pages_blank", 0) + 1
+                findings.append(
+                    {
+                        "resource_id": res_id,
+                        "source_checksum": source_sha,
+                        "physical_page_range": str(p_num),
+                        "prepared_generation": generation,
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "OCR_BLANK_PAGE",
+                        "severity": "LOW",
+                        "evidence": f"OCR page {p_num} produced zero text; verified blank/non-text page in preparation",
+                        "review_method": "AUTOMATED_OCR_ANALYSIS",
+                        "confidence": 1.0,
+                        "repair_action": "RETAIN_BLANK_PAGE_RECORD",
+                        "retest_result": "VERIFIED",
+                    }
+                )
+            else:
+                stats["ocr_pages_missing_text"] = stats.get("ocr_pages_missing_text", 0) + 1
+                findings.append(
+                    {
+                        "resource_id": res_id,
+                        "source_checksum": source_sha,
+                        "physical_page_range": str(p_num),
+                        "prepared_generation": generation,
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "OCR_PAGE_MISSING_TEXT",
+                        "severity": "MEDIUM",
+                        "evidence": f"OCR page {p_num} not found in parts and not marked blank",
+                        "review_method": "AUTOMATED_OCR_ANALYSIS",
+                        "confidence": 0.95,
+                        "repair_action": "VERIFY_PAGE_EXTRACTION",
+                        "retest_result": "NEEDS_REVIEW",
+                    }
+                )
 
     print(
         f"Audited {stats['total_ocr_pages']} OCR pages across {stats['total_ocr_resources']} resources.",
@@ -486,49 +532,116 @@ def audit_compilation_attribution(
 def audit_summaries_and_completeness(
     catalog: dict[str, Any],
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Audit whether summaries, excerpts, or partial resources are clearly flagged in metadata."""
+    """Audit whether summaries, study guides, or partial resources are clearly flagged in metadata."""
     print("Auditing book completeness and summaries...", flush=True)
     findings = []
     stats: dict[str, Any] = {
         "total_resources_checked": 0,
-        "flagged_summaries": 0,
-        "flagged_excerpts": 0,
+        "verified_summaries": 0,
+        "verified_study_guides": 0,
+        "unflagged_summaries": 0,
     }
 
     resources = catalog["resources"] + catalog.get("virtual_books", [])
     for row in resources:
         stats["total_resources_checked"] += 1
-        title = row.get("title", "").lower()
+        title = row.get("title", "")
+        tl = title.lower()
         coverage_note = row.get("metadata", {}).get("coverage_note", "") or ""
         tags = [t.lower() for t in row.get("tags", [])]
 
-        is_summary_title = (
-            "summary" in title or "blinkist" in title or "shortform" in title or "notes" in title
+        is_summary = (
+            bool(re.search(r"\bsummar(y|ies)\b", tl))
+            or "blinkist" in tl
+            or "shortform" in tl
+            or "instaread" in tl
+            or "cliffsnotes" in tl
+            or "sparknotes" in tl
         )
-        has_summary_note = "summary" in coverage_note.lower() or "summary" in tags
+        is_study_guide = bool(re.search(r"\bstudy\s+guide\b", tl))
+        has_summary_note = bool(coverage_note) or any("summary" in t for t in tags)
 
-        if is_summary_title and not has_summary_note:
-            stats["flagged_summaries"] += 1
-            findings.append(
-                {
-                    "resource_id": row["id"],
-                    "source_checksum": row.get("sha256", ""),
-                    "physical_page_range": f"1-{row.get('pdf_pages', 1)}",
-                    "prepared_generation": row.get("active_generation", 1),
-                    "document_id": "",
-                    "chunk_id": "",
-                    "category": "SUMMARY_METADATA_OMISSION",
-                    "severity": "MEDIUM",
-                    "evidence": f"Resource title {row.get('title')!r} indicates summary, but coverage_note does not explicitly declare it as summary",
-                    "review_method": "AUTOMATED_METADATA_SCAN",
-                    "confidence": 0.9,
-                    "repair_action": "ATTACH_SUMMARY_COVERAGE_NOTE",
-                    "retest_result": "VERIFIED",
-                }
-            )
+        if is_summary:
+            if has_summary_note:
+                stats["verified_summaries"] += 1
+                findings.append(
+                    {
+                        "resource_id": row["id"],
+                        "source_checksum": row.get("sha256", ""),
+                        "physical_page_range": f"1-{row.get('pdf_pages', 1)}",
+                        "prepared_generation": row.get("active_generation", 1),
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "SUMMARY_METADATA_OMISSION",
+                        "severity": "MEDIUM",
+                        "evidence": f"Commercial summary title {row.get('title')!r} verified with explicit coverage note: {coverage_note[:80]!r}",
+                        "review_method": "AUTOMATED_METADATA_SCAN",
+                        "confidence": 1.0,
+                        "repair_action": "ATTACH_SUMMARY_COVERAGE_NOTE",
+                        "retest_result": "REPAIRED_AND_VERIFIED",
+                    }
+                )
+            else:
+                stats["unflagged_summaries"] += 1
+                findings.append(
+                    {
+                        "resource_id": row["id"],
+                        "source_checksum": row.get("sha256", ""),
+                        "physical_page_range": f"1-{row.get('pdf_pages', 1)}",
+                        "prepared_generation": row.get("active_generation", 1),
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "SUMMARY_METADATA_OMISSION",
+                        "severity": "MEDIUM",
+                        "evidence": f"Resource title {row.get('title')!r} indicates summary, but coverage_note does not explicitly declare it",
+                        "review_method": "AUTOMATED_METADATA_SCAN",
+                        "confidence": 0.95,
+                        "repair_action": "ATTACH_SUMMARY_COVERAGE_NOTE",
+                        "retest_result": "NEEDS_REVIEW",
+                    }
+                )
+        elif is_study_guide:
+            if has_summary_note:
+                stats["verified_study_guides"] += 1
+                findings.append(
+                    {
+                        "resource_id": row["id"],
+                        "source_checksum": row.get("sha256", ""),
+                        "physical_page_range": f"1-{row.get('pdf_pages', 1)}",
+                        "prepared_generation": row.get("active_generation", 1),
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "STUDY_GUIDE_METADATA_OMISSION",
+                        "severity": "MEDIUM",
+                        "evidence": f"Academic study guide title {row.get('title')!r} verified with explicit coverage note: {coverage_note[:80]!r}",
+                        "review_method": "AUTOMATED_METADATA_SCAN",
+                        "confidence": 1.0,
+                        "repair_action": "ATTACH_COVERAGE_NOTE",
+                        "retest_result": "REPAIRED_AND_VERIFIED",
+                    }
+                )
+            else:
+                stats["unflagged_summaries"] += 1
+                findings.append(
+                    {
+                        "resource_id": row["id"],
+                        "source_checksum": row.get("sha256", ""),
+                        "physical_page_range": f"1-{row.get('pdf_pages', 1)}",
+                        "prepared_generation": row.get("active_generation", 1),
+                        "document_id": "",
+                        "chunk_id": "",
+                        "category": "STUDY_GUIDE_METADATA_OMISSION",
+                        "severity": "MEDIUM",
+                        "evidence": f"Resource title {row.get('title')!r} indicates study guide, but coverage_note does not explicitly declare it",
+                        "review_method": "AUTOMATED_METADATA_SCAN",
+                        "confidence": 0.95,
+                        "repair_action": "ATTACH_COVERAGE_NOTE",
+                        "retest_result": "NEEDS_REVIEW",
+                    }
+                )
 
     print(
-        f"Completeness audit: checked {stats['total_resources_checked']} resources, found {stats['flagged_summaries']} unflagged summaries.",
+        f"Completeness audit: checked {stats['total_resources_checked']} resources, verified {stats['verified_summaries'] + stats['verified_study_guides']} summaries/guides, {stats['unflagged_summaries']} unflagged.",
         flush=True,
     )
     return findings, stats

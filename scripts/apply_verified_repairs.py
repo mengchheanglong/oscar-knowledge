@@ -14,6 +14,7 @@ D:/AI/OSCAR/Knowledge/Catalog/reports/quality-review/2026-10-26/REPAIR_MANIFEST.
 """
 
 import json
+import re
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -41,44 +42,76 @@ def apply_repairs():
         virtual_books = catalog.get("virtual_books", [])
 
         # Create a backup of library.json in the quality review directory if not present
+        # Load pre-repair backup notes lookup if available
         backup_path = OUTPUT_DIR / "library.json.pre-repair.bak"
-        if not backup_path.exists():
+        bak_notes = {}
+        if backup_path.exists():
+            bak_catalog = json.loads(backup_path.read_text(encoding="utf-8"))
+            for br in bak_catalog.get("resources", []) + bak_catalog.get("virtual_books", []):
+                bak_notes[br["id"]] = (br.get("metadata") or {}).get("coverage_note", "")
+        else:
             backup_path.write_text(
                 json.dumps(catalog, ensure_ascii=False, indent=2), encoding="utf-8"
             )
             print(f"Created pre-repair backup at {backup_path}", flush=True)
 
-        # 1. Summary metadata clarification
+        # 1. Summary and study guide metadata clarification
         summary_repairs = 0
         for r in resources + virtual_books:
-            title = r.get("title", "").lower()
+            title = r.get("title", "")
+            tl = title.lower()
             metadata = r.setdefault("metadata", {})
             current_note = metadata.get("coverage_note") or ""
+            old_val = bak_notes.get(r["id"], current_note)
 
             is_summary = (
-                "summary" in title
-                or "blinkist" in title
-                or "shortform" in title
-                or "instaread" in title
+                bool(re.search(r"\bsummar(y|ies)\b", tl))
+                or "blinkist" in tl
+                or "shortform" in tl
+                or "instaread" in tl
+                or "cliffsnotes" in tl
+                or "sparknotes" in tl
             )
-            if is_summary and not current_note:
+            is_study_guide = bool(re.search(r"\bstudy\s+guide\b", tl))
+
+            if is_summary:
                 note = "Commercial executive summary / study notes; not an unabridged original publication. Reference evidence reflects summary excerpts."
-                metadata["coverage_note"] = note
-                summary_repairs += 1
-                manifest["repairs_applied"].append(
-                    {
-                        "resource_id": r["id"],
-                        "source_checksum": r.get("sha256", ""),
-                        "category": "SUMMARY_METADATA_OMISSION",
-                        "repair_type": "ATTACH_COVERAGE_NOTE",
-                        "old_value": current_note,
-                        "new_value": note,
-                        "status": "REPAIRED_AND_VERIFIED",
-                    }
-                )
+                if current_note != note:
+                    metadata["coverage_note"] = note
+                if not old_val:
+                    summary_repairs += 1
+                    manifest["repairs_applied"].append(
+                        {
+                            "resource_id": r["id"],
+                            "source_checksum": r.get("sha256", ""),
+                            "category": "SUMMARY_METADATA_OMISSION",
+                            "repair_type": "ATTACH_COVERAGE_NOTE",
+                            "old_value": old_val,
+                            "new_value": note,
+                            "status": "REPAIRED_AND_VERIFIED",
+                        }
+                    )
+            elif is_study_guide:
+                note = "Academic course study guide / review notes; not an unabridged original textbook. Reference evidence reflects course study material."
+                if current_note != note:
+                    metadata["coverage_note"] = note
+                if not old_val:
+                    summary_repairs += 1
+                    manifest["repairs_applied"].append(
+                        {
+                            "resource_id": r["id"],
+                            "source_checksum": r.get("sha256", ""),
+                            "category": "STUDY_GUIDE_METADATA_OMISSION",
+                            "repair_type": "ATTACH_COVERAGE_NOTE",
+                            "old_value": old_val,
+                            "new_value": note,
+                            "status": "REPAIRED_AND_VERIFIED",
+                        }
+                    )
 
         print(
-            f"Attached explicit summary coverage notes to {summary_repairs} resources.", flush=True
+            f"Attached explicit summary/guide coverage notes to {summary_repairs} resources.",
+            flush=True,
         )
 
         # 2. Compilation range attribution validation

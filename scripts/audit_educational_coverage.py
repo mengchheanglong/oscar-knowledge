@@ -151,7 +151,7 @@ def audit_mba_coverage() -> list[dict[str, Any]]:
                 quality_status = "VERIFIED"
             elif "individualized" in major_id:
                 gap = "Sample multidisciplinary synthesis; institutional degree audit and faculty committee approval uncertified"
-                quality_status = "VERIFIED"
+                quality_status = "NEEDS_REVIEW"
             else:
                 gap = "Faculty grading and proprietary business school examination banks excluded; self-study rubric provided"
                 quality_status = "VERIFIED"
@@ -239,8 +239,8 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
             )
             math_diagram = "Prose, tables, and illustrative diagrams present in PDF layout"
             attrib = "Local catalog title match; edition unverified"
-            curriculum = "VERIFIED" if indexed else "NEEDS_REVIEW"
-            notes = "Active database verified; title match does not certify official academic course adoption"
+            curriculum = "NEEDS_REVIEW"
+            notes = "Active database verified; title match does not certify official academic course adoption or specific critical edition"
 
         rows.append(
             {
