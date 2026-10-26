@@ -5,9 +5,10 @@ Development uses `main` directly, consistently with OSCAR backend and frontend.
 The private Windows library is connected to OSCAR. See the
 [local library integration guide](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
 and [completion continuation](docs/LIBRARY_COMPLETION_2026_10_26.md)
-for current coverage, manual incremental commands, private scope, OCR limits and
-the remaining oversized compilation ranges. Source PDFs and private reports stay
-outside Git.
+for verified coverage of all 672 original PDFs, manual incremental commands,
+private scope and OCR/graphic limits. All compilation ranges are processed;
+source PDFs and private reports stay outside Git. In OSCAR, enable **Reference
+knowledge → All permitted references** to include private MBA additions.
 
 Independent, evidence-only retrieval service. Python 3.12+ (verified locally on
 3.13), FastAPI, SQLAlchemy/Alembic, PostgreSQL 17 and pgvector. No answer generation,

@@ -96,15 +96,43 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
     mode = request.mode if embedder or request.mode == "keyword" else "keyword"
     fallback_reason = "EMBEDDING_DISABLED" if mode != request.mode else None
     pools = []
-    rows_by_id = {}
-    scores_by_id = {}
+    rows_by_id: dict[str, tuple[Chunk, Document, str, float]] = {}
+    scores_by_id: dict[str, float] = {}
     broad_keyword = False
-    limit = min(100, max(request.top_k * 5, 30))
+    # Overfetch a bounded pool so repeated copies cannot fill the evidence list.
+    # Score IDs first; fetching full text/metadata before the top-N sort makes
+    # exact vector search unnecessarily expensive on a full-length library.
+    limit = min(300, max(request.top_k * 20, 100))
+    canonical_text: dict[str, str] = {}
+
+    def hydrate(ranks):
+        if not ranks:
+            return []
+        found = {
+            row[0].id: row
+            for row in db.execute(base.where(Chunk.id.in_([r[0] for r in ranks]))).all()
+        }
+        return [(*found[key], score) for key, score in ranks if key in found]
+
+    def add_pool(rows):
+        pool, seen = [], set()
+        for row in rows:
+            identifier = str(row[0].id)
+            key = canonical_text.setdefault(row[0].text, identifier)
+            rows_by_id.setdefault(key, row)
+            scores_by_id.setdefault(key, float(row[3]))
+            if key not in seen:
+                pool.append(key)
+                seen.add(key)
+        pools.append(pool)
+
     if mode in {"keyword", "hybrid"}:
+        previous_nestloop = db.scalar(select(func.current_setting("enable_nestloop")))
+        db.execute(select(func.set_config("enable_nestloop", "off", True)))
         query = func.websearch_to_tsquery("english", request.query)
         score = func.ts_rank_cd(Chunk.search_vector, query)
         rows = db.execute(
-            base.add_columns(score.label("score"))
+            base.with_only_columns(Chunk.id, score.label("score"))
             .where(Chunk.search_vector.op("@@")(query))
             .order_by(score.desc(), Chunk.id)
             .limit(limit)
@@ -118,15 +146,13 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                 broad_query = func.websearch_to_tsquery("english", " OR ".join(terms))
                 broad_score = func.ts_rank_cd(Chunk.search_vector, broad_query)
                 rows = db.execute(
-                    base.add_columns(broad_score.label("score"))
+                    base.with_only_columns(Chunk.id, broad_score.label("score"))
                     .where(Chunk.search_vector.op("@@")(broad_query))
                     .order_by(broad_score.desc(), Chunk.id)
                     .limit(limit)
                 ).all()
-        pools.append([str(row[0].id) for row in rows])
-        for row in rows:
-            rows_by_id[str(row[0].id)] = row
-            scores_by_id[str(row[0].id)] = float(row[3])
+        db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
+        add_pool(hydrate(rows))
     if mode in {"semantic", "hybrid"}:
         assert embedder is not None
         try:
@@ -146,10 +172,16 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                 else ChunkEmbedding.embedding_1536
             )
             distance = column.cosine_distance(vector)
-            rows = list(
+            # Correlated ownership/generation joins can severely underestimate
+            # cardinality and choose hundreds of thousands of PK lookups. Use a
+            # local hash/merge-join plan for the narrow exact-distance ranking;
+            # restore the caller's setting before bounded metadata hydration.
+            previous_nestloop = db.scalar(select(func.current_setting("enable_nestloop")))
+            db.execute(select(func.set_config("enable_nestloop", "off", True)))
+            ranks = list(
                 db.execute(
                     base.join(ChunkEmbedding, ChunkEmbedding.chunk_id == Chunk.id)
-                    .add_columns((1 - distance).label("score"))
+                    .with_only_columns(Chunk.id, (1 - distance).label("score"))
                     .where(
                         column.is_not(None),
                         ChunkEmbedding.identity == identity,
@@ -168,9 +200,9 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                     .where(ChunkEmbedding.chunk_id == Chunk.id, ChunkEmbedding.identity == identity)
                     .exists()
                 )
-                rows += list(
+                ranks += list(
                     db.execute(
-                        base.add_columns((1 - legacy_distance).label("score"))
+                        base.with_only_columns(Chunk.id, (1 - legacy_distance).label("score"))
                         .where(
                             Chunk.embedding.is_not(None),
                             Chunk.embedding_identity == embedder.legacy_identity,
@@ -180,12 +212,11 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                         .limit(limit)
                     ).all()
                 )
-                rows = sorted(rows, key=lambda row: (-float(row[3]), str(row[0].id)))[:limit]
-            pools.append([str(row[0].id) for row in rows])
-            for row in rows:
-                rows_by_id[str(row[0].id)] = row
-                if mode == "semantic":
-                    scores_by_id[str(row[0].id)] = float(row[3])
+                ranks = sorted(ranks, key=lambda row: (-float(row[1]), str(row[0])))[:limit]
+            # On a SQL error the transaction is aborted; rollback also resets
+            # SET LOCAL. Do not mask that error by trying another SQL statement.
+            db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
+            add_pool(hydrate(ranks))
     # An OR-broadened query has weaker lexical agreement than the original FTS
     # query. Keep those candidates but reduce their influence in hybrid fusion.
     ranked = (

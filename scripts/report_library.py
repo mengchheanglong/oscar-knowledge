@@ -106,6 +106,10 @@ def main():
         "",
     ]
     lines += [f"- {r['id']}: {r['title']} ({r.get('pdf_pages')} pages)" for r in pending]
+    if not pending:
+        lines.append(
+            "None. All approved private references have a final indexed or reviewed non-text outcome."
+        )
     (reports / "INGESTION_REPORT.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     evaluation = json.loads((reports / "retrieval-evaluation.json").read_text(encoding="utf-8"))
     table = [
@@ -121,11 +125,23 @@ def main():
             f"| {mode} | {r['hit_at_5']:.3f} | {r['recall_at_5']:.3f} | {r['mrr_at_5']:.3f} | {r['median_seconds']:.4f} |"
         )
     probe = evaluation["embedding_probe"]
+    live_path = (
+        Path(__file__).resolve().parents[2] / "oscar-backend/var/private-library/live-chat.json"
+    )
+    live = json.loads(live_path.read_text(encoding="utf-8")) if live_path.exists() else {}
+    live_passes = sum(r.get("status") == "PASS" for r in live.get("checks", []))
+    live_failures = len(live.get("failedChecks", []))
+    mba_path = reports / "mba-retrieval-regression.json"
+    mba = json.loads(mba_path.read_text(encoding="utf-8")) if mba_path.exists() else {}
     table += [
         "",
         f"Local probe: {probe['passages']} passages, {probe['dimensions']} dimensions, {probe['seconds']} seconds, {probe['passages_per_second']} passages/sec including model verification and HTTP overhead. No vector dump.",
         "",
-        "Four unique scripted configured-model chat requests verified Finance, Social Systems, unanswerable abstention and opt-out; saved citations/replay/scope-change conflict passed. One additional browser chat cited Thinking in Systems and its physical PDF page. These demonstrate integration and attribution, not universal semantic claim support or answer accuracy. Private receipts remain outside Git.",
+        f"Saved scripted configured-model checks: {live_passes} passed, {live_failures} historical failed attempts retained. Finance, Social Systems, unanswerable abstention, opt-out and the recovered compilation physics case are recorded in the private live-chat receipt. Saved citation reload: {live.get('savedCitationReload')}; scope-change conflict: {live.get('scopeChangeConflict')}. The first compilation attempt reported unavailable sources under the old 2500 ms budget; a separate stable recovery request passed after retrieval optimization and an 8000 ms local backend budget. Replays reuse their saved request identities. One earlier browser chat cited Thinking in Systems. These demonstrate integration and attribution, not universal claim support or answer accuracy.",
+        "",
+        "Retrieval ranks eligible IDs before bounded text hydration and collapses exact-text copies only after owner/approval/current-generation filtering. It preserves all stored sources and vectors, caps each candidate pool at 300, restores transaction-local planner settings and rechecks returned evidence. Large duplicate groups beyond the bounded pool can still reduce result diversity. See retrieval-manual-review.json for reviewed alternative passages; they do not turn missing gold-book hits into benchmark passes.",
+        "",
+        f"MBA regression: {mba.get('queries', 'not run')} original questions; baseline top document retained in the top six for {mba.get('baseline_top_document_in_top6', 'unknown')}; all active approved scopes valid: {mba.get('all_active_approved_scopes_valid')}; all hybrid without fallback: {mba.get('all_hybrid_without_fallback')}. This tests scope/integrity and baseline stability, not new source-family accuracy. The original strict MBA source-family benchmark remains 20/22.",
         "",
         "Original initial benchmark retained separately. Current source question results and scope checks: retrieval-evaluation.json. The six-question sample does not certify library-wide recall or MBA equivalence.",
     ]

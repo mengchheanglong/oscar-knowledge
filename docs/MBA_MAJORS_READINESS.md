@@ -10,6 +10,13 @@ compilation progress and source-quality limits are documented in
 [the continuation guide](LIBRARY_COMPLETION_2026_10_26.md) and local generated
 reports. The measurements below retain their original 2026-10-25 scope/date.
 
+The 2026-10-26 regression repeated all 22 original MBA questions: every query
+returned current approved shared evidence through hybrid retrieval without
+fallback, and every original top document remained within the top six. This
+checks scope and stability, not a new source-family accuracy score. The strict
+20/22 result below remains unchanged. Detailed local metadata is in
+`D:\AI\OSCAR\Knowledge\Catalog\reports\mba-retrieval-regression.json`.
+
 Verified 2026-10-25. The user approved importing the reviewed subset for a
 noncommercial local demonstration, retaining source notices and excluding
 quarantined or unresolved third-party content.

@@ -111,6 +111,34 @@ def test_offline_keyword_hybrid_and_explicit_semantic(db, tmp_path, monkeypatch)
         retrieve(db, RetrievalRequest(query="pricing", mode="semantic"), Settings())
 
 
+def test_identical_copies_do_not_crowd_distinct_evidence_or_change_stored_sources(
+    db, tmp_path, monkeypatch
+):
+    monkeypatch.setattr(
+        OllamaEmbedding, "embed", lambda self, texts: [[1.0] + [0.0] * 1023 for _ in texts]
+    )
+    monkeypatch.setattr(OllamaEmbedding, "embed_query", lambda self, text: [1.0] + [0.0] * 1023)
+    settings = local_settings()
+    repeated = "Feedback loops adjust outcomes in a system."
+    distinct = (
+        "Feedback loops can amplify changes or stabilize a system with balancing adjustments."
+    )
+    for number, content in enumerate([repeated, repeated, repeated, distinct]):
+        path = tmp_path / f"source-{number}.md"
+        path.write_text(content)
+        job = enqueue(db, path, "mba-business", approved=True)
+        assert process_job(db, job.id, settings) == "INDEXED"
+    for mode in ["keyword", "semantic", "hybrid"]:
+        before = db.scalar(select(func.current_setting("enable_nestloop")))
+        response = retrieve(db, RetrievalRequest(query="feedback", mode=mode), settings)
+        assert len(response.results) == 2
+        assert {r.text for r in response.results} == {repeated, distinct}
+        assert db.scalar(select(func.current_setting("enable_nestloop"))) == before
+    assert db.scalar(select(func.count()).select_from(Document)) == 4
+    assert db.scalar(select(func.count()).select_from(Chunk)) == 4
+    assert db.scalar(select(func.count()).select_from(ChunkEmbedding)) == 4
+
+
 @pytest.mark.skipif(
     os.getenv("KNOWLEDGE_TEST_LOCAL_MODEL") != "1",
     reason="Explicit opt-in required for actual local Ollama inference",

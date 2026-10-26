@@ -14,6 +14,27 @@ from app.retrieval.hybrid import retrieve
 pytestmark = pytest.mark.integration
 
 
+def test_exact_text_copies_are_scoped_before_result_deduplication(db, tmp_path):
+    rows = []
+    for name in ["owner-a", "owner-b"]:
+        folder = tmp_path / name
+        folder.mkdir()
+        row = resource(folder, pages=1)
+        row["collection"] = "personal-library"
+        state = _prepare_pages(row, folder / "prepared", 10)
+        ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+        rows.append(row)
+    request = RetrievalRequest(
+        query="systems feedback", collection_ids=["personal-library"], mode="keyword"
+    )
+    for row in rows:
+        hits = retrieve(db, request, Settings(), subject=row["access"]["owner_id"]).results
+        assert hits and all(str(h.book_id) == row["id"] for h in hits)
+        assert len({h.text for h in hits}) == len(hits)
+    assert not retrieve(db, request, Settings(), subject=str(uuid.uuid4())).results
+    assert len(list(db.scalars(select(LibraryBook)))) == 2
+
+
 def test_mba_text_reuse_requires_current_vectors_proof_and_every_supplement(db, tmp_path):
     from app.db.models import ChunkEmbedding
     from app.ingestion.pipeline import enqueue, process_job

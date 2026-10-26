@@ -5,6 +5,31 @@ data, local Qwen pin and generation-provider configuration are preserved. Curren
 counts and completeness are derived from
 `D:\AI\OSCAR\Knowledge\Catalog\ingestion-status.json`, not registration receipts.
 
+## Final local outcome
+
+All **672 original PDFs / 198,758 physical pages** now have verified coverage:
+517 MBA PDFs reuse current approved shared text with every required supplement,
+and the remaining original content has private indexed or reviewed non-text
+outcomes. There are **1,040 searchable private references**, **24,542 active
+document parts**, and **261,212 current local Qwen chunks/vector rows**; 18
+additional references are explicitly reviewed non-text. No partial references or
+unresolved pages remain. Reference counts include HTML sections, bounded
+compilation windows and supplements; they are not distinct-book counts.
+
+All **43/43 Social Systems** roadmap readings have indexed matches. The full
+156,324-page compilation is covered by 159 disjoint ranges without gaps or
+overlap. The final page audit passes 645 prepared PDF references / 187,098 pages;
+the embedded-text audit passes 627 text references / 184,927 embedded pages.
+All original bytes, sizes and modification times are unchanged. Preservation
+checks found zero missing or changed baseline documents (1,384), chunks (36,790)
+or vector rows (36,797, including seven historical rows).
+
+In OSCAR, enable **Reference knowledge → All permitted references** to include
+the new private MBA PDFs and supplements alongside the curated MBA corpus.
+The MBA-only scope retains the approved shared collection. This completes the
+audited local inventory, not every possible MBA source, edition, diagram label
+or academic degree requirement.
+
 ## Corrected source attribution
 
 The initial 211-outline-node / 209-remaining-book estimate was unreliable. The
@@ -23,8 +48,9 @@ retain historical citations; future retrieval uses the corrected generation.
 The seven original partial references now have explicit reviewed outcomes for
 their flagged pages: decorative rules/logos, cover/header transcriptions and a
 labeled visual map description. A visual description is not a full transcription
-of every map label. Additional flagged pages are grouped by exact rendered pixels
-for review; accepted outcomes are bound to source checksum and physical page.
+of every map label. The final 12 exact-pixel review groups all have outcomes bound
+to source checksum and physical page. Local OCR recovered text on 1,808 pages.
+Graphic descriptions do not certify every label or formula.
 
 ## MBA original PDF coverage
 
@@ -129,10 +155,39 @@ revision or grant mismatch cannot satisfy the final completeness gate.
 
 ## Validation
 
-Knowledge isolated suite: **106 passed, 1 skipped**; Ruff and mypy passed. Backend:
+Knowledge isolated suite: **108 passed, 1 skipped**; Ruff and mypy passed. Backend:
 **440 unit tests**, typecheck/lint/build/format passed. Frontend: **34 tests**,
 typecheck/lint/build passed. The earlier 173 E2E and 142 isolated backend
 integration passes remain the baseline; they were not rerun for the notice text
 change. Current ordinary authentication and owner-scoped collection readiness
-passed. Final live retrieval/coverage and preservation measurements belong in the
-generated reports after the finite import and visual-review pass finish.
+passed. Five saved scripted configured-model cases passed: finance, management,
+unanswerable abstention, opt-out and compilation physics. Saved citations reload,
+idempotent replay and scope-change conflict passed. The original physics attempt
+timed out under the old 2500 ms source budget and safely reported unavailable
+sources; that failed request/message remains in history. Its separate stable
+recovery request passed after the local source budget became 8000 ms. The
+tracked default remains unchanged. The cited physics equation and direction of
+acceleration were checked against original physical page 110908; attribution is
+explicitly unverified for the mixed compilation.
+
+The expanded-library six-question sample returned all 18 requests without
+fallback: keyword gold-book hits **2/6**, semantic **5/6**, hybrid **4/6**.
+Median latency was **0.453 / 1.044 / 1.527 seconds** respectively. Relevant
+conditional-probability and writing alternatives were manually reviewed without
+inflating strict gold-book scores. The 22 original MBA queries all retained
+their baseline top document within the top six, with current approved citations
+and no fallback; this is a scope/stability regression, not a new accuracy score.
+The original strict MBA source-family benchmark remains **20/22**.
+
+Exact search scores eligible IDs before fetching bounded text/metadata, uses a
+transaction-local join plan restored before hydration, and deduplicates exact
+text after access filtering. All original database rows/provenance remain.
+Candidate pools are bounded at 300, so very large duplicate groups can still
+limit diversity. No approximate vector index or new embedding model was added.
+
+Final local evidence is under `D:\AI\OSCAR\Knowledge\Catalog\reports`:
+`INGESTION_REPORT.md`, `RETRIEVAL_EVALUATION.md`, `SECURITY_REVIEW.md`,
+`page-coverage-audit.json`, `extraction-audit.json`, `preservation-audit.json`,
+`original-file-audit.json`, `retrieval-manual-review.json` and
+`mba-retrieval-regression.json`. Private source text and chat receipts stay out
+of Git. These checks establish local operation, not public production readiness.
