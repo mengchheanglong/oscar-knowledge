@@ -83,6 +83,8 @@ model weights or embedding array dump is written to Git or the catalog.
 .venv\Scripts\python.exe scripts/register_mba_pdf_gaps.py --apply
 # Optional finite extraction-only stage: no model requests or DB writes.
 .venv\Scripts\python.exe scripts/complete_library.py --run --prepare-only --resource-kind mba
+# Optional disjoint MBA indexing batch uses its own operation receipt.
+.venv\Scripts\python.exe scripts/complete_library.py --run --resource-kind mba
 .venv\Scripts\python.exe scripts/complete_library.py --run --workers 2
 # Rerun to resume checkpoints or activate reviewed preparation revisions.
 
@@ -112,11 +114,15 @@ Full processing does not certify every source claim or academic equivalence.
 `--require-complete` fails if any original PDF still needs work or unresolved
 pages remain. Final original-file audit covers both roots and checks bytes,
 length and modification time. These checks do not modify the source PDFs.
+Repeated original-text audits rehash sources and prepared files before reusing a
+previous successful comparison. Hashes of previously verified page text can also
+check unchanged embedded pages after a reviewed preparation revision; raw book
+text or vectors are never exported for this computation cache. A source, part,
+revision or grant mismatch cannot satisfy the final completeness gate.
 
 ## Validation
 
-Knowledge isolated suite: **102 passed, 1 skipped**; the subsequent scanner
-collection-preservation test also passed (six catalog tests). Ruff and mypy passed. Backend:
+Knowledge isolated suite: **105 passed, 1 skipped**; Ruff and mypy passed. Backend:
 **440 unit tests**, typecheck/lint/build/format passed. Frontend: **34 tests**,
 typecheck/lint/build passed. The earlier 173 E2E and 142 isolated backend
 integration passes remain the baseline; they were not rerun for the notice text

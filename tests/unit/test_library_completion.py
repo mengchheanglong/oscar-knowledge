@@ -31,6 +31,51 @@ def test_non_text_completion_cannot_hide_unresolved_or_unprocessed_pages(tmp_pat
     assert not non_text_preparation(row, state)
 
 
+def test_original_text_audit_cache_requires_prior_pass_same_source_and_part_checksum(tmp_path):
+    from types import SimpleNamespace
+    from app.library.catalog import atomic_json, digest
+    from scripts.audit_prepared_books import prior_page_hashes
+
+    path = tmp_path / "part.bookpart"
+    atomic_json(
+        path,
+        {
+            "metadata": {"extraction": "PDF_EMBEDDED_TEXT"},
+            "pages": [{"page": 3, "text": "Original verified fixture"}],
+        },
+    )
+    document = SimpleNamespace(local_path=str(path), active_revision=1)
+    prior = {
+        "status": "PASS",
+        "proof": {"source_sha256": "source-sha", "parts": [["id", 1, digest(path)]]},
+    }
+    assert prior_page_hashes(prior, {"id": document}, "source-sha") == {
+        3: hashlib.sha256(b"Original verified fixture").hexdigest()
+    }
+    assert not prior_page_hashes(prior, {"id": document}, "changed-source")
+    prior["status"] = "FAIL"
+    assert not prior_page_hashes(prior, {"id": document}, "source-sha")
+    prior["status"] = "PASS"
+    path.write_text("changed prepared bytes")
+    assert not prior_page_hashes(prior, {"id": document}, "source-sha")
+
+
+def test_final_pdf_gate_rejects_stale_source_or_grant_even_if_old_book_is_indexed():
+    from scripts.audit_library_coverage import original_pdf_complete
+
+    row = {
+        "sha256": "current",
+        "rights": {"permission_status": "APPROVED", "approved_sha256": "current"},
+        "ingestion": {"status": "INDEXED", "source_sha256": "current"},
+    }
+    assert original_pdf_complete(row)
+    row["sha256"] = "changed-source"
+    assert not original_pdf_complete(row)
+    row["sha256"] = "current"
+    row["rights"]["permission_status"] = "REVOKED"
+    assert not original_pdf_complete(row)
+
+
 def test_physical_windows_cover_every_page_once_and_reject_overlap():
     selected = [[11, 25], [49, 70]]
     windows = uncovered_windows(100, selected, size=10)

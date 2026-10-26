@@ -200,7 +200,11 @@ def run(output, workers, limit, *, prepare_only=False, resource_kind="all"):
     rows.sort(key=lambda r: (bool(r.get("compilation_window")), r.get("page_range", [0])[0]))
     rows = rows[:limit]
     receipt = output / (
-        "mba-preparation-2026-10-26.json" if prepare_only else "completion-2026-10-26.json"
+        "mba-preparation-2026-10-26.json"
+        if prepare_only
+        else "completion-mba-2026-10-26.json"
+        if resource_kind == "mba"
+        else "completion-2026-10-26.json"
     )
     results = (
         json.loads(receipt.read_text(encoding="utf-8")) if receipt.exists() else {"resources": {}}

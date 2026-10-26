@@ -16,6 +16,18 @@ from app.library.status import sync_status
 ROOT = Path("D:/AI/OSCAR/Knowledge/Catalog")
 
 
+def original_pdf_complete(row):
+    state, rights = row.get("ingestion", {}), row.get("rights", {})
+    return (
+        rights.get("permission_status") == "APPROVED"
+        and rights.get("approved_sha256") == row["sha256"]
+        and state.get("source_sha256") == row["sha256"]
+        and state.get("source_matches_catalog", True)
+        and state.get("status")
+        in {"INDEXED", "INDEXED_VIA_RANGES", "INDEXED_TEXT_VIA_EXISTING_MBA", "REVIEWED_NON_TEXT"}
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--require-complete", action="store_true")
@@ -111,17 +123,7 @@ def main():
         "scope": "Complete processing outcomes are distinct from successful interpretation of every graphic or OCR symbol.",
     }
     physical_pdfs = [r for r in catalog["resources"] if r["format"] == "pdf"]
-    pending = [
-        r["id"]
-        for r in physical_pdfs
-        if r.get("ingestion", {}).get("status")
-        not in {
-            "INDEXED",
-            "INDEXED_VIA_RANGES",
-            "INDEXED_TEXT_VIA_EXISTING_MBA",
-            "REVIEWED_NON_TEXT",
-        }
-    ]
+    pending = [r["id"] for r in physical_pdfs if not original_pdf_complete(r)]
     report["original_pdf_completion"] = {
         "physical_files": len(physical_pdfs),
         "physical_pages": sum(r["pdf_pages"] for r in physical_pdfs),
