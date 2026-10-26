@@ -2,6 +2,9 @@
 
 Development uses `main` directly, consistently with OSCAR backend and frontend.
 
+Full page-content cleaning is deferred for later work; see the
+[saved handoff and next batch](docs/NEXT_PDF_CLEANING_PASS.md).
+
 The [completed source review](docs/SOURCE_REVIEW_COMPLETION_2026_10_26.md)
 records the 68 page repairs, two encoding corrections, and bounded reviews of
 176 MBA units and 43 Social Systems readings. The
