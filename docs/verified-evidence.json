@@ -4,6 +4,13 @@
   "score_semantics": "PostgreSQL ts_rank_cd; not a probability",
   "results": [
     {
+      "extraction": null,
+      "review_required": false,
+      "coverage_note": null,
+      "book_id": null,
+      "author": null,
+      "edition": null,
+      "chapter": null,
       "chunk_id": "e669b4eb-dbb4-5bac-9521-3943916428e0",
       "document_id": "c496e55e-4ddb-4fc2-8151-201f957e2d51",
       "source_type": "EXTERNAL_KNOWLEDGE",
