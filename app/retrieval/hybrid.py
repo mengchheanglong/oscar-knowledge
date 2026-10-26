@@ -11,6 +11,19 @@ from app.embeddings.base import EmbeddingError
 from app.embeddings.provider import provider
 from app.security import public_source_url
 
+ENGLISH_STOP_WORDS = {
+    "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are",
+    "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by",
+    "can", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from",
+    "further", "had", "has", "have", "having", "he", "her", "here", "hers", "herself", "him", "himself",
+    "his", "how", "if", "in", "into", "is", "it", "its", "itself", "just", "me", "more", "most", "my",
+    "myself", "no", "nor", "not", "now", "of", "off", "on", "once", "only", "or", "other", "our",
+    "ours", "ourselves", "out", "over", "own", "same", "she", "should", "so", "some", "such", "than",
+    "that", "the", "their", "theirs", "them", "themselves", "then", "there", "these", "they", "this",
+    "those", "through", "to", "too", "under", "until", "up", "very", "was", "we", "were", "what",
+    "when", "where", "which", "while", "who", "whom", "why", "with", "would", "you", "your", "yours",
+}
+
 
 def rrf(pools, k=60, weights=None, bonus_by_id=None):
     weights = weights or [1.0] * len(pools)
@@ -144,7 +157,9 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         if not rows:
             # Natural questions often contain words absent from a passage. Broaden
             # only to a bounded indexed disjunction, never to unrelated documents.
-            terms = re.findall(r"[^\W_]{2,}", request.query, flags=re.UNICODE)[:32]
+            all_terms = re.findall(r"[^\W_]{2,}", request.query, flags=re.UNICODE)
+            content_terms = [t for t in all_terms if t.lower() not in ENGLISH_STOP_WORDS]
+            terms = content_terms[:32] if content_terms else all_terms[:32]
             if terms:
                 broad_keyword = True
                 broad_query = func.websearch_to_tsquery("english", " OR ".join(terms))
