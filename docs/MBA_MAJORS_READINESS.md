@@ -1,5 +1,15 @@
 # Approved MBA-major library: local readiness
 
+2026-10-26 PDF continuation: all 599 original MBA PDFs now have verified text
+coverage through 517 existing shared-source links, 82 private full-PDF imports
+and 407 page supplements. The existing shared import and its held-out subset are
+unchanged. In Assistant, enable **Reference knowledge → All permitted references**
+to include owned private MBA additions alongside the approved shared collection.
+The **MBA** scope continues to select the curated shared subset. Whole-library
+compilation progress and source-quality limits are documented in
+[the continuation guide](LIBRARY_COMPLETION_2026_10_26.md) and local generated
+reports. The measurements below retain their original 2026-10-25 scope/date.
+
 Verified 2026-10-25. The user approved importing the reviewed subset for a
 noncommercial local demonstration, retaining source notices and excluding
 quarantined or unresolved third-party content.
