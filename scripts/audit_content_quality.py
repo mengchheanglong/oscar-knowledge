@@ -2,7 +2,7 @@
 
 Comprehensive audit covering:
 1. Database chunks and documents (Unicode replacement characters, control chars, noise).
-2. OCR pages (the 1,808 OCR pages across 285 resources) for math, tables, gibberish.
+2. Current OCR pages for heuristic math, table and gibberish flags.
 3. Visual review groups (12 exact-pixel groups) for classification fidelity.
 4. Compilation attribution (159 ranges, 157 generic + 2 named).
 5. Metadata & educational completeness (summaries vs full texts).
@@ -24,9 +24,10 @@ from typing import Any
 
 from sqlalchemy import text
 
+from app.config import get_settings
 from app.db.session import session
 from app.library.catalog import read_catalog
-from app.library.quality import CURRENT_EVIDENCE_SQL, classify_representation
+from app.library.quality import classify_representation, screened_evidence_sql
 
 CATALOG_DIR = Path("D:/AI/OSCAR/Knowledge/Catalog")
 OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26/corrected"
@@ -38,6 +39,9 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     print("Running database chunk quality checks...", flush=True)
     findings = []
     stats: dict[str, Any] = {}
+    excluded = get_settings().quality_excluded_chunk_ids
+    eligible = screened_evidence_sql(excluded)
+    stats["excluded_known_quality_chunk_ids"] = [str(value) for value in excluded]
 
     # Total active chunks
     total_active_chunks = db.scalar(
@@ -47,7 +51,7 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
         JOIN collections col ON col.id = d.collection_id
-        WHERE {CURRENT_EVIDENCE_SQL}
+        WHERE {eligible}
         """
         )
     )
@@ -64,7 +68,7 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
         LEFT JOIN collections col ON col.id = d.collection_id
-        WHERE {CURRENT_EVIDENCE_SQL}
+        WHERE {eligible}
           AND c.text LIKE '%\ufffd%'
         """
         )
@@ -103,7 +107,7 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
         JOIN collections col ON col.id = d.collection_id
-        WHERE {CURRENT_EVIDENCE_SQL}
+        WHERE {eligible}
           AND c.text ~ '[\x01-\x08\x0b\x0c\x0e-\x1f]'
         LIMIT 100
         """
@@ -140,7 +144,7 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
         JOIN collections col ON col.id = d.collection_id
-        WHERE {CURRENT_EVIDENCE_SQL}
+        WHERE {eligible}
           AND length(trim(c.text)) < 25 AND length(trim(c.text)) > 0
         LIMIT 50
         """
@@ -174,8 +178,8 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
 def audit_ocr_pages(
     catalog: dict[str, Any], status: dict[str, Any]
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
-    """Exhaustively audit the 1,808 OCR pages across 285 resources."""
-    print("Auditing 1,808 OCR pages...", flush=True)
+    """Heuristically screen current OCR pages, retaining explicit blank outcomes."""
+    print("Auditing current OCR pages...", flush=True)
     findings = []
     stats: dict[str, Any] = {
         "total_ocr_resources": 0,
@@ -568,12 +572,12 @@ def audit_summaries_and_completeness(
                         "prepared_generation": row.get("active_generation", 1),
                         "document_id": "",
                         "chunk_id": "",
-                        "category": "SUMMARY_METADATA_OMISSION",
-                        "severity": "MEDIUM",
+                        "category": "SUMMARY_NOTICE_PRESENT",
+                        "severity": "INFO",
                         "evidence": f"Commercial summary title {row.get('title')!r} verified with explicit coverage note: {coverage_note[:80]!r}",
                         "review_method": "AUTOMATED_METADATA_SCAN",
                         "confidence": 1.0,
-                        "repair_action": "ATTACH_SUMMARY_COVERAGE_NOTE",
+                        "repair_action": "NONE_CATALOG_NOTICE_PRESENT",
                         "retest_result": "CATALOG_NOTE_PRESENT_RUNTIME_NOT_CHECKED",
                     }
                 )
@@ -607,12 +611,12 @@ def audit_summaries_and_completeness(
                         "prepared_generation": row.get("active_generation", 1),
                         "document_id": "",
                         "chunk_id": "",
-                        "category": "STUDY_GUIDE_METADATA_OMISSION",
-                        "severity": "MEDIUM",
+                        "category": "STUDY_GUIDE_NOTICE_PRESENT",
+                        "severity": "INFO",
                         "evidence": f"Academic study guide title {row.get('title')!r} verified with explicit coverage note: {coverage_note[:80]!r}",
                         "review_method": "AUTOMATED_METADATA_SCAN",
                         "confidence": 1.0,
-                        "repair_action": "ATTACH_COVERAGE_NOTE",
+                        "repair_action": "NONE_CATALOG_NOTICE_PRESENT",
                         "retest_result": "CATALOG_NOTE_PRESENT_RUNTIME_NOT_CHECKED",
                     }
                 )
@@ -690,7 +694,6 @@ def main():
         "audit_timestamp": datetime.now(UTC).isoformat(),
         "method": "Automated screening of current eligible evidence; no new visual/semantic certification",
         "new_manual_visual_pages_reviewed": 0,
-        "manual_visual_ocr_pages_total": 1808,
         "catalog_summary": status.get("summary", {}),
     }
 
@@ -702,7 +705,7 @@ def main():
     ocr_findings, ocr_stats = audit_ocr_pages(catalog, status)
     all_findings.extend(ocr_findings)
     coverage_record["ocr_audit"] = ocr_stats
-    coverage_record["manual_visual_ocr_pages_total"] = ocr_stats["total_ocr_pages"]
+    coverage_record["ocr_pages_screened_total"] = ocr_stats["total_ocr_pages"]
 
     vr_findings, vr_stats = audit_visual_review_groups()
     all_findings.extend(vr_findings)

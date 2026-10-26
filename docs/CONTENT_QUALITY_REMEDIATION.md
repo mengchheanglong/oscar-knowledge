@@ -1,5 +1,9 @@
 # Content-quality tooling remediation — 2026-10-26
 
+Historical tooling-remediation checkpoint. The later
+[source review completion](SOURCE_REVIEW_COMPLETION_2026_10_26.md) supersedes
+the counts and outstanding review items below; this checkpoint is retained.
+
 The independent review found unsupported commercial-summary labels, catalog-only
 warnings, historical generations in active scans and heuristic retrieval scores
 reported as grounding accuracy. These defects have been corrected. This does

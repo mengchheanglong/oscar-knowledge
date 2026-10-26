@@ -2,7 +2,10 @@
 
 Development uses `main` directly, consistently with OSCAR backend and frontend.
 
-The [content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md) corrects
+The [completed source review](docs/SOURCE_REVIEW_COMPLETION_2026_10_26.md)
+records the 68 page repairs, two encoding corrections, and bounded reviews of
+176 MBA units and 43 Social Systems readings. The
+[content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md) corrects
 the later automated audit's metadata labels, citation checks and benchmark
 claims. Processing completeness and independent semantic/visual review remain
 separate statuses; current private quality reports use the `corrected` directory.

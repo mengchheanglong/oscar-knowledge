@@ -106,7 +106,11 @@ def main():
                     data = response.json()
                     hits = data["results"]
                     checks = validate_citations(
-                        db, hits, subject=owner, collections=question["expected_collections"]
+                        db,
+                        hits,
+                        subject=owner,
+                        collections=question["expected_collections"],
+                        excluded=settings.quality_excluded_chunk_ids,
                     )
                     metrics = (
                         reviewed_metrics(hits, question, checks)

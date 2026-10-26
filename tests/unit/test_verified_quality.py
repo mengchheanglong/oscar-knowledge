@@ -84,3 +84,25 @@ def test_unit_structure_does_not_certify_substantive_educational_coverage(tmp_pa
     assert len(rows) == 1
     assert rows[0]["quality_status"] == "NEEDS_REVIEW"
     assert "not independently verified" in rows[0]["assessment_status"]
+
+
+def test_present_summary_and_guide_notices_are_not_omissions():
+    from scripts.audit_content_quality import audit_summaries_and_completeness
+
+    rows = [
+        {"id": "summary", "title": "Instaread summary", "format": "pdf"},
+        {"id": "guide", "title": "Quiz study guide", "format": "pdf"},
+    ]
+    for row in rows:
+        row["metadata"] = {"coverage_note": "Summary or guide; not a complete textbook."}
+    findings, stats = audit_summaries_and_completeness({"resources": rows})
+    assert stats["unflagged_summaries"] == 0
+    assert {f["category"] for f in findings} == {
+        "SUMMARY_NOTICE_PRESENT",
+        "STUDY_GUIDE_NOTICE_PRESENT",
+    }
+    assert all(f["severity"] == "INFO" for f in findings)
+    rows[0]["metadata"] = {}
+    findings, stats = audit_summaries_and_completeness({"resources": rows})
+    assert stats["unflagged_summaries"] == 1
+    assert any(f["category"] == "SUMMARY_METADATA_OMISSION" for f in findings)

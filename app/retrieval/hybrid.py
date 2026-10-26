@@ -201,6 +201,8 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         ),
     ]
     filters = request.filters
+    if settings.quality_excluded_chunk_ids:
+        conditions.append(Chunk.id.not_in(settings.quality_excluded_chunk_ids))
     for values, filter_column in (
         (filters.subject, Document.subject),
         (filters.course, Document.course_code),
@@ -374,6 +376,8 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
     counts: Counter = Counter()
     for key, score_value in ranked:
         chunk, doc, slug, _ = rows_by_id[key]
+        if chunk.id in settings.quality_excluded_chunk_ids:
+            continue
         db.refresh(doc)
         book_record = (
             db.get(LibraryBook, doc.book_id, populate_existing=True) if doc.book_id else None

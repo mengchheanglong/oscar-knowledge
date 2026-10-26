@@ -6,15 +6,26 @@ Produces:
 """
 
 import csv
+import hashlib
 import json
 import re
 from pathlib import Path
 from typing import Any
 
+from app.library.educational import verified_review
+
 CORPUS_DIR = Path("D:/AI/OSCAR/mba-corpus/2026-10-25")
 CATALOG_DIR = Path("D:/AI/OSCAR/Knowledge/Catalog")
 OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26/corrected"
 TRACKS_DIR = CORPUS_DIR / "tracks"
+REVIEW_PATH = OUTPUT_DIR / "source-review/EDUCATIONAL_REVIEW_MANIFEST.json"
+
+
+def review_records(kind: str) -> dict[str, Any]:
+    if not REVIEW_PATH.exists():
+        return {}
+    return json.loads(REVIEW_PATH.read_text(encoding="utf-8")).get(kind, {})
+
 
 MAJOR_EDUCATIONAL_METRICS = {
     "accounting": {
@@ -173,6 +184,8 @@ def parse_unit_file(unit_path: Path) -> dict[str, Any]:
 
 def audit_mba_coverage() -> list[dict[str, Any]]:
     print("Auditing 22 MBA major pathways (176 units)...", flush=True)
+    reviews = review_records("mba")
+    hashes: dict[str, str] = {}
     summary_path = CORPUS_DIR / "MBA_MAJORS_SUMMARY.csv"
     majors_summary = {}
     if summary_path.exists():
@@ -257,6 +270,21 @@ def audit_mba_coverage() -> list[dict[str, Any]]:
                     "remaining_gap": metric["gap"],
                 }
             )
+            review = reviews.get(unit_id)
+            binding = {
+                "unit_id": unit_id,
+                "unit_path": str(u_file.resolve()),
+                "unit_sha256": hashlib.sha256(u_file.read_bytes()).hexdigest(),
+            }
+            if verified_review(review, binding, hashes):
+                rows[-1].update(
+                    quality_status=review["status"],
+                    relevant_sections=review["reading_references"],
+                    assessment_status=review["assessment_review"],
+                    prerequisites_coverage=review["prerequisites"],
+                    worked_examples_status=review["worked_example_review"],
+                    remaining_gap=review["limits"],
+                )
 
     print(f"Generated {len(rows)} topic coverage rows across 22 majors.", flush=True)
     return rows
@@ -267,6 +295,8 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
     json_path = CATALOG_DIR / "social-roadmap-coverage.json"
     data = json.loads(json_path.read_text(encoding="utf-8"))
     readings = data.get("readings", [])
+    reviews = review_records("social")
+    hashes: dict[str, str] = {}
 
     rows = []
     for r in readings:
@@ -348,6 +378,14 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
                 "notes": notes,
             }
         )
+        review = reviews.get(reading)
+        if verified_review(review, r, hashes):
+            rows[-1].update(
+                curriculum_status=review["status"],
+                attribution_quality=review["rationale"],
+                math_table_diagram_quality="Representative source passages reviewed; full illustration/formula fidelity not certified",
+                notes=review["rationale"] + " " + review["limits"],
+            )
 
     print(f"Generated {len(rows)} Social Systems quality rows.", flush=True)
     return rows

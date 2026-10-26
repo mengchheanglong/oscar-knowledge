@@ -19,6 +19,16 @@ AND ((d.book_id IS NULL AND col.visibility = 'CURATED_SHARED') OR
 """
 
 
+def screened_evidence_sql(excluded):
+    """UUID-validated local exclusions leave stored evidence and grants intact."""
+    identifiers = [str(uuid.UUID(str(value))) for value in excluded]
+    return CURRENT_EVIDENCE_SQL + (
+        " AND c.id NOT IN (" + ",".join("'" + value + "'::uuid" for value in identifiers) + ")"
+        if identifiers
+        else ""
+    )
+
+
 def classify_representation(resource):
     """Conservative type hints, not an assertion of source fidelity or completeness."""
     import re
@@ -38,13 +48,16 @@ def classify_representation(resource):
     return "UNCLASSIFIED"
 
 
-def validate_citations(db, hits, *, subject, collections):
+def validate_citations(db, hits, *, subject, collections, excluded=()):
     """Check actual current identity, scope, revision, text and physical page bounds."""
     checks = []
     for hit in hits:
         try:
             identifier = uuid.UUID(str(hit.get("chunk_id")))
         except (ValueError, TypeError, AttributeError):
+            checks.append(False)
+            continue
+        if identifier in excluded:
             checks.append(False)
             continue
         row = db.execute(

@@ -1,4 +1,5 @@
 import uuid
+from pathlib import Path
 
 import pymupdf
 import pytest
@@ -12,6 +13,67 @@ from app.library.catalog import digest
 from app.retrieval.hybrid import retrieve
 
 pytestmark = pytest.mark.integration
+
+
+def test_review_staging_preserves_previous_parts_and_rejects_unbound_edits(db, tmp_path):
+    from app.library.review import stage_reviewed_pages
+
+    row = resource(tmp_path, pages=2)
+    row["collection"] = "personal-library"
+    old = _prepare_pages(row, tmp_path / "old", 10)
+    old_hashes = {p["path"]: digest(Path(p["path"])) for p in old["parts"]}
+    row["preparation_revision"] = 1
+    review = {
+        "resource_id": row["id"],
+        "source_sha256": row["sha256"],
+        "physical_page": 1,
+        "text": "Reviewed original-page excerpt; this is not a full-page transcription.",
+        "review_method": "Fixture original image reviewed",
+        "image_sha256": "a" * 64,
+    }
+    revised = stage_reviewed_pages(row, old, [review], tmp_path / "cache")
+    assert revised["reviewed_excerpt_pages"] == [1]
+    assert all(digest(Path(path)) == sha for path, sha in old_hashes.items())
+    assert stage_reviewed_pages(row, old, [review], tmp_path / "cache") == revised
+    ingest_parts(db, row, revised, "personal-library", Settings(), limit=100)
+    chunks = list(db.scalars(select(Chunk)))
+    assert any(
+        c.text == review["text"] and c.source_metadata["extraction"] == "VISUAL_DESCRIPTION"
+        for c in chunks
+    )
+    with pytest.raises(ValueError, match="SOURCE_BOUND_PAGE_REVIEW_REQUIRED"):
+        stage_reviewed_pages(row, old, [{**review, "source_sha256": "b" * 64}], tmp_path / "cache")
+    with pytest.raises(ValueError, match="REVIEW_REVISION_CONFLICT"):
+        stage_reviewed_pages(
+            row,
+            old,
+            [
+                {
+                    **review,
+                    "text": "A different reviewed excerpt cannot overwrite the same revision.",
+                }
+            ],
+            tmp_path / "cache",
+        )
+
+
+def test_quality_exclusion_blocks_retrieval_without_changing_stored_evidence(db, tmp_path):
+    row = resource(tmp_path, pages=1)
+    row["collection"] = "personal-library"
+    state = _prepare_pages(row, tmp_path / "prepared", 10)
+    ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+    ids = list(db.scalars(select(Chunk.id)))
+    settings = Settings(quality_excluded_chunk_ids=ids)
+    result = retrieve(
+        db,
+        RetrievalRequest(
+            query="systems feedback", collection_ids=["personal-library"], mode="keyword"
+        ),
+        settings,
+        subject=row["access"]["owner_id"],
+    )
+    assert not result.results
+    assert list(db.scalars(select(Chunk.id))) == ids
 
 
 def test_quality_citations_require_real_current_owner_scoped_evidence(db, tmp_path):
@@ -387,7 +449,7 @@ def test_resumable_book_atomic_activation_owner_filters_and_revocation(db, tmp_p
     with pymupdf.open(row["absolute_path"]) as pdf:
         pdf[-1].insert_text((50, 790), "New final-page observation")
         pdf.saveIncr()
-    row["sha256"] = digest(__import__("pathlib").Path(row["absolute_path"]))
+    row["sha256"] = digest(Path(row["absolute_path"]))
     row["rights"]["approved_sha256"] = row["sha256"]
     updated = _prepare_pages(row, tmp_path / "updated", 100)
     updated = _prepare_pages(row, tmp_path / "updated", 100)

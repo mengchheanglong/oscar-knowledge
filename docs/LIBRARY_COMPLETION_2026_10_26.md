@@ -1,5 +1,8 @@
 # Library completion continuation — 2026-10-26
 
+The later [source review completion](SOURCE_REVIEW_COMPLETION_2026_10_26.md)
+supersedes these historical counts and review statuses.
+
 Later [content-quality remediation](CONTENT_QUALITY_REMEDIATION.md) supersedes
 the automated quality-review claims and updates verification to 125 passed,
 one optional test skipped. It preserves the original processing counts below;
