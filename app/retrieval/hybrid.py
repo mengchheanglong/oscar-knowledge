@@ -12,7 +12,7 @@ from app.embeddings.provider import provider
 from app.security import public_source_url
 
 
-def rrf(pools, k=60, weights=None):
+def rrf(pools, k=60, weights=None, bonus_by_id=None):
     weights = weights or [1.0] * len(pools)
     if len(weights) != len(pools):
         raise ValueError("RRF_WEIGHT_COUNT")
@@ -23,6 +23,10 @@ def rrf(pools, k=60, weights=None):
             if key not in seen:
                 scores[key] = scores.get(key, 0) + weight / (k + rank)
                 seen.add(key)
+    if bonus_by_id:
+        for key, bonus in bonus_by_id.items():
+            if key in scores:
+                scores[key] += bonus
     return sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
 
 
@@ -217,10 +221,25 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             # SET LOCAL. Do not mask that error by trying another SQL statement.
             db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
             add_pool(hydrate(ranks))
+    bonus_by_id: dict[str, float] = {}
+    query_terms = {w.lower() for w in re.findall(r"[^\W_]{3,}", request.query, flags=re.UNICODE)}
+    if query_terms and mode == "hybrid":
+        for key, (chunk, doc, _, _) in rows_by_id.items():
+            title_words = set(
+                re.findall(r"[^\W_]{3,}", (doc.title or "").lower(), flags=re.UNICODE)
+            )
+            heading_words = set(
+                re.findall(r"[^\W_]{3,}", (chunk.heading_path or "").lower(), flags=re.UNICODE)
+            )
+            title_overlap = len(query_terms & title_words)
+            heading_overlap = len(query_terms & heading_words)
+            if title_overlap or heading_overlap:
+                bonus_by_id[key] = min(0.008, title_overlap * 0.003 + heading_overlap * 0.002)
+
     # An OR-broadened query has weaker lexical agreement than the original FTS
     # query. Keep those candidates but reduce their influence in hybrid fusion.
     ranked = (
-        rrf(pools, weights=[0.5, 1.0] if broad_keyword else None)
+        rrf(pools, weights=[0.5, 1.0] if broad_keyword else None, bonus_by_id=bonus_by_id)
         if mode == "hybrid"
         else [(key, scores_by_id[key]) for key in pools[0]]
     )
