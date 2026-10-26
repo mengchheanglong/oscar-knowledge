@@ -599,7 +599,7 @@ def generate_retrieval_report(
         "# Retrieval Quality and Grounding Evaluation Report",
         "",
         "**Date**: 2026-10-26",
-        "**Scope**: 38-question comprehensive benchmark across all 22 MBA majors, 7 General Library subjects, OCR/math/table questions, compilation attribution, and unanswerable queries.",
+        f"**Scope**: {len(BENCHMARK_QUERIES)}-question comprehensive benchmark across all 22 MBA majors, 7 General Library subjects, OCR/math/table questions, compilation attribution, and unanswerable queries.",
         "",
         "## 1. Summary Performance by Retrieval Mode",
         "",
@@ -658,13 +658,19 @@ def generate_retrieval_report(
 
 
 def main():
+    import sys
+
+    rerun = "--rerun" in sys.argv or "--force" in sys.argv
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     json_path = OUTPUT_DIR / "retrieval-benchmark-results.json"
-    if json_path.exists():
+    if json_path.exists() and not rerun:
         data = json.loads(json_path.read_text(encoding="utf-8"))
         mode_summaries = data["summaries"]
         results_by_mode = data["results"]
-        print(f"Loaded existing benchmark results from {json_path}", flush=True)
+        print(
+            f"Loaded existing benchmark results from {json_path} (use --rerun to re-execute)",
+            flush=True,
+        )
     else:
         results_by_mode, mode_summaries = run_benchmark()
         json_path.write_text(
