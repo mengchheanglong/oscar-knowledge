@@ -1,5 +1,10 @@
 # Library completion continuation — 2026-10-26
 
+Later [content-quality remediation](CONTENT_QUALITY_REMEDIATION.md) supersedes
+the automated quality-review claims and updates verification to 125 passed,
+one optional test skipped. It preserves the original processing counts below;
+current OCR-attempt accounting is 1,810 after the summary notice revision.
+
 This continues the approved private import on `main`. Original files, shared MBA
 data, local Qwen pin and generation-provider configuration are preserved. Current
 counts and completeness are derived from

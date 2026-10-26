@@ -69,9 +69,9 @@ def test_major_educational_metrics_22_distinct_majors():
     indiv = MAJOR_EDUCATIONAL_METRICS["individualized"]
     assert indiv["status"] == "NEEDS_REVIEW"
 
-    # All other 21 majors must be VERIFIED
+    # Pathway templates are not independent content verification.
     verified_count = sum(1 for m in MAJOR_EDUCATIONAL_METRICS.values() if m["status"] == "VERIFIED")
-    assert verified_count == 21
+    assert verified_count == 0
 
 
 def test_summary_and_study_guide_regex_accuracy():

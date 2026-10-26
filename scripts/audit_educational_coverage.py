@@ -13,54 +13,54 @@ from typing import Any
 
 CORPUS_DIR = Path("D:/AI/OSCAR/mba-corpus/2026-10-25")
 CATALOG_DIR = Path("D:/AI/OSCAR/Knowledge/Catalog")
-OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26"
+OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26/corrected"
 TRACKS_DIR = CORPUS_DIR / "tracks"
 
 MAJOR_EDUCATIONAL_METRICS = {
     "accounting": {
         "worked_examples": "Capstone cash flows, WACC, ratio models; step-by-step problem sets in sources",
         "gap": "Faculty grading and proprietary business school examination banks excluded; self-study rubric provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "ai-business": {
         "worked_examples": "Loss evaluation, confusion matrices, neural network loss curves",
         "gap": "Enterprise GPU infrastructure and closed proprietary frontier model APIs excluded; open weights and synthetic frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "business-analytics": {
         "worked_examples": "Linear programming shadow prices, k-means clustering, regression models",
         "gap": "Proprietary enterprise data lakes excluded; open-access analytical datasets provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "economics-policy": {
         "worked_examples": "Deadweight loss, tax incidence calculations, market equilibrium models",
         "gap": "Real-time political economy legislative amendments excluded; core policy models verified",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "energy-environment": {
         "worked_examples": "Levelized cost of energy (LCOE), NPV of renewable assets, dispatch cost curves",
         "gap": "Real-time regional grid telemetry and spot market feeds excluded; fundamental valuation models provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "entrepreneurship": {
         "worked_examples": "Unit economics, CAC/CLV ratio, runway and burn rate models",
         "gap": "Live investor pitch rooms and accredited angel syndicates excluded; venture self-evaluation rubrics provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "finance": {
         "worked_examples": "WACC, bond pricing, discounted cash flow, option valuation models",
         "gap": "Real-time market feeds and proprietary Bloomberg terminals excluded; corporate valuation models verified",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "healthcare": {
         "worked_examples": "Value-based reimbursement formulas, quality-adjusted life years (QALY), hospital cost accounting",
         "gap": "Restricted clinical patient records excluded; US-specific statutory frameworks require local jurisdictional adaptation",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "impact-sustainable": {
         "worked_examples": "Social return on investment (SROI), carbon accounting, ESG materiality scorecards",
         "gap": "Verified voluntary carbon offset registry access excluded; corporate sustainability assessment frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "individualized": {
         "worked_examples": "Cross-functional system dynamics models and interdisciplinary synthesis",
@@ -70,62 +70,62 @@ MAJOR_EDUCATIONAL_METRICS = {
     "leading-differences": {
         "worked_examples": "Qualitative decision matrices, cross-cultural leadership case rubrics",
         "gap": "Live behavioral observation and executive coaching excluded; structured leadership frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "management": {
         "worked_examples": "Span of control calculations, matrix organization design, governance structures",
         "gap": "Live boardroom politics and confidential executive deliberation excluded; organizational design rubrics provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "marketing": {
         "worked_examples": "Marketing mix optimization, CLV/CAC allocation, price elasticity models",
         "gap": "Commercial Markstrat / Practice Marketing simulations replaced with local decision models; proprietary HBS case studies excluded",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "marketing-operations": {
         "worked_examples": "Economic order quantity (EOQ), safety stock sizing, lead-time variance modeling",
         "gap": "Enterprise ERP systems (SAP/Oracle) excluded; foundational supply chain optimization models provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "multinational": {
         "worked_examples": "FX translation exposure, purchasing power parity (PPP), transfer pricing models",
         "gap": "Real-time geopolitical sanctions and tariff updates excluded; international financial management frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "operations-information-decisions": {
         "worked_examples": "Little's Law, queueing theory formulas, Bullwhip effect simulation calculations",
         "gap": "Real-time warehouse telemetry and RFID tracking systems excluded; core operations research models provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "organizational-effectiveness": {
         "worked_examples": "Principal-agent incentive models, compensation equity ratios, performance scorecards",
         "gap": "Confidential executive compensation records excluded; strategic human capital frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "quantitative-finance": {
         "worked_examples": "Black-Scholes PDE, Monte Carlo option pricing, delta/gamma hedging formulas",
         "gap": "High-frequency order book feeds and proprietary trading desks excluded; quantitative derivatives mathematics verified",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "real-estate": {
         "worked_examples": "Debt service coverage ratio (DSCR), capitalization rate (cap rate), waterfall equity returns",
         "gap": "Proprietary CoStar and Real Capital Analytics transaction records excluded; underwriting models provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "social-governance": {
         "worked_examples": "Governance compliance scorecards, stakeholder materiality matrices, ESG reporting",
         "gap": "Closed board committee executive minutes excluded; corporate governance and business ethics frameworks provided",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "statistics-data-science": {
         "worked_examples": "K-fold cross-validation, hypothesis testing, linear regression diagnostic plots",
         "gap": "Proprietary high-dimensional clinical genomics and finance data excluded; statistical inference frameworks verified",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
     "strategic-management": {
         "worked_examples": "Porter's Five Forces scoring, VRIO capability evaluation, industry matrix models",
         "gap": "Confidential corporate strategy board archives excluded; strategic analysis frameworks verified",
-        "status": "VERIFIED",
+        "status": "NEEDS_REVIEW",
     },
 }
 
@@ -202,7 +202,7 @@ def audit_mba_coverage() -> list[dict[str, Any]]:
             {
                 "worked_examples": "Conceptual exercises and qualitative decision frameworks",
                 "gap": "Faculty grading and proprietary business school examination banks excluded; self-study rubric provided",
-                "status": "VERIFIED",
+                "status": "NEEDS_REVIEW",
             },
         )
 
@@ -238,7 +238,6 @@ def audit_mba_coverage() -> list[dict[str, Any]]:
                 prereqs = "Organizational analysis, business vocabulary prerequisites required"
 
             # Assessments status
-            assessment = "4-part analytical activity with rubric; integrated capstone evaluation"
 
             rows.append(
                 {
@@ -248,11 +247,13 @@ def audit_mba_coverage() -> list[dict[str, Any]]:
                     "required_topic": required_topic,
                     "original_requirement": original_requirement,
                     "available_source": available_source,
-                    "relevant_sections": relevant_sections,
-                    "prerequisites_coverage": prereqs,
-                    "worked_examples_status": metric["worked_examples"],
-                    "assessment_status": assessment,
-                    "quality_status": metric["status"],
+                    "relevant_sections": "Unit-file references only; source passage review pending: "
+                    + relevant_sections,
+                    "prerequisites_coverage": "Unverified pathway assumption: " + prereqs,
+                    "worked_examples_status": "Unverified pathway-level expectation: "
+                    + metric["worked_examples"],
+                    "assessment_status": "Structural activity/rubric references present; substantive quality not independently verified",
+                    "quality_status": "NEEDS_REVIEW",
                     "remaining_gap": metric["gap"],
                 }
             )
@@ -279,31 +280,33 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
         # Classify edition status & completeness
         if avail == "COMPLETE_PUBLIC_DOMAIN_TEXT_COLLECTED":
             edition_status = "Public domain unabridged edition (Gutenberg / authoritative source)"
-            completeness = "Complete full work"
+            completeness = "Prior acquisition reports full-work coverage; not reverified in this structural pass"
             extraction = "Clean text / HTML extraction"
             math_diagram = "Prose text; original footnotes and marginalia preserved"
-            attrib = "Verified author and historical edition"
-            curriculum = "VERIFIED"
+            attrib = "Prior catalog attribution; not independently reverified in this pass"
+            curriculum = "NEEDS_REVIEW"
             notes = "Full Books I-V available; replaces earlier partial Books I-III PDF remainder"
         elif avail == "OFFICIAL_PUBLIC_HTML_COLLECTED":
             edition_status = "Official CORE Econ open access curriculum text"
-            completeness = "Complete multi-unit HTML web textbook sections"
+            completeness = (
+                "Collected HTML sections; full educational coverage not independently verified"
+            )
             extraction = "Structured HTML text and table extraction"
             math_diagram = "Mathematical formulas and empirical data tables included; interactive web widgets excluded"
             attrib = "Verified CORE Econ author collective, licensed open access"
-            curriculum = "VERIFIED"
+            curriculum = "NEEDS_REVIEW"
             notes = "Public web textbook modules; interactive quizzes and gated teacher solutions excluded"
         elif avail == "PRESENT_IN_COMPILATION_RANGE":
             edition_status = (
                 "OpenStax verified textbook physical page range within local compilation"
             )
-            completeness = "Complete dedicated textbook range"
+            completeness = "Previously reviewed physical range; this pass does not certify edition completeness"
             extraction = "PDF embedded text extraction"
             math_diagram = (
                 "Diagrams, exercises, glossary, and review questions present in PDF pages"
             )
             attrib = "Verified OpenStax book title and physical page range"
-            curriculum = "VERIFIED"
+            curriculum = "NEEDS_REVIEW"
             notes = "Exact physical PDF pages verified (Political Science: 10421-11059; Psychology: 35189-35971)"
         elif "SUMMARY" in reading.upper() or "summary" in r.get("index_note", "").lower():
             edition_status = "Commercial summary / study guide edition"
@@ -317,7 +320,9 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
             edition_status = (
                 "Local single-volume PDF; specific publication year/edition uncertified"
             )
-            completeness = "Full book PDF (subject to OCR/blank page exclusions)"
+            completeness = (
+                "Local PDF present; full-publication completeness not independently verified"
+            )
             extraction = (
                 "PDF embedded text" if not partial else "PDF embedded text with partial exclusions"
             )
@@ -335,7 +340,8 @@ def audit_social_systems_quality() -> list[dict[str, Any]]:
                 "edition_status": edition_status,
                 "text_completeness": completeness,
                 "extraction_fidelity": extraction,
-                "math_table_diagram_quality": math_diagram,
+                "math_table_diagram_quality": "Prior catalog description; not independently rechecked: "
+                + math_diagram,
                 "attribution_quality": attrib,
                 "curriculum_status": curriculum,
                 "resource_ids_count": len(resource_ids),

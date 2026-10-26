@@ -14,6 +14,83 @@ from app.retrieval.hybrid import retrieve
 pytestmark = pytest.mark.integration
 
 
+def test_quality_citations_require_real_current_owner_scoped_evidence(db, tmp_path):
+    from app.library.quality import validate_citations
+    from scripts.audit_content_quality import run_db_chunk_audit
+
+    row = resource(tmp_path, pages=1)
+    row.update(collection="personal-library", source_notice="Verified summary warning")
+    state = _prepare_pages(row, tmp_path / "prepared", 10)
+    ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+    response = retrieve(
+        db,
+        RetrievalRequest(
+            query="systems feedback", collection_ids=["personal-library"], mode="keyword"
+        ),
+        Settings(),
+        subject=row["access"]["owner_id"],
+    )
+    hits = [hit.model_dump(mode="json") for hit in response.results]
+    assert hits and all(hit["coverage_note"] == row["source_notice"] for hit in hits)
+    kwargs = {"subject": row["access"]["owner_id"], "collections": ["personal-library"]}
+    assert all(validate_citations(db, hits, **kwargs))
+    import hashlib
+    from scripts.evaluate_verified_quality import check_gold
+
+    current = hits[0]
+    question = {
+        "expected_collections": ["personal-library"],
+        "reviewed_qrels": {
+            current["chunk_id"]: {
+                "document_id": current["document_id"],
+                "revision": current["revision"],
+                "source_sha256": row["sha256"],
+                "physical_page": current["page_start"],
+                "text_sha256": hashlib.sha256(current["text"].encode()).hexdigest(),
+            }
+        },
+    }
+    check_gold(db, [question], kwargs["subject"])
+    with pytest.raises(ValueError, match="REVIEWED_GOLD_CHANGED"):
+        check_gold(db, [question], str(uuid.uuid4()))
+    assert not any(validate_citations(db, hits, **{**kwargs, "subject": str(uuid.uuid4())}))
+    assert not any(validate_citations(db, [{**hits[0], "page_start": 999}], **kwargs))
+    assert not any(validate_citations(db, [{**hits[0], "chunk_id": str(uuid.uuid4())}], **kwargs))
+    book = db.get(LibraryBook, row["id"])
+    book.active_generation += 1
+    db.commit()
+    assert not any(validate_citations(db, hits, **kwargs))
+    _, stats = run_db_chunk_audit(db)
+    assert stats["total_active_chunks"] == 0
+
+
+def test_structured_text_notice_is_prepared_and_returned_in_citations(db, tmp_path):
+    from app.library.books import _prepare_text
+
+    row = resource(tmp_path, pages=1)
+    path = tmp_path / "source.md"
+    path.write_text("# Source summary\n\nSystems feedback adjusts outcomes.", encoding="utf-8")
+    row.update(
+        format="md",
+        absolute_path=str(path),
+        sha256=digest(path),
+        collection="personal-library",
+        source_notice="A summary, not a complete publication.",
+    )
+    row["rights"]["approved_sha256"] = row["sha256"]
+    state = _prepare_text(row, tmp_path / "text-prepared")
+    ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+    hits = retrieve(
+        db,
+        RetrievalRequest(
+            query="systems feedback", collection_ids=["personal-library"], mode="keyword"
+        ),
+        Settings(),
+        subject=row["access"]["owner_id"],
+    ).results
+    assert hits and all(hit.coverage_note == row["source_notice"] for hit in hits)
+
+
 def test_exact_text_copies_are_scoped_before_result_deduplication(db, tmp_path):
     rows = []
     for name in ["owner-a", "owner-b"]:

@@ -353,6 +353,7 @@ def _prepare_text(resource, folder: Path):
         "source_sha256": resource["sha256"],
         "edition": resource.get("edition"),
         "extraction": "STRUCTURED_TEXT",
+        "source_notice": resource.get("source_notice"),
     }
     for start in range(0, len(segments), 8):
         selected = segments[start : start + 8]

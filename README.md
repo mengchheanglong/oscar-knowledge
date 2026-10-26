@@ -2,6 +2,11 @@
 
 Development uses `main` directly, consistently with OSCAR backend and frontend.
 
+The [content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md) corrects
+the later automated audit's metadata labels, citation checks and benchmark
+claims. Processing completeness and independent semantic/visual review remain
+separate statuses; current private quality reports use the `corrected` directory.
+
 The private Windows library is connected to OSCAR. See the
 [local library integration guide](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
 and [completion continuation](docs/LIBRARY_COMPLETION_2026_10_26.md)

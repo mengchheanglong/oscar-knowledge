@@ -65,8 +65,12 @@ def test_rrf_rank_dilution_reproduction():
     # Doc B: Mediocre hit in both pools (rank 20 in keyword, rank 8 in semantic)
 
     pools = [
-        ["other_kw_1", "other_kw_2"] + ["other_kw_" + str(i) for i in range(3, 20)] + ["doc_B"],  # Keyword pool: doc_B at rank 20
-        ["doc_A"] + ["other_sem_" + str(i) for i in range(2, 8)] + ["doc_B"],  # Semantic pool: doc_A at rank 1, doc_B at rank 8
+        ["other_kw_1", "other_kw_2"]
+        + ["other_kw_" + str(i) for i in range(3, 20)]
+        + ["doc_B"],  # Keyword pool: doc_B at rank 20
+        ["doc_A"]
+        + ["other_sem_" + str(i) for i in range(2, 8)]
+        + ["doc_B"],  # Semantic pool: doc_A at rank 1, doc_B at rank 8
     ]
 
     weights = [0.5, 1.0]  # Standard broad_keyword weights
@@ -132,7 +136,7 @@ def test_abstention_calibration_cutoff_tradeoff():
     ans_rejected_45 = sum(1 for s in ans_scores if s < cutoff_45)
 
     assert unans_abstained_45 == 2  # Catches 2/6 unanswerable
-    assert ans_rejected_45 == 1     # Wrongly rejects 1 valid answerable question
+    assert ans_rejected_45 == 1  # Wrongly rejects 1 valid answerable question
 
     # At cutoff 0.50:
     cutoff_50 = 0.50
@@ -140,4 +144,4 @@ def test_abstention_calibration_cutoff_tradeoff():
     ans_rejected_50 = sum(1 for s in ans_scores if s < cutoff_50)
 
     assert unans_abstained_50 == 4  # Catches 4/6 unanswerable
-    assert ans_rejected_50 == 2     # Wrongly rejects 2 valid answerable questions!
+    assert ans_rejected_50 == 2  # Wrongly rejects 2 valid answerable questions!

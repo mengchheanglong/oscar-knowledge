@@ -116,7 +116,11 @@ BENCHMARK_100_QUERIES = [
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
             "gold_terms": ["WACC", "cost of capital", "tax shield", "debt", "equity"],
-            "known_sources": ["Financial Intelligence", "Corporate Finance", "Mit Finance Transcripts"],
+            "known_sources": [
+                "Financial Intelligence",
+                "Corporate Finance",
+                "Mit Finance Transcripts",
+            ],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
@@ -130,7 +134,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
-            "gold_terms": ["fee-for-service", "value-based", "reimbursement", "healthcare", "payment"],
+            "gold_terms": [
+                "fee-for-service",
+                "value-based",
+                "reimbursement",
+                "healthcare",
+                "payment",
+            ],
             "known_sources": ["Healthcare Management", "Health Economics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -206,12 +216,15 @@ BENCHMARK_100_QUERIES = [
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
             "gold_terms": ["bullwhip", "demand", "variance", "supply chain", "distortion"],
-            "known_sources": ["Operations and Information", "The Goal", "Mit Analytics Transcripts"],
+            "known_sources": [
+                "Operations and Information",
+                "The Goal",
+                "Mit Analytics Transcripts",
+            ],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # MBA Test Queries (13 queries)
     {
         "id": "mba-test-14-operations-bottlenecks",
@@ -268,7 +281,11 @@ BENCHMARK_100_QUERIES = [
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
             "gold_terms": ["Black-Scholes", "option", "call", "volatility", "dividend"],
-            "known_sources": ["Quantitative Finance", "Quant Bible", "Mit Financial Math Transcripts"],
+            "known_sources": [
+                "Quantitative Finance",
+                "Quant Bible",
+                "Mit Financial Math Transcripts",
+            ],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
@@ -282,7 +299,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
-            "gold_terms": ["debt service coverage", "DSCR", "mortgage", "underwriting", "borrowing"],
+            "gold_terms": [
+                "debt service coverage",
+                "DSCR",
+                "mortgage",
+                "underwriting",
+                "borrowing",
+            ],
             "known_sources": ["Real Estate Finance", "MIT 11-431"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -387,7 +410,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["mba-majors", "personal-library"],
         "gold_evidence": {
-            "gold_terms": ["terminal value", "discounted cash flow", "perpetual growth", "DCF", "cash flow"],
+            "gold_terms": [
+                "terminal value",
+                "discounted cash flow",
+                "perpetual growth",
+                "DCF",
+                "cash flow",
+            ],
             "known_sources": ["Financial Intelligence", "Corporate Finance"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -408,7 +437,6 @@ BENCHMARK_100_QUERIES = [
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 2: STRATEGY (8 queries: 4 dev, 4 test)
     # =========================================================================
@@ -436,7 +464,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["where to play", "how to win", "choice cascade", "aspiration", "capabilities"],
+            "gold_terms": [
+                "where to play",
+                "how to win",
+                "choice cascade",
+                "aspiration",
+                "capabilities",
+            ],
             "known_sources": ["Playing to Win", "Strategy and Decision"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -451,7 +485,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["megaprojects", "optimism bias", "misrepresentation", "cost overrun", "planning"],
+            "gold_terms": [
+                "megaprojects",
+                "optimism bias",
+                "misrepresentation",
+                "cost overrun",
+                "planning",
+            ],
             "known_sources": ["How Big Things Get Done"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -481,7 +521,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["cold start", "atomic network", "density", "marketplace", "network effect"],
+            "gold_terms": [
+                "cold start",
+                "atomic network",
+                "density",
+                "marketplace",
+                "network effect",
+            ],
             "known_sources": ["The Cold Start Problem"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -511,7 +557,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["reference class", "outside view", "forecasting", "planning fallacy", "bias"],
+            "gold_terms": [
+                "reference class",
+                "outside view",
+                "forecasting",
+                "planning fallacy",
+                "bias",
+            ],
             "known_sources": ["How Big Things Get Done", "Superforecasting"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -532,7 +584,6 @@ BENCHMARK_100_QUERIES = [
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 3: SOCIAL SYSTEMS (8 queries: 4 dev, 4 test)
     # =========================================================================
@@ -590,7 +641,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["social-systems", "personal-library"],
         "gold_evidence": {
-            "gold_terms": ["structural power", "compliance", "rules", "regime", "collective action"],
+            "gold_terms": [
+                "structural power",
+                "compliance",
+                "rules",
+                "regime",
+                "collective action",
+            ],
             "known_sources": ["Social Systems Strategy Roadmap", "Society and Power"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -620,7 +677,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "social-systems"],
         "gold_evidence": {
-            "gold_terms": ["bowling", "voluntary associations", "civic engagement", "decline", "league"],
+            "gold_terms": [
+                "bowling",
+                "voluntary associations",
+                "civic engagement",
+                "decline",
+                "league",
+            ],
             "known_sources": ["Bowling Alone"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -635,7 +698,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["veil of ignorance", "Rawls", "justice", "liberties", "difference principle"],
+            "gold_terms": [
+                "veil of ignorance",
+                "Rawls",
+                "justice",
+                "liberties",
+                "difference principle",
+            ],
             "known_sources": ["Justice"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -656,7 +725,6 @@ BENCHMARK_100_QUERIES = [
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 4: ECONOMICS (10 queries: 5 dev, 5 test)
     # =========================================================================
@@ -669,7 +737,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["r > g", "rate of return", "growth", "wealth concentration", "patrimonial"],
+            "gold_terms": [
+                "r > g",
+                "rate of return",
+                "growth",
+                "wealth concentration",
+                "patrimonial",
+            ],
             "known_sources": ["Capital in the Twenty-First Century"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -714,7 +788,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["public goods", "non-rival", "non-excludable", "free-rider", "market failure"],
+            "gold_terms": [
+                "public goods",
+                "non-rival",
+                "non-excludable",
+                "free-rider",
+                "market failure",
+            ],
             "known_sources": ["Microeconomics", "CORE Econ"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -729,7 +809,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["automatic stabilizers", "business cycle", "unemployment", "taxation", "stabilization"],
+            "gold_terms": [
+                "automatic stabilizers",
+                "business cycle",
+                "unemployment",
+                "taxation",
+                "stabilization",
+            ],
             "known_sources": ["Macroeconomics", "CORE Econ"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -744,7 +830,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["price discrimination", "monopolist", "first-degree", "surplus", "arbitrage"],
+            "gold_terms": [
+                "price discrimination",
+                "monopolist",
+                "first-degree",
+                "surplus",
+                "arbitrage",
+            ],
             "known_sources": ["Microeconomics", "Doing Economics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -774,7 +866,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Phillips curve", "stagflation", "inflation", "unemployment", "expectations"],
+            "gold_terms": [
+                "Phillips curve",
+                "stagflation",
+                "inflation",
+                "unemployment",
+                "expectations",
+            ],
             "known_sources": ["Macroeconomics", "CORE Econ"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -789,7 +887,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Coase theorem", "transaction costs", "externalities", "property rights", "bargaining"],
+            "gold_terms": [
+                "Coase theorem",
+                "transaction costs",
+                "externalities",
+                "property rights",
+                "bargaining",
+            ],
             "known_sources": ["Microeconomics", "Environmental Economics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -804,13 +908,18 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["capital-income ratio", "savings rate", "national accounts", "growth", "beta"],
+            "gold_terms": [
+                "capital-income ratio",
+                "savings rate",
+                "national accounts",
+                "growth",
+                "beta",
+            ],
             "known_sources": ["Capital in the Twenty-First Century"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 5: FINANCE (10 queries: 5 dev, 5 test)
     # =========================================================================
@@ -823,7 +932,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["margin of safety", "room for error", "investor", "planning", "survival"],
+            "gold_terms": [
+                "margin of safety",
+                "room for error",
+                "investor",
+                "planning",
+                "survival",
+            ],
             "known_sources": ["The Psychology of Money"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -838,7 +953,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["free cash flow", "FCFF", "EBIT", "capital expenditures", "working capital"],
+            "gold_terms": [
+                "free cash flow",
+                "FCFF",
+                "EBIT",
+                "capital expenditures",
+                "working capital",
+            ],
             "known_sources": ["Financial Intelligence", "Corporate Finance"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -853,7 +974,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["CAPM", "beta", "expected return", "risk-free rate", "market risk premium"],
+            "gold_terms": [
+                "CAPM",
+                "beta",
+                "expected return",
+                "risk-free rate",
+                "market risk premium",
+            ],
             "known_sources": ["Corporate Finance", "Mit Finance Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -868,7 +995,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Modigliani-Miller", "leverage", "cost of equity", "debt", "proposition"],
+            "gold_terms": [
+                "Modigliani-Miller",
+                "leverage",
+                "cost of equity",
+                "debt",
+                "proposition",
+            ],
             "known_sources": ["Corporate Finance", "Mit Finance Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -898,7 +1031,14 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["put-call parity", "European options", "arbitrage", "strike", "call", "put"],
+            "gold_terms": [
+                "put-call parity",
+                "European options",
+                "arbitrage",
+                "strike",
+                "call",
+                "put",
+            ],
             "known_sources": ["Quant Bible", "Mit Financial Math Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -913,7 +1053,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["yield curve", "liquidity preference", "term premium", "interest rates", "maturity"],
+            "gold_terms": [
+                "yield curve",
+                "liquidity preference",
+                "term premium",
+                "interest rates",
+                "maturity",
+            ],
             "known_sources": ["Corporate Finance", "Mit Finance Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -928,7 +1074,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Economic Value Added", "EVA", "capital charge", "net operating profit", "NOPAT"],
+            "gold_terms": [
+                "Economic Value Added",
+                "EVA",
+                "capital charge",
+                "net operating profit",
+                "NOPAT",
+            ],
             "known_sources": ["Financial Intelligence", "Corporate Finance"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -943,7 +1095,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Macaulay duration", "modified duration", "price sensitivity", "convexity", "bond"],
+            "gold_terms": [
+                "Macaulay duration",
+                "modified duration",
+                "price sensitivity",
+                "convexity",
+                "bond",
+            ],
             "known_sources": ["Quant Bible", "Mit Finance Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -958,13 +1116,18 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["mental accounting", "fungible", "behavioral", "investor", "loss aversion"],
+            "gold_terms": [
+                "mental accounting",
+                "fungible",
+                "behavioral",
+                "investor",
+                "loss aversion",
+            ],
             "known_sources": ["The Psychology of Money"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 6: QUANTITATIVE REASONING (10 queries: 5 dev, 5 test)
     # =========================================================================
@@ -992,7 +1155,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["conditional probability", "joint probability", "conditioning", "event", "P(A|B)"],
+            "gold_terms": [
+                "conditional probability",
+                "joint probability",
+                "conditioning",
+                "event",
+                "P(A|B)",
+            ],
             "known_sources": ["Quant Bible", "OpenStax Statistics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1007,7 +1176,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Central Limit Theorem", "sample mean", "variance", "normal distribution", "independence"],
+            "gold_terms": [
+                "Central Limit Theorem",
+                "sample mean",
+                "variance",
+                "normal distribution",
+                "independence",
+            ],
             "known_sources": ["Harvard Data Science", "OpenStax Statistics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1037,7 +1212,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["statistical power", "Type II error", "beta", "null hypothesis", "significance"],
+            "gold_terms": [
+                "statistical power",
+                "Type II error",
+                "beta",
+                "null hypothesis",
+                "significance",
+            ],
             "known_sources": ["Harvard Data Science", "OpenStax Statistics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1052,7 +1233,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Markov chain", "stationary distribution", "transition matrix", "aperiodic", "state"],
+            "gold_terms": [
+                "Markov chain",
+                "stationary distribution",
+                "transition matrix",
+                "aperiodic",
+                "state",
+            ],
             "known_sources": ["Quant Bible", "Mathematics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1067,7 +1254,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Monte Carlo", "antithetic variates", "variance reduction", "simulation", "convergence"],
+            "gold_terms": [
+                "Monte Carlo",
+                "antithetic variates",
+                "variance reduction",
+                "simulation",
+                "convergence",
+            ],
             "known_sources": ["Quant Bible", "Mit Financial Math Transcripts"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1082,7 +1275,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["Variance Inflation Factor", "VIF", "multicollinearity", "regression", "predictors"],
+            "gold_terms": [
+                "Variance Inflation Factor",
+                "VIF",
+                "multicollinearity",
+                "regression",
+                "predictors",
+            ],
             "known_sources": ["Harvard Data Science", "Statistics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1112,13 +1311,18 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["Brier score", "calibration", "resolution", "forecasting", "probability"],
+            "gold_terms": [
+                "Brier score",
+                "calibration",
+                "resolution",
+                "forecasting",
+                "probability",
+            ],
             "known_sources": ["Superforecasting"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 7: ENGINEERING & TECHNOLOGY (8 queries: 4 dev, 4 test)
     # =========================================================================
@@ -1131,7 +1335,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["ACID", "atomicity", "isolation", "eventual consistency", "transactions"],
+            "gold_terms": [
+                "ACID",
+                "atomicity",
+                "isolation",
+                "eventual consistency",
+                "transactions",
+            ],
             "known_sources": ["Designing Data-Intensive Applications"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1146,7 +1356,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["offline evaluation", "online evaluation", "A/B testing", "metrics", "production"],
+            "gold_terms": [
+                "offline evaluation",
+                "online evaluation",
+                "A/B testing",
+                "metrics",
+                "production",
+            ],
             "known_sources": ["AI Engineering"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1161,7 +1377,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["replication lag", "leader", "follower", "read-after-write", "anomalies"],
+            "gold_terms": [
+                "replication lag",
+                "leader",
+                "follower",
+                "read-after-write",
+                "anomalies",
+            ],
             "known_sources": ["Designing Data-Intensive Applications"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1176,7 +1398,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["deployment frequency", "lead time", "change failure rate", "time to restore", "DORA"],
+            "gold_terms": [
+                "deployment frequency",
+                "lead time",
+                "change failure rate",
+                "time to restore",
+                "DORA",
+            ],
             "known_sources": ["Accelerate"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1221,7 +1449,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["trunk-based development", "branches", "continuous integration", "merging", "delivery"],
+            "gold_terms": [
+                "trunk-based development",
+                "branches",
+                "continuous integration",
+                "merging",
+                "delivery",
+            ],
             "known_sources": ["Accelerate"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1242,7 +1476,6 @@ BENCHMARK_100_QUERIES = [
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 8: CROSS-DISCIPLINARY REASONING (8 queries: 4 dev, 4 test)
     # =========================================================================
@@ -1345,7 +1578,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["moral hazard", "asymmetric information", "insurance", "deductible", "healthcare"],
+            "gold_terms": [
+                "moral hazard",
+                "asymmetric information",
+                "insurance",
+                "deductible",
+                "healthcare",
+            ],
             "known_sources": ["Healthcare Management", "Microeconomics"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1366,7 +1605,6 @@ BENCHMARK_100_QUERIES = [
             "judgment_type": "verified_source_evidence",
         },
     },
-
     # =========================================================================
     # DOMAIN 9: OCR / MATHEMATICS / DIAGRAMS / TABLES (6 queries: 3 dev, 3 test)
     # =========================================================================
@@ -1411,7 +1649,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["operating cash", "financing cash", "cash flow", "activities", "statement"],
+            "gold_terms": [
+                "operating cash",
+                "financing cash",
+                "cash flow",
+                "activities",
+                "statement",
+            ],
             "known_sources": ["Financial Statements", "Financial Intelligence"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1427,7 +1671,14 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["normal distribution", "density function", "variance", "sigma", "Gaussian", "mu"],
+            "gold_terms": [
+                "normal distribution",
+                "density function",
+                "variance",
+                "sigma",
+                "Gaussian",
+                "mu",
+            ],
             "known_sources": ["OpenStax Statistics", "Quant Bible"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1443,7 +1694,13 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library", "mba-majors"],
         "gold_evidence": {
-            "gold_terms": ["portfolio variance", "covariance", "weights", "correlation", "variance"],
+            "gold_terms": [
+                "portfolio variance",
+                "covariance",
+                "weights",
+                "correlation",
+                "variance",
+            ],
             "known_sources": ["Mit Finance Transcripts", "Quant Bible"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
@@ -1459,14 +1716,19 @@ BENCHMARK_100_QUERIES = [
         "unanswerable": False,
         "expected_collections": ["personal-library"],
         "gold_evidence": {
-            "gold_terms": ["reaction quotient", "equilibrium constant", "concentration", "products", "reactants"],
+            "gold_terms": [
+                "reaction quotient",
+                "equilibrium constant",
+                "concentration",
+                "products",
+                "reactants",
+            ],
             "known_sources": ["OpenStax Chemistry", "Mixed local compilation"],
             "min_terms_required": 2,
             "judgment_type": "verified_source_evidence",
             "visual_review_required": True,
         },
     },
-
     # =========================================================================
     # DOMAIN 10: UNANSWERABLE / ABSTENTION (6 queries: 3 dev, 3 test)
     # =========================================================================
@@ -1566,11 +1828,11 @@ BENCHMARK_100_QUERIES = [
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     out_file = OUTPUT_DIR / "BENCHMARK_100_DATASET.json"
-    
+
     dev_count = sum(1 for q in BENCHMARK_100_QUERIES if q["split"] == "dev")
     test_count = sum(1 for q in BENCHMARK_100_QUERIES if q["split"] == "held_out_test")
     domains = {q["domain"] for q in BENCHMARK_100_QUERIES}
-    
+
     manifest = {
         "benchmark_name": "OSCAR Knowledge Retrieval Quality Benchmark (100 Questions)",
         "created_at": "2026-10-26T11:55:00+07:00",
@@ -1582,9 +1844,11 @@ def main():
         "domains_represented": sorted(domains),
         "queries": BENCHMARK_100_QUERIES,
     }
-    
+
     out_file.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    print(f"Generated {len(BENCHMARK_100_QUERIES)} benchmark queries: {dev_count} dev, {test_count} held-out test.")
+    print(
+        f"Generated {len(BENCHMARK_100_QUERIES)} benchmark queries: {dev_count} dev, {test_count} held-out test."
+    )
     print(f"Written to {out_file}")
 
 

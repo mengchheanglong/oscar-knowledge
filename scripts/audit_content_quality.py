@@ -26,9 +26,10 @@ from sqlalchemy import text
 
 from app.db.session import session
 from app.library.catalog import read_catalog
+from app.library.quality import CURRENT_EVIDENCE_SQL, classify_representation
 
 CATALOG_DIR = Path("D:/AI/OSCAR/Knowledge/Catalog")
-OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26"
+OUTPUT_DIR = CATALOG_DIR / "reports/quality-review/2026-10-26/corrected"
 CACHE_DIR = CATALOG_DIR / "ingestion-cache"
 
 
@@ -41,10 +42,12 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     # Total active chunks
     total_active_chunks = db.scalar(
         text(
-            """
+            f"""
         SELECT count(*) FROM chunks c
         JOIN documents d ON d.id = c.document_id
-        WHERE d.status != 'DELETED' AND d.approved = true AND c.revision = d.active_revision
+        LEFT JOIN library_books b ON b.id = d.book_id
+        JOIN collections col ON col.id = d.collection_id
+        WHERE {CURRENT_EVIDENCE_SQL}
         """
         )
     )
@@ -54,14 +57,14 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     # 1. Unicode replacement character '\ufffd'
     replacement_rows = db.execute(
         text(
-            """
+            f"""
         SELECT c.id, c.document_id, d.book_id, d.book_generation, c.page_start, c.page_end, c.text,
                b.source_sha256, d.title, col.slug
         FROM chunks c
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
         LEFT JOIN collections col ON col.id = d.collection_id
-        WHERE d.status != 'DELETED' AND d.approved = true AND c.revision = d.active_revision
+        WHERE {CURRENT_EVIDENCE_SQL}
           AND c.text LIKE '%\ufffd%'
         """
         )
@@ -93,13 +96,14 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     # 2. Control characters (excluding standard \t, \n, \r)
     control_rows = db.execute(
         text(
-            r"""
+            rf"""
         SELECT c.id, c.document_id, d.book_id, d.book_generation, c.page_start, c.page_end, c.text,
                b.source_sha256
         FROM chunks c
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
-        WHERE d.status != 'DELETED' AND d.approved = true AND c.revision = d.active_revision
+        JOIN collections col ON col.id = d.collection_id
+        WHERE {CURRENT_EVIDENCE_SQL}
           AND c.text ~ '[\x01-\x08\x0b\x0c\x0e-\x1f]'
         LIMIT 100
         """
@@ -122,20 +126,21 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
                 "review_method": "AUTOMATED_SQL",
                 "confidence": 1.0,
                 "repair_action": "SANITIZE_CONTROL_CHARS",
-                "retest_result": "VERIFIED",
+                "retest_result": "NEEDS_REVIEW",
             }
         )
 
     # 3. Very short chunks (< 25 characters) that are not covers or numbers
     short_rows = db.execute(
         text(
-            """
+            f"""
         SELECT c.id, c.document_id, d.book_id, d.book_generation, c.page_start, c.page_end, c.text,
                b.source_sha256
         FROM chunks c
         JOIN documents d ON d.id = c.document_id
         LEFT JOIN library_books b ON b.id = d.book_id
-        WHERE d.status != 'DELETED' AND d.approved = true AND c.revision = d.active_revision
+        JOIN collections col ON col.id = d.collection_id
+        WHERE {CURRENT_EVIDENCE_SQL}
           AND length(trim(c.text)) < 25 AND length(trim(c.text)) > 0
         LIMIT 50
         """
@@ -159,7 +164,7 @@ def run_db_chunk_audit(db) -> tuple[list[dict[str, Any]], dict[str, Any]]:
                 "review_method": "AUTOMATED_SQL",
                 "confidence": 0.8,
                 "repair_action": "EVALUATE_CHUNK_MERGE",
-                "retest_result": "VERIFIED",
+                "retest_result": "NEEDS_REVIEW",
             }
         )
 
@@ -179,7 +184,7 @@ def audit_ocr_pages(
         "ocr_pages_with_table_patterns": 0,
         "ocr_pages_with_high_noise": 0,
         "ocr_pages_with_broken_operators": 0,
-        "ocr_pages_clean": 0,
+        "ocr_pages_without_heuristic_flags": 0,
     }
 
     status_resources = status.get("resources", {})
@@ -203,7 +208,7 @@ def audit_ocr_pages(
         stats["total_ocr_resources"] += 1
         cat_row = catalog_resources.get(res_id, {})
         source_sha = cat_row.get("sha256", prep.get("source_sha256", ""))
-        generation = cat_row.get("active_generation", 1)
+        generation = res_info.get("indexed_revision")
 
         # Build map of part pages for OCR pages
         ocr_set = set(ocr_pages_list)
@@ -289,11 +294,11 @@ def audit_ocr_pages(
                             "review_method": "AUTOMATED_OCR_ANALYSIS",
                             "confidence": 0.82,
                             "repair_action": "FLAG_MATHEMATICAL_OCR_LIMITATION",
-                            "retest_result": "VERIFIED",
+                            "retest_result": "NEEDS_REVIEW",
                         }
                     )
                 else:
-                    stats["ocr_pages_clean"] += 1
+                    stats["ocr_pages_without_heuristic_flags"] += 1
 
         # Check any OCR pages not present in text parts (e.g. blank pages)
         missing_from_parts = ocr_set - audited_pages_for_res
@@ -316,7 +321,7 @@ def audit_ocr_pages(
                         "review_method": "AUTOMATED_OCR_ANALYSIS",
                         "confidence": 1.0,
                         "repair_action": "RETAIN_BLANK_PAGE_RECORD",
-                        "retest_result": "VERIFIED",
+                        "retest_result": "NEEDS_REVIEW",
                     }
                 )
             else:
@@ -545,20 +550,11 @@ def audit_summaries_and_completeness(
     resources = catalog["resources"] + catalog.get("virtual_books", [])
     for row in resources:
         stats["total_resources_checked"] += 1
-        title = row.get("title", "")
-        tl = title.lower()
         coverage_note = row.get("metadata", {}).get("coverage_note", "") or ""
         tags = [t.lower() for t in row.get("tags", [])]
 
-        is_summary = (
-            bool(re.search(r"\bsummar(y|ies)\b", tl))
-            or "blinkist" in tl
-            or "shortform" in tl
-            or "instaread" in tl
-            or "cliffsnotes" in tl
-            or "sparknotes" in tl
-        )
-        is_study_guide = bool(re.search(r"\bstudy\s+guide\b", tl))
+        is_summary = classify_representation(row) == "PUBLISHER_SUMMARY"
+        is_study_guide = classify_representation(row) == "COURSE_STUDY_GUIDE"
         has_summary_note = bool(coverage_note) or any("summary" in t for t in tags)
 
         if is_summary:
@@ -578,7 +574,7 @@ def audit_summaries_and_completeness(
                         "review_method": "AUTOMATED_METADATA_SCAN",
                         "confidence": 1.0,
                         "repair_action": "ATTACH_SUMMARY_COVERAGE_NOTE",
-                        "retest_result": "REPAIRED_AND_VERIFIED",
+                        "retest_result": "CATALOG_NOTE_PRESENT_RUNTIME_NOT_CHECKED",
                     }
                 )
             else:
@@ -617,7 +613,7 @@ def audit_summaries_and_completeness(
                         "review_method": "AUTOMATED_METADATA_SCAN",
                         "confidence": 1.0,
                         "repair_action": "ATTACH_COVERAGE_NOTE",
-                        "retest_result": "REPAIRED_AND_VERIFIED",
+                        "retest_result": "CATALOG_NOTE_PRESENT_RUNTIME_NOT_CHECKED",
                     }
                 )
             else:
@@ -684,6 +680,7 @@ def export_findings(findings: list[dict[str, Any]], output_dir: Path) -> tuple[P
 
 
 def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     start_time = time.time()
     catalog = read_catalog(CATALOG_DIR / "library.json")
     status = json.loads((CATALOG_DIR / "ingestion-status.json").read_text(encoding="utf-8"))
@@ -691,6 +688,9 @@ def main():
     all_findings = []
     coverage_record: dict[str, Any] = {
         "audit_timestamp": datetime.now(UTC).isoformat(),
+        "method": "Automated screening of current eligible evidence; no new visual/semantic certification",
+        "new_manual_visual_pages_reviewed": 0,
+        "manual_visual_ocr_pages_total": 1808,
         "catalog_summary": status.get("summary", {}),
     }
 
@@ -702,6 +702,7 @@ def main():
     ocr_findings, ocr_stats = audit_ocr_pages(catalog, status)
     all_findings.extend(ocr_findings)
     coverage_record["ocr_audit"] = ocr_stats
+    coverage_record["manual_visual_ocr_pages_total"] = ocr_stats["total_ocr_pages"]
 
     vr_findings, vr_stats = audit_visual_review_groups()
     all_findings.extend(vr_findings)
