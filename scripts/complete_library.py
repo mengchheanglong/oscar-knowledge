@@ -167,6 +167,16 @@ def run(output, workers, limit, *, prepare_only=False, resource_kind="all"):
     for row in catalog["resources"] + catalog.get("virtual_books", []):
         if resource_kind == "mba" and Path(row["root"]) != Path("D:/AI/OSCAR/mba-corpus"):
             continue
+        if resource_kind == "reviewed":
+            active = books.get(row["id"])
+            if not (
+                row.get("page_reviews")
+                and active
+                and active.approved
+                and active.status in {"INDEXED", "PARTIALLY_INDEXED"}
+                and active.source_sha256 == row["sha256"]
+            ):
+                continue
         if (
             row.get("preparation_version") != 3
             or row["rights"].get("permission_status") != "APPROVED"
@@ -204,6 +214,8 @@ def run(output, workers, limit, *, prepare_only=False, resource_kind="all"):
         if prepare_only
         else "completion-mba-2026-10-26.json"
         if resource_kind == "mba"
+        else "completion-reviewed-2026-10-26.json"
+        if resource_kind == "reviewed"
         else "completion-2026-10-26.json"
     )
     results = (
@@ -351,7 +363,7 @@ if __name__ == "__main__":
     parser.add_argument("--register", action="store_true")
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--prepare-only", action="store_true")
-    parser.add_argument("--resource-kind", choices=["all", "mba"], default="all")
+    parser.add_argument("--resource-kind", choices=["all", "mba", "reviewed"], default="all")
     parser.add_argument("--workers", type=int, choices=[1, 2, 3, 4], default=2)
     parser.add_argument("--limit", type=int, default=1000)
     args = parser.parse_args()

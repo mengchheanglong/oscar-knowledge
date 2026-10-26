@@ -76,6 +76,19 @@ def test_final_pdf_gate_rejects_stale_source_or_grant_even_if_old_book_is_indexe
     assert not original_pdf_complete(row)
 
 
+def test_recorded_mba_ownership_does_not_auto_approve_new_or_changed_files():
+    from scripts.register_mba_pdf_gaps import require_owner_grant
+
+    approval = {"approved_mba_pdf_checksums": {"owned-id": "approved-sha"}}
+    require_owner_grant(approval, {"id": "owned-id", "sha256": "approved-sha"})
+    for row in [
+        {"id": "owned-id", "sha256": "changed-bytes"},
+        {"id": "new-file", "sha256": "approved-sha"},
+    ]:
+        with pytest.raises(ValueError, match="HASH_BOUND_OWNER_APPROVAL_REQUIRED"):
+            require_owner_grant(approval, row)
+
+
 def test_physical_windows_cover_every_page_once_and_reject_overlap():
     selected = [[11, 25], [49, 70]]
     windows = uncovered_windows(100, selected, size=10)

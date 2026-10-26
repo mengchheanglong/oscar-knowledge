@@ -20,6 +20,11 @@ from app.library.source import verify_source
 ROOT = Path("D:/AI/OSCAR/Knowledge/Catalog")
 
 
+def require_owner_grant(approval, row):
+    if approval.get("approved_mba_pdf_checksums", {}).get(row["id"]) != row["sha256"]:
+        raise ValueError("MBA_HASH_BOUND_OWNER_APPROVAL_REQUIRED")
+
+
 def contiguous_ranges(pages):
     result = []
     for page in sorted(set(pages)):
@@ -51,6 +56,7 @@ def register(output):
         plan = []
         for evidence in audit["resources"]:
             row = originals[evidence["id"]]
+            require_owner_grant(approval, row)
             if row["sha256"] != evidence["sha256"] or row["pdf_pages"] != evidence["pdf_pages"]:
                 raise ValueError("MBA_AUDIT_SOURCE_CHANGED")
             if Path(row["root"]) != Path("D:/AI/OSCAR/mba-corpus") or row["format"] != "pdf":

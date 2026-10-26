@@ -43,6 +43,9 @@ also requires the same document revision/embedding identity and active vectors.
 Missing supplements, revoked approval and changed source evidence cannot count
 as complete. Blank or explicitly reviewed decorative ranges have a
 `REVIEWED_NON_TEXT` outcome; they produce no fabricated text, chunks or citations.
+The recorded ownership grant freezes the 599 MBA PDF resource IDs/checksums in
+`private-use-approval.json` alongside the original Knowledge PDF grants. Repeated
+registration rejects new files and changed bytes outside that recorded scope.
 
 ## Processing and preservation
 
@@ -92,6 +95,7 @@ model weights or embedding array dump is written to Git or the catalog.
 .venv\Scripts\python.exe scripts/library_visual_review.py
 # Inspect images and explicitly classify groups in reports/visual-review.json.
 .venv\Scripts\python.exe scripts/library_visual_review.py --apply
+.venv\Scripts\python.exe scripts/complete_library.py --run --resource-kind reviewed
 
 .venv\Scripts\python.exe scripts/audit_library_coverage.py --require-complete
 .venv\Scripts\python.exe scripts/audit_prepared_books.py
@@ -102,6 +106,9 @@ model weights or embedding array dump is written to Git or the catalog.
 Registration requires hash-bound roadmap boundary review; it does not assert
 successful indexing. `ingestion-status.json` reports active compilation coverage
 and remaining pages. Operation receipts can contain historical failed attempts.
+The `reviewed` batch selects approved, already active references with staged page
+reviews. It uses a separate operation receipt, allowing completed ranges to be
+updated while the main batch continues through different ranges.
 The additive legacy helper defaults to verification only; its explicit `--apply`
 binds identity metadata only after all checks pass.
 
@@ -122,7 +129,7 @@ revision or grant mismatch cannot satisfy the final completeness gate.
 
 ## Validation
 
-Knowledge isolated suite: **105 passed, 1 skipped**; Ruff and mypy passed. Backend:
+Knowledge isolated suite: **106 passed, 1 skipped**; Ruff and mypy passed. Backend:
 **440 unit tests**, typecheck/lint/build/format passed. Frontend: **34 tests**,
 typecheck/lint/build passed. The earlier 173 E2E and 142 isolated backend
 integration passes remain the baseline; they were not rerun for the notice text
