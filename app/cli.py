@@ -52,7 +52,7 @@ def doctor():
 
     try:
         ready()
-        typer.echo("Database: ready (migration 0005)")
+        typer.echo("Database: ready (migration 0006)")
     except Exception:
         typer.echo(
             "NOT_READY: check DB, alembic upgrade head and KNOWLEDGE_SERVICE_TOKEN", err=True

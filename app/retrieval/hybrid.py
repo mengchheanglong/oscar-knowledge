@@ -236,18 +236,28 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                 edition=chunk.source_metadata.get("edition"),
                 chapter=chunk.heading_path if doc.book_id else None,
                 extraction=chunk.source_metadata.get("extraction"),
-                review_required=chunk.source_metadata.get("extraction") == "LOCAL_TESSERACT_OCR"
+                review_required=chunk.source_metadata.get("extraction")
+                in {"LOCAL_TESSERACT_OCR", "VISUAL_DESCRIPTION", "VISUALLY_REVIEWED_TRANSCRIPTION"}
                 or bool(
                     chunk.source_metadata.get("formula_review_required")
                     and re.search(
-                        r"\b(quant|quantitative|statistics|mathematics|accounting)\b",
+                        r"\b(quant|quantitative|statistics|mathematics|accounting|calculus|physics|compilation)\b",
                         doc.title,
                         re.I,
                     )
                 ),
-                coverage_note="Some image-only pages remain unindexed; consult original PDF."
-                if book_record and book_record.status == "PARTIALLY_INDEXED"
-                else None,
+                coverage_note=" ".join(
+                    filter(
+                        None,
+                        [
+                            "Some image-only pages remain unindexed; consult original PDF."
+                            if book_record and book_record.status == "PARTIALLY_INDEXED"
+                            else None,
+                            chunk.source_metadata.get("source_notice"),
+                        ],
+                    )
+                )
+                or None,
                 course_code=doc.course_code,
                 institution=doc.institution,
                 locator=" / ".join(locators) or None,

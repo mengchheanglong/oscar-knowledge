@@ -260,11 +260,14 @@ def scan(roots: list[Path], previous: dict, *, verify=False, max_files=100000, p
                 "publication_year": None if changed else (prior or {}).get("publication_year"),
                 "category": category,
                 "tags": (prior or {}).get("tags", [category]),
-                "collection": "managed-mba-review"
-                if root.name == "mba-corpus"
-                else "social-systems"
-                if category == "social-systems"
-                else "personal-library",
+                "collection": (prior or {}).get("collection")
+                or (
+                    "managed-mba-review"
+                    if root.name == "mba-corpus"
+                    else "social-systems"
+                    if category == "social-systems"
+                    else "personal-library"
+                ),
                 "access": (prior or {}).get("access", {"visibility": "PRIVATE", "owner_id": None}),
                 "rights": rights,
                 "presence": "PRESENT",

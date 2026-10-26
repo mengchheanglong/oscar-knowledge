@@ -69,6 +69,11 @@ def main():
         value = read_catalog(output / "library.json")
         files = [r for r in value["resources"] if Path(r["root"]) == ROOT]
         compilation = next(r for r in files if "All_119_OPENSTAX" in r["filename"])
+        reviewed = json.loads(
+            (output / "compilation-reviewed-ranges.json").read_text(encoding="utf-8")
+        )
+        if reviewed["source_sha256"] != compilation["sha256"]:
+            raise ValueError("ROADMAP_PHYSICAL_RANGE_REVIEW_REQUIRED")
         with pymupdf.open(compilation["absolute_path"]) as pdf:
             books = [item for item in pdf.get_toc() if item[0] == 2]
             ranges = []
@@ -90,16 +95,7 @@ def main():
             ("psychology", "OpenStax Psychology 2e"),
             ("political", "OpenStax Introduction to Political Science"),
         ]:
-            candidate = next(
-                r
-                for r in ranges
-                if (
-                    "psychology 2e" in r["title"].lower()
-                    if key == "psychology"
-                    else "introduction to political science" in r["title"].lower()
-                )
-            )
-            start, end = candidate["physical_pdf_start"], candidate["physical_pdf_end"]
+            start, end = reviewed["ranges"][key]["page_range"]
             identifier = str(uuid.uuid5(uuid.UUID(compilation["id"]), f"roadmap:{key}"))
             previous = next(
                 (r for r in value.get("virtual_books", []) if r["id"] == identifier), {}
@@ -129,7 +125,7 @@ def main():
                         "permitted_uses": ["local_index", "private_retrieval"],
                     },
                     "ingestion": previous.get("ingestion", {"status": "CATALOGED"}),
-                    "source_range_evidence": "Verified level-2 PDF outline and representative physical pages; no source file copy or printed-page remapping",
+                    "source_range_evidence": "Hash-bound compilation-reviewed-ranges.json physical boundary review; outline-only endpoints are not trusted",
                 }
             )
         selected_ids = {r["id"] for r in virtual}
@@ -144,7 +140,9 @@ def main():
                 "physical_pdf_pages": compilation["pdf_pages"],
                 "book_level_outline_ranges": ranges,
                 "selected_roadmap_resource_ids": [r["id"] for r in virtual],
-                "note": "211 outline ranges are candidates, not 211 unique verified editions; overlaps and duplicated editions require review.",
+                "note": "Legacy outline adjacency diagnostic only; not reliable book boundaries. Use compilation-coverage-plan.json for physical coverage and hash-bound reviewed roadmap ranges for attribution.",
+                "outline_nodes": len(books),
+                "superseded_for_ingestion": True,
             },
         )
         acquired = json.loads((output / "core-acquisition.json").read_text(encoding="utf-8"))

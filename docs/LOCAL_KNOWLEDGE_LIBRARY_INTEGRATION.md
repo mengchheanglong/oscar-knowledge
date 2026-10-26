@@ -6,7 +6,11 @@ Original PDFs remain in `D:\AI\OSCAR\Knowledge`; the separate existing
 moved, renamed, deleted or edited. The local reports and source content are not
 Git artifacts.
 
-## Current outcome and limits
+The [2026-10-26 continuation](LIBRARY_COMPLETION_2026_10_26.md) corrects the
+compilation boundaries and supersedes the initial coverage/count estimate below.
+Use the live catalog reports for current readiness.
+
+## Initial 2026-10-25 outcome and limits
 
 - Catalog: 25,051 physical supported resources across both roots, plus two logical
   book ranges referencing the original compilation without copying it.
@@ -231,7 +235,7 @@ citations, but do not expose local PDF files.
 
 Additive migrations `0003_library_books`, `0004_private_library_scope` and
 `0005_book_preparation_identity` preserve original records and vectors. Local DB
-is at 0005. A pre-library `pg_dump` and row/hash baseline are retained privately in
+is at 0006 (including the additive exact-text lookup index). A pre-library `pg_dump` and row/hash baseline are retained privately in
 the existing MBA backup area. No database reset, volume deletion or destructive
 downgrade was performed. These migrations refuse destructive downgrade; rollback
 means disable private-scope keys and restart the current compatible services while

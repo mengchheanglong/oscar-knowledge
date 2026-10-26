@@ -6,6 +6,7 @@ import multiprocessing
 import re
 import uuid
 import time
+from contextlib import nullcontext
 from typing import Any
 from pathlib import Path
 
@@ -17,6 +18,41 @@ from app.ingestion.chunking import chunk_segments
 from app.ingestion.loaders import ExtractedSegment
 from app.ingestion.pipeline import enqueue, process_job
 from app.library.catalog import atomic_json, digest
+from app.library.source import fingerprint, verify_source
+
+
+def preparation_folder(cache: Path, resource) -> Path:
+    version = resource.get("preparation_version", 2)
+    if version not in {2, 3}:
+        raise ValueError("BOOK_PREPARATION_VERSION")
+    revision = resource.get("preparation_revision", 0)
+    if not isinstance(revision, int) or not 0 <= revision <= 100:
+        raise ValueError("BOOK_PREPARATION_REVISION")
+    suffix = f"-r{revision}" if revision else ""
+    return cache / resource["id"] / resource["sha256"] / f"bookparts-v{version}{suffix}"
+
+
+def preparation_identity(prepared):
+    return hashlib.sha256(
+        json.dumps(
+            [(p["first_page"], p["last_page"], p["sha256"]) for p in prepared["parts"]]
+        ).encode()
+    ).hexdigest()
+
+
+def non_text_preparation(resource, prepared):
+    """A complete blank/decorative range needs an outcome, not fabricated chunks."""
+    first, last = resource.get("page_range", [1, resource.get("pdf_pages", 0)])
+    outcomes = prepared.get("blank_pages", []) + prepared.get("reviewed_non_text_pages", [])
+    return bool(
+        prepared.get("complete")
+        and not prepared.get("parts")
+        and not prepared.get("ocr_required_pages")
+        and prepared.get("source_sha256") == resource["sha256"]
+        and 1 <= first <= last
+        and last - first < 2000
+        and sorted(outcomes) == list(range(first, last + 1))
+    )
 
 
 def require_shared_permission(resource):
@@ -48,7 +84,9 @@ def require_shared_permission(resource):
         uuid.UUID(resource["access"]["owner_id"])
 
 
-def _prepare_pages(resource, folder: Path, limit: int):
+def _prepare_pages(
+    resource, folder: Path, limit: int, *, verified_stat=None, source_pdf=None, source_toc=None
+):
     import pymupdf
 
     source = Path(resource["absolute_path"])
@@ -56,8 +94,10 @@ def _prepare_pages(resource, folder: Path, limit: int):
         2 * 1024**3 if resource.get("page_range") else 512 * 1024**2
     ):
         raise ValueError("BOOK_FILE_LIMIT")
-    if digest(source) != resource["sha256"]:
-        raise ValueError("SOURCE_CHECKSUM_CHANGED")
+    if verified_stat is None:
+        verify_source(resource)
+    elif fingerprint(source) != verified_stat:
+        raise ValueError("SOURCE_CHANGED_DURING_PREPARATION")
     folder.mkdir(parents=True, exist_ok=True)
     state_path = folder / "preparation.json"
     state = (
@@ -74,7 +114,7 @@ def _prepare_pages(resource, folder: Path, limit: int):
         }
     )
     assert state["source_sha256"] == resource["sha256"], "SOURCE_CHECKSUM_CHANGED"
-    with pymupdf.open(source) as pdf:
+    with nullcontext(source_pdf) if source_pdf is not None else pymupdf.open(source) as pdf:
         first_page, last_page = resource.get("page_range", [1, len(pdf)])
         if (
             pdf.needs_pass
@@ -84,11 +124,23 @@ def _prepare_pages(resource, folder: Path, limit: int):
             raise ValueError("BOOK_PAGE_LIMIT_OR_ENCRYPTED")
         state["total_pdf_pages"] = last_page - first_page + 1
         state["source_total_pdf_pages"] = len(pdf)
-        outlines = [
-            (title.strip()[:500], page)
-            for level, title, page in pdf.get_toc()
-            if level == resource.get("outline_level", 1) and title.strip() and 1 <= page <= len(pdf)
-        ]
+        outlines = sorted(
+            [
+                (title.strip()[:500], page)
+                for level, title, page in (
+                    []
+                    if resource.get("outline_level", 1) == 0
+                    else source_toc
+                    if source_toc is not None
+                    else pdf.get_toc()
+                )
+                if level == resource.get("outline_level", 1)
+                and title.strip()
+                and title.strip().lower() != "blank page"
+                and first_page <= page <= last_page
+            ],
+            key=lambda item: item[1],
+        )
         # Only monotonic valid PDF outline destinations are accepted. Printed
         # page labels and guessed chapter names are never manufactured.
         if outlines != sorted(outlines, key=lambda item: item[1]):
@@ -101,6 +153,7 @@ def _prepare_pages(resource, folder: Path, limit: int):
             "edition": resource.get("edition"),
             "extraction": "PDF_EMBEDDED_TEXT",
             "formula_review_required": True,
+            "source_notice": resource.get("source_notice"),
         }
         pages = state.pop("pending_pages", [])
         chunk_count = sum(
@@ -141,23 +194,36 @@ def _prepare_pages(resource, folder: Path, limit: int):
 
         start = state["next_page"]
         for number in range(start, min(last_page + 1, start + limit)):
+            if (
+                resource.get("physical_page_buckets")
+                and pages
+                and (number - first_page) // 8 != (pages[0]["page"] - first_page) // 8
+            ):
+                flush()
             page = pdf[number - 1]
+            review = resource.get("page_reviews", {}).get(str(number))
+            if review and review.get("source_sha256") != resource["sha256"]:
+                raise ValueError("PAGE_REVIEW_CHECKSUM_CHANGED")
+            if review and review["classification"] == "NON_TEXT_DECORATION":
+                state.setdefault("reviewed_non_text_pages", []).append(number)
+                state["next_page"] = number + 1
+                continue
             if page.rect.width * page.rect.height * (150 / 72) ** 2 > 12_000_000:
                 raise ValueError("BOOK_PAGE_RENDER_LIMIT")
             text = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", " ", page.get_text())
+            if review and review.get("text"):
+                text = review["text"]
             ocr = False
-            if (
-                len(re.sub(r"\W", "", text)) < 20
-                and page.get_images()
-                and resource.get("ocr_tessdata")
-            ):
-                text = page.get_text(
+            if len(re.sub(r"\W", "", text)) < 20 and not review and resource.get("ocr_tessdata"):
+                ocr_text = page.get_text(
                     textpage=page.get_textpage_ocr(
                         language="eng", dpi=150, full=True, tessdata=resource["ocr_tessdata"]
                     )
                 )
-                ocr = True
-                state.setdefault("ocr_pages", []).append(number)
+                if ocr_text.strip():
+                    text = ocr_text
+                    ocr = True
+                    state.setdefault("ocr_pages", []).append(number)
             if len(text) > 100000:
                 raise ValueError("BOOK_PAGE_TEXT_LIMIT")
             if not text.strip():
@@ -196,7 +262,13 @@ def _prepare_pages(resource, folder: Path, limit: int):
                         "text": text,
                         "chapter": chapter,
                         "metadata": {
-                            "extraction": "LOCAL_TESSERACT_OCR" if ocr else "PDF_EMBEDDED_TEXT"
+                            "extraction": review.get(
+                                "extraction", "VISUALLY_REVIEWED_TRANSCRIPTION"
+                            )
+                            if review
+                            else "LOCAL_TESSERACT_OCR"
+                            if ocr
+                            else "PDF_EMBEDDED_TEXT"
                         },
                     }
                 )
@@ -211,13 +283,31 @@ def _prepare_pages(resource, folder: Path, limit: int):
     return state
 
 
-def _prepare_child(resource, folder, limit, sender):
+def _prepare_child(resource, folder, limit, sender, verified_stat=None, whole_book=False):
     try:
-        state = (
-            _prepare_pages(resource, Path(folder), limit)
-            if resource["format"] == "pdf"
-            else _prepare_text(resource, Path(folder))
-        )
+        if resource["format"] == "pdf" and whole_book:
+            import pymupdf
+
+            with pymupdf.open(resource["absolute_path"]) as pdf:
+                toc = [] if resource.get("outline_level", 1) == 0 else pdf.get_toc()
+                while True:
+                    state = _prepare_pages(
+                        resource,
+                        Path(folder),
+                        limit,
+                        verified_stat=verified_stat,
+                        source_pdf=pdf,
+                        source_toc=toc,
+                    )
+                    if state["complete"]:
+                        break
+                    sender.send(("progress", state["next_page"]))
+        else:
+            state = (
+                _prepare_pages(resource, Path(folder), limit, verified_stat=verified_stat)
+                if resource["format"] == "pdf"
+                else _prepare_text(resource, Path(folder))
+            )
         sender.send((True, state))
     except Exception as exc:
         code = str(exc) if re.fullmatch(r"[A-Z_]+", str(exc)) else "BOOK_PREPARATION_FAILED"
@@ -297,14 +387,34 @@ def _prepare_text(resource, folder: Path):
     return state
 
 
-def prepare(resource, cache: Path, *, page_batch=40, timeout=120, memory_bytes=512 * 1024 * 1024):
+def prepare(
+    resource, cache: Path, *, page_batch=40, timeout=120, memory_bytes=None, whole_book=False
+):
     require_shared_permission(resource)
+    source_path = Path(resource["absolute_path"])
+    if source_path.is_symlink() or source_path.stat().st_size > (
+        2 * 1024**3 if resource.get("page_range") else 512 * 1024**2
+    ):
+        raise ValueError("BOOK_FILE_LIMIT")
+    if memory_bytes is None:
+        memory_bytes = (
+            2 * 1024**3
+            if resource.get("page_range")
+            and Path(resource["absolute_path"]).stat().st_size > 512 * 1024**2
+            else 512 * 1024**2
+        )
+    if not 0 < memory_bytes <= 2 * 1024**3:
+        raise ValueError("BOOK_PREPARATION_MEMORY_BUDGET")
     if not 1 <= page_batch <= 100:
         raise ValueError("BOOK_PAGE_BATCH_LIMIT")
-    folder = cache / resource["id"] / resource["sha256"] / "bookparts-v2"
+    folder = preparation_folder(cache, resource)
     ctx = multiprocessing.get_context("spawn")
     receiver, sender = ctx.Pipe(duplex=False)
-    process = ctx.Process(target=_prepare_child, args=(resource, str(folder), page_batch, sender))
+    verified_stat = verify_source(resource)
+    process = ctx.Process(
+        target=_prepare_child,
+        args=(resource, str(folder), page_batch, sender, verified_stat, whole_book),
+    )
     process.start()
     assert process.pid is not None
     sender.close()
@@ -312,19 +422,32 @@ def prepare(resource, cache: Path, *, page_batch=40, timeout=120, memory_bytes=5
         from app.library.limits import resident_bytes
 
         deadline = time.monotonic() + timeout
+        previous_page = 0
+        progress_updates = 0
         while True:
             if resident_bytes(process.pid) > memory_bytes:
                 raise ValueError("BOOK_PREPARATION_MEMORY_LIMIT")
             if receiver.poll(0.2):
-                break
+                ok, result = receiver.recv()
+                if ok == "progress":
+                    progress_updates += 1
+                    if (
+                        not whole_book
+                        or not isinstance(result, int)
+                        or result <= previous_page
+                        or progress_updates > 2000 // page_batch + 1
+                    ):
+                        raise ValueError("BOOK_PREPARATION_PROGRESS_INVALID")
+                    previous_page = result
+                    deadline = time.monotonic() + timeout
+                    continue
+                if not ok:
+                    raise ValueError(result)
+                return result
             if time.monotonic() > deadline:
                 raise ValueError("BOOK_PREPARATION_TIMEOUT")
             if not process.is_alive():
                 raise ValueError("BOOK_PREPARATION_CHILD_EXITED")
-        ok, result = receiver.recv()
-        if not ok:
-            raise ValueError(result)
-        return result
     finally:
         if process.is_alive():
             process.terminate()
@@ -345,8 +468,7 @@ def ingest_parts(
         raise ValueError("BOOK_OCR_REVIEW_REQUIRED")
     if not prepared["parts"] or prepared["source_sha256"] != resource["sha256"]:
         raise ValueError("BOOK_PREPARATION_INVALID")
-    if digest(Path(resource["absolute_path"])) != resource["sha256"]:
-        raise ValueError("SOURCE_CHECKSUM_CHANGED")
+    verify_source(resource)
     if settings.embedding_provider not in {"disabled", "ollama"}:
         raise ValueError("LOCAL_BOOK_EMBEDDINGS_REQUIRED")
     col = db.scalar(select(Collection).where(Collection.slug == collection))
@@ -401,14 +523,10 @@ def ingest_parts(
             raise ValueError("BOOK_REVOKED_OR_SCOPE_CHANGED")
         embedder = provider(settings)
         identity = embedder.identity if embedder else None
-        preparation_identity = hashlib.sha256(
-            json.dumps(
-                [(p["first_page"], p["last_page"], p["sha256"]) for p in prepared["parts"]]
-            ).encode()
-        ).hexdigest()
+        prepared_identity = preparation_identity(prepared)
         unchanged_preparation = (
             book.source_sha256 == resource["sha256"]
-            and book.preparation_sha256 == preparation_identity
+            and book.preparation_sha256 == prepared_identity
         )
         generation = book.active_generation if unchanged_preparation else book.active_generation + 1
         completed = 0
@@ -425,6 +543,16 @@ def ingest_parts(
                     Document.collection_id == col.id, Document.canonical_key == key
                 )
             )
+            if not doc and unchanged_preparation:
+                doc = db.scalar(
+                    select(Document).where(
+                        Document.book_id == book.id,
+                        Document.book_generation == book.active_generation,
+                        Document.canonical_key.like(
+                            f"book:{book.id}:%:{part['first_page']}:{part['last_page']}"
+                        ),
+                    )
+                )
             if not doc and book.active_generation and not unchanged_preparation:
                 prior = db.scalar(
                     select(Document).where(
@@ -464,19 +592,26 @@ def ingest_parts(
                         len(current) == len(old)
                         and [signature(s) for s in current] == [signature(s) for s in old]
                         and all(
-                            s.source_metadata.get("edition") == resource.get("edition") for s in old
+                            prior_chunk.source_metadata.get(field) == segment.metadata.get(field)
+                            for prior_chunk, segment in zip(old, current, strict=True)
+                            for field in [
+                                "edition",
+                                "extraction",
+                                "formula_review_required",
+                                "source_notice",
+                            ]
                         )
                     ):
                         expected_ids.append(prior.id)
                         reused_ids.append(prior.id)
                         completed += 1
                         continue
-            if doc and doc.status == "DELETED":
+            if doc and (doc.status == "DELETED" or not doc.approved):
                 raise ValueError("BOOK_PART_REVOKED")
             if (
                 doc
                 and doc.active_revision > 0
-                and doc.content_sha256 == part["sha256"]
+                and (doc.content_sha256 == part["sha256"] or unchanged_preparation)
                 and doc.embedding_identity == identity
             ):
                 expected_ids.append(doc.id)
@@ -528,8 +663,7 @@ def ingest_parts(
             )
             if count != sum(p["expected_chunks"] for p in prepared["parts"]):
                 raise ValueError("BOOK_CHUNK_COVERAGE_MISMATCH")
-            if digest(Path(resource["absolute_path"])) != resource["sha256"]:
-                raise ValueError("SOURCE_CHANGED_DURING_INDEXING")
+            verify_source(resource)
             db.refresh(book, with_for_update=True)
             if not book.approved or book.visibility != visibility or book.owner_id != owner:
                 raise ValueError("BOOK_REVOKED")
@@ -539,7 +673,7 @@ def ingest_parts(
                 resource["sha256"],
                 status,
             )
-            book.preparation_sha256 = preparation_identity
+            book.preparation_sha256 = prepared_identity
             book.title, book.author, book.edition = (
                 resource["title"],
                 desired_author,

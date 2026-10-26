@@ -147,6 +147,9 @@ def review_resource(
 def prepare_book(
     resource_id: str,
     page_batch: int = typer.Option(40, min=1, max=100),
+    whole_book: bool = typer.Option(
+        False, help="Retain one bounded PDF child through checkpointed batches until complete"
+    ),
     catalog_dir: Path = typer.Option(Path("D:/AI/OSCAR/Knowledge/Catalog")),
 ):
     """Prepare at most page-batch pages. Repeat until complete; no embeddings."""
@@ -154,7 +157,9 @@ def prepare_book(
 
     value = read_catalog(catalog_dir / "library.json")
     row = next(r for r in resources(value) if r["id"] == resource_id)
-    state = prepare(row, catalog_dir / "ingestion-cache", page_batch=page_batch)
+    state = prepare(
+        row, catalog_dir / "ingestion-cache", page_batch=page_batch, whole_book=whole_book
+    )
     typer.echo(json.dumps({k: v for k, v in state.items() if k not in {"parts", "pending_pages"}}))
 
 
@@ -171,18 +176,11 @@ def ingest_book(
     """Process approved scoped parts; activate only when every expected part exists."""
     from app.config import get_settings
     from app.db.session import session
-    from app.library.books import ingest_parts
+    from app.library.books import ingest_parts, preparation_folder
 
     value = read_catalog(catalog_dir / "library.json")
     row = next(r for r in resources(value) if r["id"] == resource_id)
-    state_path = (
-        catalog_dir
-        / "ingestion-cache"
-        / row["id"]
-        / row["sha256"]
-        / "bookparts-v2"
-        / "preparation.json"
-    )
+    state_path = preparation_folder(catalog_dir / "ingestion-cache", row) / "preparation.json"
     state = json.loads(state_path.read_text(encoding="utf-8"))
     # Do not hold the metadata writer lock over embedding work: revoke must be
     # able to persist its deny tombstone while a CLI batch is running.
@@ -218,12 +216,22 @@ def revoke_resource(
 
     with catalog_lock(catalog_dir):
         value = read_catalog(catalog_dir / "library.json")
-        row = next(r for r in resources(value) if r["id"] == resource_id)
+        identifiers = {resource_id}
+        while True:
+            expanded = identifiers | {
+                r["id"] for r in resources(value) if r.get("parent_resource_id") in identifiers
+            }
+            if expanded == identifiers:
+                break
+            identifiers = expanded
         with session() as db:
-            revoke_book(db, row, get_settings())
-        row["rights"].update(permission_status="REVOKED", permitted_uses=[])
-        row["catalog_status"] = "NEEDS_PERMISSION_REVIEW"
-        row["ingestion"]["status"] = "REVOKED"
+            for row in resources(value):
+                if row["id"] not in identifiers:
+                    continue
+                revoke_book(db, row, get_settings())
+                row["rights"].update(permission_status="REVOKED", permitted_uses=[])
+                row["catalog_status"] = "NEEDS_PERMISSION_REVIEW"
+                row["ingestion"]["status"] = "REVOKED"
         atomic_json(catalog_dir / "library.json", value)
     typer.echo("REVOKED_FILES_AND_VECTORS_RETAINED")
 

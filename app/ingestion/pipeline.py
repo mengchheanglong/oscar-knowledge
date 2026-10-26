@@ -12,6 +12,7 @@ from app.config import Settings, get_settings
 from app.db.models import Chunk, Collection, Document, IngestionJob
 from app.embeddings.provider import provider
 from app.embeddings.storage import store_vectors
+from app.embeddings.reuse import embed_with_reuse
 from app.ingestion.chunking import chunk_segments
 from app.ingestion.loaders import PARSER_VERSION, SourceError, load
 
@@ -210,7 +211,7 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
         job.stage, job.progress = stage, 30
         db.commit()
         vectors: list[list[float] | None] = (
-            list(embedder.embed_documents([s.text for s in segments]))
+            embed_with_reuse(db, [s.text for s in segments], embedder)
             if embedder
             else [None] * len(segments)
         )

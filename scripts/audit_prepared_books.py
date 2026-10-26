@@ -10,6 +10,7 @@ from sqlalchemy import select
 from app.db.models import Document, LibraryBook
 from app.db.session import session
 from app.library.catalog import atomic_json, digest, read_catalog
+from app.library.source import verify_source
 
 ROOT = Path("D:/AI/OSCAR/Knowledge/Catalog")
 
@@ -18,15 +19,19 @@ def main():
     catalog = read_catalog(ROOT / "library.json")
     resources = {r["id"]: r for r in catalog["resources"] + catalog.get("virtual_books", [])}
     results = []
+    verified_sources = set()
     with session() as db:
         books = list(db.scalars(select(LibraryBook).where(LibraryBook.active_generation > 0)))
         for book in books:
             row = resources.get(str(book.id))
             if not row or row["format"] != "pdf":
                 continue
-            if digest(Path(row["absolute_path"])) != book.source_sha256:
+            if row["sha256"] != book.source_sha256:
                 results.append({"id": str(book.id), "status": "SOURCE_CHANGED_NOT_AUDITED"})
                 continue
+            key = (row["absolute_path"], row["sha256"])
+            verify_source(row, force=key not in verified_sources)
+            verified_sources.add(key)
             mismatches = []
             checked = 0
             docs = list(
@@ -45,7 +50,7 @@ def main():
                         extraction = page.get("metadata", {}).get(
                             "extraction", data["metadata"].get("extraction")
                         )
-                        if extraction == "LOCAL_TESSERACT_OCR":
+                        if extraction != "PDF_EMBEDDED_TEXT":
                             continue
                         original = re.sub(
                             r"[\x00-\x08\x0b\x0c\x0e-\x1f]",
@@ -65,6 +70,9 @@ def main():
                     "mismatched_pages": mismatches,
                     "status": "REPAIR_REQUIRED" if mismatches else "PASS",
                 }
+            )
+            print(
+                str(book.id), "PASS" if not mismatches else "REPAIR_REQUIRED", checked, flush=True
             )
     atomic_json(
         ROOT / "reports" / "extraction-audit.json",

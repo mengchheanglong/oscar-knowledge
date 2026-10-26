@@ -30,7 +30,17 @@ def main():
                 "vectors": "SELECT chunk_id::text, identity, md5(coalesce(embedding_1024::text,embedding_1536::text)) FROM chunk_embeddings",
             }
             for name, sql in statements.items():
-                actual = {tuple(r) for r in db.execute(text(sql))}
+                identifier = "chunk_id" if name == "vectors" else "id"
+                actual = set()
+                identifiers = list({r[0] for r in baseline[name]})
+                for start in range(0, len(identifiers), 1000):
+                    bounded = sql + f" WHERE {identifier} = ANY(CAST(:ids AS uuid[]))"
+                    actual.update(
+                        tuple(r)
+                        for r in db.execute(
+                            text(bounded), {"ids": identifiers[start : start + 1000]}
+                        )
+                    )
                 checks[name] = {
                     "baseline_rows": len(baseline[name]),
                     "missing_or_changed": sum(tuple(r) not in actual for r in baseline[name]),
@@ -49,7 +59,13 @@ def main():
         for r in resources
         if r.get("rights", {}).get("permission_status") == "APPROVED"
         and r.get("access", {}).get("visibility") == "PRIVATE"
-        and r["id"] not in status["resources"]
+        and r.get("ingestion", {}).get("status")
+        not in {
+            "INDEXED",
+            "INDEXED_VIA_RANGES",
+            "INDEXED_TEXT_VIA_EXISTING_MBA",
+            "REVIEWED_NON_TEXT",
+        }
     ]
     coverage = json.loads((root / "social-roadmap-coverage.json").read_text(encoding="utf-8"))
     audit = json.loads((reports / "extraction-audit.json").read_text(encoding="utf-8"))
@@ -69,7 +85,9 @@ def main():
         "",
         f"Collections: {summary['collections']}. Status: {summary['states']}.",
         "",
-        f"Prepared PDF coverage spans {summary['pdf_pages_in_prepared_references']:,} physical pages, including blanks and excluded unreadable pages. Local OCR produced text for {summary['ocr_pages']} pages; {summary['unresolved_pages']} pages remain unresolved across seven explicitly partial references. No silent truncation or invented text.",
+        f"MBA original PDFs reusing approved existing text: {summary.get('mba_original_pdfs_reusing_existing_text', 0)}; complete with all required page supplements: {summary.get('mba_original_pdfs_complete_with_supplements', 0)}. These reuse counts are separate from new private book/vector counts; no existing shared document or grant was changed.",
+        "",
+        f"Prepared PDF coverage spans {summary['pdf_pages_in_prepared_references']:,} physical pages, including blanks and excluded unreadable pages. Local OCR produced text for {summary['ocr_pages']} pages; {summary['unresolved_pages']} pages remain unresolved across {summary['states'].get('PARTIALLY_INDEXED', 0)} explicitly partial references. Reviewed visual descriptions/transcriptions are distinct from embedded text; descriptions do not reproduce every graphical detail.",
         "",
         f"Roadmap: {coverage['with_local_references']}/{coverage['count']} readings have local matches; {coverage['indexed_readings']} have retrievable references. See social-roadmap-coverage.csv for per-reading partial coverage. Title matches are not verified edition equivalence.",
         "",
@@ -77,11 +95,14 @@ def main():
         "",
         f"Duplicates: {len(duplicates['exact'])} SHA groups across both roots. Nothing deleted or merged; duplicate copies do not transfer rights.",
         "",
-        "The giant 156,324-page compilation is cataloged and authorized but is not fully indexed. Two verified roadmap ranges (Psychology and Political Science, 2,446 pages combined) reference the original PDF directly. The remaining 209 outline candidates require bounded range preparation and validation; 211 candidates are not 211 verified unique editions. No permission request remains for the existing owned PDFs.",
+        "Compilation coverage (live active ranges): "
+        + json.dumps(status.get("compilations", {}), sort_keys=True),
+        "",
+        "The earlier 211 outline-node / 209 remaining-book estimate was incorrect: nested binders, repeated books and unrelated inserted material invalidate those book boundaries. The superseding compilation-coverage-plan.json registers disjoint physical windows over all 156,324 pages. The corrected Political Science range is 10421–11059; the Psychology range is 35189–35971. The other windows are labeled mixed compilation, not verified OpenStax editions. Original content is retained without attributing unrelated text to OpenStax. No permission question remains for these owned source bytes.",
         "",
         "Other limits: commercial-book editions/full-publication completeness are unverified; some local files are summaries. Public HTML collection retains source URLs/notices but does not mirror interactive/media assets or gated solutions. Two ambiguous prior HTML acquisitions are retained and quarantined. Original MBA content remains separate and shared only under its existing approvals.",
         "",
-        "Approved private resources without active book rows:",
+        "Approved private resources still requiring processing or page review:",
         "",
     ]
     lines += [f"- {r['id']}: {r['title']} ({r.get('pdf_pages')} pages)" for r in pending]

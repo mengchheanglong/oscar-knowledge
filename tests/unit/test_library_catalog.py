@@ -134,3 +134,20 @@ def test_preparation_terminates_child_when_memory_budget_is_exceeded(tmp_path, m
     monkeypatch.setattr("app.library.limits.resident_bytes", lambda pid: 1024)
     with pytest.raises(ValueError, match="BOOK_PREPARATION_MEMORY_LIMIT"):
         prepare(row, tmp_path / "cache", memory_bytes=1)
+
+
+def test_refresh_preserves_explicit_mba_private_collection_and_reuse_evidence(tmp_path):
+    from app.library.catalog import atomic_json
+
+    root, output = tmp_path / "mba-corpus", tmp_path / "catalog"
+    pdf(root / "original.pdf")
+    catalog = refresh([root], output)
+    row = catalog["resources"][0]
+    assert row["collection"] == "managed-mba-review"
+    row["collection"] = "personal-library"
+    row["mba_text_reuse"] = {"source_sha256": row["sha256"], "document_ids": [str(uuid.uuid4())]}
+    atomic_json(output / "library.json", catalog)
+    updated = refresh([root], output)["resources"][0]
+    assert updated["collection"] == "personal-library"
+    assert updated["mba_text_reuse"] == row["mba_text_reuse"]
+    assert updated["id"] == row["id"]

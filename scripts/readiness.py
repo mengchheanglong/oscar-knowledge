@@ -75,7 +75,7 @@ def check(collection):
             pass
     try:
         with session() as db:
-            if db.scalar(text("SELECT version_num FROM alembic_version")) != "0005":
+            if db.scalar(text("SELECT version_num FROM alembic_version")) != "0006":
                 raise ValueError("MIGRATION_REQUIRED")
             if collection not in settings.allowed_collections:
                 raise ValueError("COLLECTION_NOT_ALLOWED")

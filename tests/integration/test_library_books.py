@@ -14,6 +14,87 @@ from app.retrieval.hybrid import retrieve
 pytestmark = pytest.mark.integration
 
 
+def test_mba_text_reuse_requires_current_vectors_proof_and_every_supplement(db, tmp_path):
+    from app.db.models import ChunkEmbedding
+    from app.ingestion.pipeline import enqueue, process_job
+    from app.library.catalog import atomic_json, read_catalog
+    from app.library.status import sync_status
+
+    path = tmp_path / "approved.md"
+    path.write_text("# Original fixture\n\nApproved MBA coverage fixture text.", encoding="utf-8")
+    job = enqueue(db, path, "mba-business", approved=True)
+    assert process_job(db, job.id, Settings()) == "INDEXED"
+    document = db.get(Document, job.document_id)
+    document.embedding_identity = "coverage-fixture"
+    chunk = db.scalar(select(Chunk).where(Chunk.document_id == document.id))
+    vector = ChunkEmbedding(
+        chunk_id=chunk.id,
+        identity=document.embedding_identity,
+        dimensions=1024,
+        embedding_1024=[1.0] + [0.0] * 1023,
+    )
+    db.add(vector)
+    db.commit()
+    row = resource(tmp_path, pages=2)
+    row.update(
+        collection="personal-library",
+        root=str(tmp_path),
+        mba_text_reuse={
+            "source_sha256": row["sha256"],
+            "document_ids": [str(document.id)],
+            "document_proofs": {
+                str(document.id): {
+                    "content_sha256": document.content_sha256,
+                    "active_revision": document.active_revision,
+                    "embedding_identity": document.embedding_identity,
+                }
+            },
+            "supplement_ranges": [],
+            "graphic_interpretation": "Text coverage only",
+        },
+    )
+    output = tmp_path / "catalog"
+    output.mkdir()
+
+    def snapshot():
+        atomic_json(output / "library.json", {"schema_version": 1, "resources": [row]})
+        sync_status(db, output)
+        return read_catalog(output / "library.json")["resources"][0]["ingestion"]
+
+    assert snapshot()["status"] == "INDEXED_TEXT_VIA_EXISTING_MBA"
+    row["mba_text_reuse"]["supplement_ranges"] = [[2, 2]]
+    assert not snapshot()["retrievable"]  # Missing child must not imply zero work remains.
+    row["mba_text_reuse"]["supplement_ranges"] = []
+    document.approved = False
+    db.commit()
+    assert snapshot()["status"] == "MBA_EXISTING_TEXT_REAUDIT_REQUIRED"
+    document.approved = True
+    db.delete(vector)
+    db.commit()
+    assert not snapshot()["retrievable"]
+    db.add(
+        ChunkEmbedding(
+            chunk_id=chunk.id,
+            identity=document.embedding_identity,
+            dimensions=1024,
+            embedding_1024=[1.0] + [0.0] * 1023,
+        )
+    )
+    db.commit()
+    row["rights"]["permission_status"] = "REVOKED"
+    assert snapshot()["status"] == "REVOKED" and not snapshot()["retrievable"]
+
+
+def test_whole_book_child_retains_bounded_checkpoints_and_complete_physical_coverage(tmp_path):
+    from app.library.books import prepare
+
+    row = resource(tmp_path, pages=17)
+    state = prepare(row, tmp_path / "cache", page_batch=5, whole_book=True)
+    assert state["complete"] and state["next_page"] == 18
+    assert state["total_pdf_pages"] == 17
+    assert sum(part["last_page"] - part["first_page"] + 1 for part in state["parts"]) == 17
+
+
 def test_catalog_sync_requires_active_chunks_and_tracks_revocation(db, tmp_path):
     from app.library.catalog import atomic_json, read_catalog
     from app.library.status import sync_status
@@ -53,6 +134,77 @@ def test_catalog_sync_requires_active_chunks_and_tracks_revocation(db, tmp_path)
     db.commit()
     assert sync_status(db, output)["retrievable_references"] == 0
     assert read_catalog(output / "library.json")["resources"][0]["ingestion"]["status"] == "REVOKED"
+
+
+def test_status_prefers_active_preparation_identity_over_reused_part_cache(db, tmp_path):
+    from app.library.books import preparation_folder
+    from app.library.catalog import atomic_json, read_catalog
+    from app.library.status import sync_status
+
+    row = resource(tmp_path, pages=12)
+    row.update(collection="personal-library", root=str(tmp_path))
+    first = _prepare_pages(row, tmp_path / "a-old-cache", 100)
+    assert (
+        ingest_parts(db, row, first, "personal-library", Settings(), limit=100)["status"]
+        == "INDEXED"
+    )
+    row.update(page_range=[1, 11], preparation_version=3)
+    output = tmp_path / "catalog"
+    output.mkdir()
+    atomic_json(output / "library.json", {"schema_version": 1, "resources": [row]})
+    corrected = _prepare_pages(row, preparation_folder(output / "ingestion-cache", row), 100)
+    result = ingest_parts(db, row, corrected, "personal-library", Settings(), limit=100)
+    assert result["status"] == "INDEXED" and result["reused_unchanged_parts"] == 1
+    sync_status(db, output)
+    assert read_catalog(output / "library.json")["resources"][0]["ingestion"]["pdf_pages"] == 11
+
+
+def test_text_reuse_keeps_updated_extraction_and_source_notices(db, tmp_path):
+    row = resource(tmp_path, pages=2)
+    row.update(collection="personal-library", source_notice="Initial source notice")
+    first = _prepare_pages(row, tmp_path / "first", 10)
+    ingest_parts(db, row, first, "personal-library", Settings(), limit=100)
+    original_ids = set(db.scalars(select(Chunk.id)))
+    row["source_notice"] = "Corrected attribution and source notice"
+    revised = _prepare_pages(row, tmp_path / "revised", 10)
+    result = ingest_parts(db, row, revised, "personal-library", Settings(), limit=100)
+    assert result["status"] == "INDEXED" and result["generation"] == 2
+    active = list(
+        db.scalars(
+            select(Chunk)
+            .join(Document)
+            .where(
+                Document.book_id == uuid.UUID(row["id"]),
+                Document.book_generation == 2,
+                Chunk.revision == Document.active_revision,
+            )
+        )
+    )
+    assert active and all(
+        c.source_metadata["source_notice"] == row["source_notice"] for c in active
+    )
+    assert original_ids <= set(db.scalars(select(Chunk.id)))
+
+
+def test_verified_legacy_identity_adoption_preserves_source_ids_and_scope(db, tmp_path):
+    import copy
+    from app.library.legacy import adopt_legacy_preparation
+
+    row = resource(tmp_path, pages=2)
+    row["collection"] = "personal-library"
+    state = _prepare_pages(row, tmp_path / "prepared", 10)
+    ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+    book = db.get(LibraryBook, uuid.UUID(row["id"]))
+    book.preparation_sha256 = None
+    db.commit()
+    ids = set(db.scalars(select(Chunk.id)))
+    other = copy.deepcopy(row)
+    other["access"]["owner_id"] = str(uuid.uuid4())
+    with pytest.raises(ValueError, match="SCOPE_MISMATCH"):
+        adopt_legacy_preparation(db, other, state, Settings(), apply=True)
+    result = adopt_legacy_preparation(db, row, state, Settings(), apply=True)
+    assert result["verified"] and book.preparation_sha256 and book.active_generation == 1
+    assert set(db.scalars(select(Chunk.id))) == ids
 
 
 def resource(tmp_path, pages=20):
@@ -151,6 +303,9 @@ def test_resumable_book_atomic_activation_owner_filters_and_revocation(db, tmp_p
         )
     )
     assert len(active_ids & ids) > len(ids) * 0.9
+    repeated = ingest_parts(db, row, updated, "personal-library", Settings(), limit=100)
+    assert repeated["status"] == "INDEXED" and repeated["generation"] == 2
+    assert set(db.scalars(select(Chunk.id))) == ids | active_ids
     book = db.get(LibraryBook, uuid.UUID(row["id"]))
     book.approved = False
     db.commit()

@@ -4,6 +4,7 @@ Development uses `main` directly, consistently with OSCAR backend and frontend.
 
 The private Windows library is connected to OSCAR. See the
 [local library integration guide](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
+and [completion continuation](docs/LIBRARY_COMPLETION_2026_10_26.md)
 for current coverage, manual incremental commands, private scope, OCR limits and
 the remaining oversized compilation ranges. Source PDFs and private reports stay
 outside Git.
