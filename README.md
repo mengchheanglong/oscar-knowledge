@@ -1,156 +1,241 @@
 # OSCAR Knowledge
 
-Development uses `main` directly, consistently with OSCAR backend and frontend.
+An independent evidence-retrieval service for OSCAR. It ingests approved
+reference material, preserves source provenance, and returns relevant passages
+to the main application. Answer generation remains in the OSCAR backend.
 
-The local main app now searches all permitted library sources together with
-project context through one enabled **Knowledge** toggle. Collection boundaries
-still enforce access and preserve citations. Large local installations can set
-`KNOWLEDGE_DATABASE_STATEMENT_TIMEOUT_MS=10000` (validated maximum 30000) and an
-app request budget of 25000 ms; the tracked SQL default remains 5000 ms.
+Built with **Python 3.12+, FastAPI, SQLAlchemy, Alembic, PostgreSQL 17, and
+pgvector**. Local operation has been verified with Python 3.13.
 
-The local main app now enforces **Sources required** for ordinary Assistant chat.
-An explicit exact-book private reader grant connects the actual Rentify browser
-account to the existing approved library; earlier PAT-only tests missed that
-account mismatch. See the local library integration guide for grant binding,
-revocation and preserving ownership. Private grants are not shared-public access.
+## Repository responsibilities
 
-Full page-content cleaning is deferred for later work; see the
-[saved handoff and next batch](docs/NEXT_PDF_CLEANING_PASS.md).
+| Repository                                                          | Responsibility                                                                          |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **oscar-knowledge**                                                 | Reference ingestion, private library access, embeddings, retrieval, and source metadata |
+| [oscar-backend](https://github.com/mengchheanglong/oscar-backend)   | User authentication, project context, memory, answer generation, and orchestration      |
+| [oscar-frontend](https://github.com/mengchheanglong/oscar-frontend) | Chat, source previews, reference controls, and review interface                         |
 
-The [completed source review](docs/SOURCE_REVIEW_COMPLETION_2026_10_26.md)
-records the 68 page repairs, two encoding corrections, and bounded reviews of
-176 MBA units and 43 Social Systems readings. The
-[content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md) corrects
-the later automated audit's metadata labels, citation checks and benchmark
-claims. Processing completeness and independent semantic/visual review remain
-separate statuses; current private quality reports use the `corrected` directory.
+This service owns its database, migrations, and Compose project. It does not own
+OSCAR tasks, project records, chat attachments, or personal-memory writes.
 
-The private Windows library is connected to OSCAR. See the
-[local library integration guide](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
-and [completion continuation](docs/LIBRARY_COMPLETION_2026_10_26.md)
-for verified coverage of all 672 original PDFs, manual incremental commands,
-private scope and OCR/graphic limits. All compilation ranges are processed;
-source PDFs and private reports stay outside Git. In OSCAR, enable **Reference
-knowledge → All permitted references** to include private MBA additions.
+## Capabilities
 
-Independent, evidence-only retrieval service. Python 3.12+ (verified locally on
-3.13), FastAPI, SQLAlchemy/Alembic, PostgreSQL 17 and pgvector. No answer generation,
-memory writes, project tables, or background agent framework. Embeddings are
-optional and separately configured. Synthetic fixtures need no provider credentials.
+- Approved manifest imports and private-library preparation with explicit
+  document revisions and active generations.
+- Text extraction, bounded passage preparation, resumable jobs, and embedding
+  identities that separate incompatible model generations.
+- Keyword, semantic, and hybrid retrieval with bounded candidate pools and
+  per-document diversity limits.
+- Curated shared collections, owner-scoped private references, and explicit
+  exact-book reader grants.
+- Citation metadata including document identity, source title, section, physical
+  PDF page, edition, extraction method, and coverage notices where available.
+- CLI administration, database/runtime diagnostics, and evaluation tooling.
 
-Local Qwen embeddings are installed and verified on this Windows machine. See
-[Local Qwen operation](docs/LOCAL_QWEN.md) and the
-[implementation and verification report](docs/QWEN_IMPLEMENTATION_REPORT.md).
-The checked-in default remains `disabled`; provider selection is explicit.
+The repository includes synthetic demo fixtures. Private libraries, downloaded
+materials, model weights, and installation-specific reports are not shipped with
+a fresh checkout. Processing coverage, retrieval relevance, citation integrity,
+and factual answer quality are separate measurements.
 
-The approved 22-major study library is now available in shared `mba-majors`:
-1,374 documents and 36,722 locally embedded passages. See
-[MBA major library readiness](docs/MBA_MAJORS_READINESS.md) for usage, import
-integrity, live chat checks and scope. Enable **Course knowledge** in OSCAR chat.
+## Local development
 
-The earlier local MIT demo, measured real-source retrieval results, startup and
-remaining grounding limits are documented in
-[KNOWLEDGE_HACKATHON_READINESS.md](docs/KNOWLEDGE_HACKATHON_READINESS.md).
-Health check: `scripts/hackathon.ps1`; existing-machine startup: add `-Start`.
+### Requirements
 
-## Windows PowerShell
+- Python **3.12 or later**; examples use the Windows Python 3.13 launcher.
+- Docker with Compose v2.
+- Ollama only when local embeddings are explicitly enabled.
+- Node.js/pnpm only when also running the main OSCAR application.
 
-Run from this directory. Docker Desktop must be running; Python 3.13 and pnpm/Node
-are needed for the respective repositories. The setup script creates a random
-internal token in ignored `.env` only when the file does not already exist.
-It provisions only the new `oscar-knowledge` Compose project.
+Run from this repository. The setup script preserves an existing `.env`; for a
+fresh installation it copies the template and generates a random service token.
+It starts this service's PostgreSQL, applies migrations, checks readiness, and
+imports the bundled synthetic demo.
 
 ```powershell
-cd C:\Users\User\study-workspace\OSCAR\oscar-knowledge
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -c requirements.lock -e '.[dev]'
 .\scripts\setup.ps1
 .\.venv\Scripts\knowledgectl.exe doctor
-.\.venv\Scripts\knowledgectl.exe query 'subscription pricing' --mode hybrid
-.\.venv\Scripts\knowledgectl.exe jobs
-.\.venv\Scripts\knowledgectl.exe sources
-.\.venv\Scripts\knowledgectl.exe eval fixtures/eval_questions.json
 .\.venv\Scripts\uvicorn.exe app.main:app --host 127.0.0.1 --port 8010 --no-access-log --limit-concurrency 32
 ```
 
-In a second PowerShell window:
+The PostgreSQL data belongs to this service. Never substitute the main OSCAR
+database URL or reset an existing database during setup.
 
-```powershell
-cd C:\Users\User\study-workspace\OSCAR\oscar-knowledge
-.\.venv\Scripts\python.exe scripts/smoke.py
-.\scripts\test.ps1 -q
-.\.venv\Scripts\ruff.exe check app tests scripts migrations
-.\.venv\Scripts\ruff.exe format --check app tests scripts migrations
-.\.venv\Scripts\mypy.exe app
+### Local endpoints
+
+| Component                | Endpoint / port              |
+| ------------------------ | ---------------------------- |
+| Knowledge API            | `http://127.0.0.1:8010`      |
+| API documentation        | `http://127.0.0.1:8010/docs` |
+| Knowledge PostgreSQL     | `127.0.0.1:43114`            |
+| Isolated test PostgreSQL | `127.0.0.1:43115`            |
+| Optional local Ollama    | `http://127.0.0.1:11434`     |
+
+`/health/live` is a minimal liveness check. `/health/ready` verifies database
+access, migration version, pgvector, and a nonempty service token. Use
+`knowledgectl doctor` to check the configured embedding runtime as well.
+
+## Configuration and embeddings
+
+See [.env.example](.env.example) for the full inventory. Keep secrets in ignored
+`.env` files or the deployment's secret manager.
+
+| Variable                                  | Purpose / default                                     |
+| ----------------------------------------- | ----------------------------------------------------- |
+| `KNOWLEDGE_DATABASE_URL`                  | Independent Knowledge database connection             |
+| `KNOWLEDGE_SERVICE_TOKEN`                 | Required internal bearer token; empty fails closed    |
+| `KNOWLEDGE_ALLOWED_COLLECTIONS`           | Allowlisted shared collection slugs                   |
+| `KNOWLEDGE_PRIVATE_SCOPE_SECRET`          | Separate backend-only signing key for private scope   |
+| `KNOWLEDGE_PRIVATE_READER_GRANTS_PATH`    | Optional private manifest of exact-book reader grants |
+| `KNOWLEDGE_EMBEDDING_PROVIDER`            | `disabled` in the checked-in template                 |
+| `KNOWLEDGE_DATABASE_STATEMENT_TIMEOUT_MS` | Bounded SQL timeout; default 5000 ms                  |
+
+Keyword retrieval works without model credentials. Select local embeddings
+independently of the main backend:
+
+```dotenv
+KNOWLEDGE_EMBEDDING_PROVIDER=ollama
+KNOWLEDGE_EMBEDDING_MODEL=qwen3-embedding:0.6b
+KNOWLEDGE_EMBEDDING_DIMENSIONS=1024
+KNOWLEDGE_OLLAMA_BASE_URL=http://127.0.0.1:11434
+KNOWLEDGE_EMBEDDING_MODEL_REVISION=<full-installed-model-digest>
 ```
 
-`test.ps1` temporarily configures test environment variables, restores them on exit, and runs explicit
-migrations against port 43115, database `knowledge_test`. Integration fixtures
-refuse any database name not ending in `_test`. Do not change these to an OSCAR DB.
-Tests use no paid APIs. Unit/contract tests alone: `pytest tests/unit tests/contract`.
+Install and warm the model before ingestion. Follow [local Qwen operation](docs/LOCAL_QWEN.md)
+for digest pinning, query instructions, endpoint identity, and re-embedding.
+Weights are not downloaded automatically. OpenAI embeddings are an explicit
+alternative using a separate credential; DeepSeek generation keys are not used
+here. Provider selection never falls back automatically to a paid API.
 
-## Docker workflow
+With disabled or unavailable embeddings, hybrid retrieval reports keyword mode
+and a fallback reason. Explicit semantic retrieval returns an unavailable error
+when no compatible provider is usable. Preserve existing vectors and source
+revisions when changing configuration.
 
-Use `scripts/setup.ps1` to provision `.env`, or copy `.env.example` to `.env` and
-set `KNOWLEDGE_SERVICE_TOKEN` to a freshly generated random value. The sample DB
-password is exclusively for loopback local development; use distinct secrets in deployment.
+## Ingestion and administration
+
+Examples for the bundled synthetic corpus:
+
+```powershell
+.\.venv\Scripts\knowledgectl.exe import-manifest fixtures/demo.yaml
+.\.venv\Scripts\knowledgectl.exe sources
+.\.venv\Scripts\knowledgectl.exe jobs
+.\.venv\Scripts\knowledgectl.exe query 'subscription pricing' --mode hybrid
+.\.venv\Scripts\knowledgectl.exe eval fixtures/eval_questions.json
+```
+
+Use `--queue-only` when staging imports without immediate processing. The worker
+is a bounded, one-shot consumer:
+
+```powershell
+.\.venv\Scripts\knowledgectl.exe worker
+```
+
+Invoke it for further batches or schedule it deliberately. Create and consume
+jobs in the same filesystem environment: Windows paths do not become valid
+container paths. Administrative mutations are CLI-only. Preserve originals,
+source approval, licenses, ownership, and revision provenance. See the
+[ingestion guide](docs/INGESTION.md) for supported workflows and limits.
+
+## Connecting OSCAR
+
+The HTTP surface is an internal evidence API:
+
+| Endpoint                                | Purpose                                           |
+| --------------------------------------- | ------------------------------------------------- |
+| `POST /internal/v1/retrieve`            | Return permitted passages and citation metadata   |
+| `GET /internal/v1/collections`          | List allowlisted curated shared collections       |
+| `POST /internal/v1/library/collections` | Return authenticated private-library availability |
+
+All internal routes require the service bearer token. Private requests also need
+an authenticated-user scope signed by the OSCAR backend, bound to the request
+body and a short validity period. A service token alone cannot read private
+books. Reader grants apply only to specified books and readers; they do not make
+material public or automatically include future imports.
+
+Configure the backend's `OSCAR_KNOWLEDGE_*` settings using its
+[integration guide](https://github.com/mengchheanglong/oscar-backend/blob/main/docs/operations/KNOWLEDGE_LOCAL.md).
+OSCAR combines this evidence with permitted project context. Its optional
+**Knowledge** control or required-source policy is owned by the main application.
+The frontend does not connect to this API directly.
+
+## Docker operation
+
+Prepare `.env` with a nonempty random service token before running the API:
 
 ```powershell
 docker compose up -d --wait postgres
 docker compose --profile app build api
 docker compose --profile app run --rm api alembic upgrade head
 docker compose --profile app run --rm api knowledgectl doctor
-docker compose --profile app run --rm api knowledgectl import-manifest fixtures/demo.yaml
 docker compose --profile app up -d --wait api
-docker compose --profile app run --rm api knowledgectl query 'subscription pricing'
+```
+
+For container imports, use packaged fixtures or paths beneath mounted
+`/app/data`. The worker profile mounts `./data` there:
+
+```powershell
 docker compose --profile worker run --rm worker
 ```
 
-The worker is a bounded, one-shot job consumer; invoke it again for further batches
-or use an operator scheduler. Queue using `--queue-only` during import. Keep queue
-creation and processing in the same filesystem environment: Windows absolute paths
-are not Docker paths. Container imports must use `/app/data` or packaged fixtures.
-Never run `down -v` to repair an installation. No OSCAR Compose files are changed.
+Host/container Ollama origins are configured separately; the container default
+uses `host.docker.internal`. Keep Knowledge and OSCAR Compose projects separate.
+Never use `docker compose down -v` as a repair step.
 
-## API example
+## Verification
 
-OpenAPI: `http://127.0.0.1:8010/docs`. Mutations are CLI-only. Readiness checks DB,
-explicit migration version, vector extension and service token; liveness is minimal.
+The PowerShell runner configures the dedicated `knowledge_test` database on port
+43115, runs migrations, and restores previous environment variables afterward.
+Tests must never target the main or private-library database.
 
 ```powershell
-$knowledgeLine = Get-Content .env | Where-Object { $_ -like 'KNOWLEDGE_SERVICE_TOKEN=*' }
-$knowledgeHeaders = @{ Authorization = 'Bearer ' + $knowledgeLine.Substring('KNOWLEDGE_SERVICE_TOKEN='.Length) }
-$knowledgeBody = @{ query = 'subscription pricing'; collection_ids = @('mba-business'); top_k = 4; mode = 'hybrid' } | ConvertTo-Json
-Invoke-RestMethod http://127.0.0.1:8010/internal/v1/retrieve -Method Post -Headers $knowledgeHeaders -ContentType application/json -Body $knowledgeBody
+.\scripts\test.ps1 -q
+.\.venv\Scripts\ruff.exe check app tests scripts migrations
+.\.venv\Scripts\ruff.exe format --check app tests scripts migrations
+.\.venv\Scripts\mypy.exe app
 ```
 
-See [verified-evidence.json](docs/verified-evidence.json) for actual evidence from
-the local synthetic corpus. UUIDs depend on the first import; subsequent unchanged
-imports preserve chunk IDs. `example.org` URLs in these fixtures identify synthetic
-provenance and are **not actual hosted course materials**. The fixture license is
-CC0; the code is not assigned a new license by that dedication.
+For unit and contract checks without the integration database:
 
-Filters accept `subject`, `course`, `document_ids`, and `publication_year` arrays.
-Collection IDs are public slugs, restricted by the configured service allowlist.
-Query limit 4,000 chars; top-k 1–20; request body 32 KiB; candidate pool ≤100 per
-retrieval path; per-document diversity cap 3. Scores are ranks/similarities, never
-probabilities. Keyword search needs no model. Disabled embeddings or a provider
-failure make hybrid return `retrieval_mode_used: keyword` with `fallback_reason`.
-Explicit semantic requests return 503 when the provider is disabled/unavailable.
-Local Ollama needs no embedding API key; explicitly selected OpenAI requires one.
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/unit tests/contract
+```
 
-## OSCAR demo
+Deterministic tests do not need paid provider calls. Local-model, real-source,
+and cross-service checks have separate prerequisites. Evaluate source identity,
+reviewed relevance labels, and answer grounding separately; retrieval scores and
+valid citations are not factual-accuracy percentages.
 
-Follow [OSCAR_INTEGRATION.md](docs/OSCAR_INTEGRATION.md). Enable the backend flag
-and turn on **Course knowledge** in the chat composer. Ask:
+## Quality, access, and deployment boundaries
 
-> How should Rentify test its subscription pricing, using the synthetic course notes?
+PDF processing does not guarantee complete understanding of diagrams, equations,
+OCR text, or abridged sources. Preserve extraction and coverage notices in any
+consumer. Reports document bounded source reviews; a full page-content cleaning
+pass remains deferred in the saved handoff.
 
-Expect a citation to **Pricing experiments**, course **DEMO-PRICING**, section
-**Pricing experiments**. These are deliberately original notes, not MIT content.
-Disable/stop the supplementary service and verify workspace chat still responds
-with a supplementary-unavailable notice for opted-in turns.
+Private PDFs and local paths are not exposed as a public download library.
+Approving ingestion does not grant redistribution or commercial-use rights.
+Keep attribution, licenses, and usage restrictions with imported material.
+The CC0 dedication for synthetic fixtures does not license the application code
+or third-party sources.
 
-Further details: [architecture](docs/architecture.md), [ingestion](docs/INGESTION.md),
-[security](docs/SECURITY.md), [evaluation](docs/EVALUATION.md), and
-[verification / changed files](docs/IMPLEMENTATION_REPORT.md).
+Local Compose uses loopback bindings and development-only database credentials.
+Public deployment requires private ingress or TLS, dedicated roles, secret
+rotation, backups, resource limits, and an operator-reviewed retention policy.
+Soft deletion and historical revisions are not immediate physical removal from
+storage or backups.
+
+## Documentation
+
+- [Architecture](docs/architecture.md) and [OSCAR integration](docs/OSCAR_INTEGRATION.md)
+- [Private library integration and reader grants](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
+- [Local Qwen operation](docs/LOCAL_QWEN.md)
+- [Library processing coverage](docs/LIBRARY_COMPLETION_2026_10_26.md)
+- [Source review completion](docs/SOURCE_REVIEW_COMPLETION_2026_10_26.md)
+- [Content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md)
+- [Deferred page-content cleaning](docs/NEXT_PDF_CLEANING_PASS.md)
+- [Evaluation methodology](docs/EVALUATION.md)
+
+Active development uses `main`. Keep credentials, private manifests, source
+materials, model weights, backups, and installation-specific reports out of Git.
