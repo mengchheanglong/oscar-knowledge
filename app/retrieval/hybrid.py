@@ -9,6 +9,7 @@ from app.config import Settings
 from app.db.models import Chunk, ChunkEmbedding, Collection, Document, LibraryBook
 from app.embeddings.base import EmbeddingError
 from app.embeddings.provider import provider
+from app.library.access import can_read_private_book, private_book_access
 from app.security import public_source_url
 
 ENGLISH_STOP_WORDS = {
@@ -174,7 +175,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             Collection.slug.in_(private),
             Collection.visibility == "PRIVATE",
             LibraryBook.visibility == "PRIVATE",
-            LibraryBook.owner_id == subject,
+            private_book_access(subject, settings),
             Document.book_id.is_not(None),
         )
         if subject
@@ -389,7 +390,10 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             or not book_record.approved
             or book_record.status not in {"INDEXED", "PARTIALLY_INDEXED"}
             or book_record.active_generation != doc.book_generation
-            or (book_record.visibility == "PRIVATE" and str(book_record.owner_id) != subject)
+            or (
+                book_record.visibility == "PRIVATE"
+                and not can_read_private_book(book_record, slug, subject, settings)
+            )
         ):
             continue
         diversity_key = doc.book_id or doc.id

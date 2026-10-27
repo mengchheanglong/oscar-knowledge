@@ -274,3 +274,40 @@ Sources: [CORE Doing Economics](https://books.core-econ.org/doing-economics/book
 [Project Gutenberg ebook 3300](https://www.gutenberg.org/ebooks/3300).
 No access controls were bypassed. Private indexing approval is not authorization
 to republish these materials or remove third-party notices.
+
+# Explicit local readers — 2026-10-27
+
+The actual Rentify browser account differed from the integration account that
+owned the imported library. It therefore saw zero private books despite previous
+PAT-only acceptance. The human user's request to use their owned local library
+now has an explicit read grant for the authenticated browser identity and the
+1,042 approved existing book IDs. Ownership, generations, documents, vectors,
+source rights and original files are unchanged; this is private access, not
+shared-public publication or impersonation of the integration account.
+
+`KNOWLEDGE_PRIVATE_READER_GRANTS_PATH` optionally points to an absolute local JSON
+file: `{"version":1,"grants":[{"reader_id":"UUID","owner_id":"UUID",
+"book_ids":["UUID"],"collections":["personal-library","social-systems"]}]}`.
+Empty configuration preserves owner-only access. The manifest has bounded size,
+strict UUIDs/fields, exact owner/book/collection bindings and no wildcard/admin
+fallback. Invalid configured files fail closed. Removing a grant revokes future
+retrieval and counts; historical saved answers retain their already-read excerpts.
+New book IDs are not implicitly shared. Existing approval, deletion, generation,
+revision, local-embedding and HMAC body/subject checks remain in force.
+
+SQL retrieval, result rechecks, citation audits and collection counts use the
+same grant rules. The signed subject remains the real requesting user. Current
+Windows configuration keeps the manifest outside Git in the Catalog directory;
+an ignored Compose override mounts only that file read-only in the API container.
+No source PDFs are mounted or recopied to fix access. `.env`, the override,
+manifest and local authorization receipt must stay private. Automated tests use
+synthetic grants and the isolated test DB, never the production manifest.
+
+Verification: 138 tests passed with one optional local-model test skipped;
+Ruff/mypy passed. Integration checks prove reader access to an exact existing
+book, unchanged owner/generation/chunk IDs, rejection for an unrelated reader
+and unlisted book, revocation and current citation checks. The healthy rebuilt
+API reports 585 Personal Library and 457 Social Systems references through the
+actual browser's ordinary authenticated session. A real Rentify chat cited Lean
+Analytics and opened its physical PDF page preview. It also cited shared courses
+and project records; local original files and index rows were not rewritten.

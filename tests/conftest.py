@@ -16,6 +16,7 @@ def isolate_embedding_configuration(monkeypatch):
     monkeypatch.setenv("KNOWLEDGE_EMBEDDING_DIMENSIONS", "1536")
     monkeypatch.setenv("KNOWLEDGE_EMBEDDING_MODEL_REVISION", "")
     monkeypatch.setenv("KNOWLEDGE_EMBEDDING_API_KEY", "")
+    monkeypatch.setenv("KNOWLEDGE_PRIVATE_READER_GRANTS_PATH", "")
     get_settings.cache_clear()
     original = httpx.HTTPTransport.handle_request
 

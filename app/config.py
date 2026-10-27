@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     database_statement_timeout_ms: int = Field(default=5000, ge=100, le=30000)
     service_token: SecretStr = SecretStr("")
     private_scope_secret: SecretStr = SecretStr("")
+    private_reader_grants_path: str = ""
     private_collections: list[str] = ["personal-library", "social-systems"]
     allowed_collections: list[str] = ["mba-business"]
     quality_excluded_chunk_ids: list[UUID] = Field(default_factory=list, max_length=1000)

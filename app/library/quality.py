@@ -7,6 +7,7 @@ import uuid
 from sqlalchemy import select
 
 from app.db.models import Chunk, Collection, Document, LibraryBook
+from app.library.access import can_read_private_book
 
 
 CURRENT_EVIDENCE_SQL = """
@@ -94,7 +95,10 @@ def validate_citations(db, hits, *, subject, collections, excluded=()):
                 and book.collection_id == doc.collection_id
                 and book.visibility == col.visibility
                 and (
-                    (book.visibility == "PRIVATE" and str(book.owner_id) == subject)
+                    (
+                        book.visibility == "PRIVATE"
+                        and can_read_private_book(book, col.slug, subject)
+                    )
                     or book.visibility == "CURATED_SHARED"
                 )
             )

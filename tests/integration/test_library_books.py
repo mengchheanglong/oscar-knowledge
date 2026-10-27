@@ -15,6 +15,68 @@ from app.retrieval.hybrid import retrieve
 pytestmark = pytest.mark.integration
 
 
+def test_exact_reader_grants_share_existing_index_without_changing_ownership(
+    db, tmp_path, monkeypatch
+):
+    import json
+    from app.library.quality import validate_citations
+
+    row = resource(tmp_path, pages=1)
+    row["collection"] = "personal-library"
+    state = _prepare_pages(row, tmp_path / "prepared-reader", 10)
+    ingest_parts(db, row, state, "personal-library", Settings(), limit=100)
+    request = RetrievalRequest(
+        query="systems feedback", collection_ids=["personal-library"], mode="keyword"
+    )
+    owner, reader = row["access"]["owner_id"], str(uuid.uuid4())
+    book = db.get(LibraryBook, row["id"])
+    before = (book.owner_id, book.active_generation, list(db.scalars(select(Chunk.id))))
+    assert not retrieve(db, request, Settings(), subject=reader).results
+    path = tmp_path / "reader-grants.json"
+    payload = {
+        "version": 1,
+        "grants": [
+            {
+                "reader_id": reader,
+                "owner_id": owner,
+                "book_ids": [row["id"]],
+                "collections": ["personal-library"],
+            }
+        ],
+    }
+    path.write_text(json.dumps(payload))
+    monkeypatch.setenv("KNOWLEDGE_PRIVATE_READER_GRANTS_PATH", str(path))
+    from app.config import get_settings
+
+    get_settings.cache_clear()
+    settings = Settings()
+    hits = retrieve(db, request, settings, subject=reader).results
+    assert hits
+    assert all(
+        validate_citations(
+            db,
+            [hit.model_dump(mode="json") for hit in hits],
+            subject=reader,
+            collections=["personal-library"],
+        )
+    )
+    assert not retrieve(db, request, settings, subject=str(uuid.uuid4())).results
+    assert before == (book.owner_id, book.active_generation, list(db.scalars(select(Chunk.id))))
+    # A new book owned by the same account is not implicitly shared.
+    payload["grants"][0]["book_ids"] = [str(uuid.uuid4())]
+    path.write_text(json.dumps(payload))
+    assert not retrieve(db, request, settings, subject=reader).results
+    assert not any(
+        validate_citations(
+            db,
+            [hit.model_dump(mode="json") for hit in hits],
+            subject=reader,
+            collections=["personal-library"],
+        )
+    )
+    assert retrieve(db, request, settings, subject=owner).results
+
+
 def test_review_staging_preserves_previous_parts_and_rejects_unbound_edits(db, tmp_path):
     from app.library.review import stage_reviewed_pages
 

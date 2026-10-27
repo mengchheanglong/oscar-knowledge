@@ -11,6 +11,7 @@ from app.api.schemas import RetrievalRequest, RetrievalResponse
 from app.config import get_settings
 from app.db.models import Chunk, Collection, Document, LibraryBook
 from app.db.session import session
+from app.library.access import private_book_access
 from app.retrieval.hybrid import retrieve
 from app.security import private_subject
 
@@ -140,7 +141,7 @@ async def library_collections(request: Request):
                     .where(
                         Collection.slug == slug,
                         Collection.visibility == "PRIVATE",
-                        LibraryBook.owner_id == subject,
+                        private_book_access(subject, settings),
                         LibraryBook.visibility == "PRIVATE",
                         LibraryBook.approved.is_(True),
                         LibraryBook.active_generation > 0,

@@ -8,6 +8,12 @@ still enforce access and preserve citations. Large local installations can set
 `KNOWLEDGE_DATABASE_STATEMENT_TIMEOUT_MS=10000` (validated maximum 30000) and an
 app request budget of 25000 ms; the tracked SQL default remains 5000 ms.
 
+The local main app now enforces **Sources required** for ordinary Assistant chat.
+An explicit exact-book private reader grant connects the actual Rentify browser
+account to the existing approved library; earlier PAT-only tests missed that
+account mismatch. See the local library integration guide for grant binding,
+revocation and preserving ownership. Private grants are not shared-public access.
+
 Full page-content cleaning is deferred for later work; see the
 [saved handoff and next batch](docs/NEXT_PDF_CLEANING_PASS.md).
 
