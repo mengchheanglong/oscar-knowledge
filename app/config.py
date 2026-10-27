@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     database_url: str = (
         "postgresql+psycopg://knowledge:local_knowledge_only@127.0.0.1:43114/knowledge"
     )
+    database_statement_timeout_ms: int = Field(default=5000, ge=100, le=30000)
     service_token: SecretStr = SecretStr("")
     private_scope_secret: SecretStr = SecretStr("")
     private_collections: list[str] = ["personal-library", "social-systems"]

@@ -83,8 +83,9 @@ async def retrieval(body: RetrievalRequest, request: Request):
         return await run_in_threadpool(scoped_retrieve)
     except PermissionError:
         raise HTTPException(403, "COLLECTION_NOT_ALLOWED") from None
-    except Exception:
-        logger.warning("RETRIEVAL_UNAVAILABLE")
+    except Exception as error:
+        # Exception messages/SQL can contain private query text; log only the class.
+        logger.warning("RETRIEVAL_UNAVAILABLE %s", type(error).__name__)
         raise HTTPException(503, "RETRIEVAL_UNAVAILABLE") from None
 
 

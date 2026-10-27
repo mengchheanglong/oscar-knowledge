@@ -2,6 +2,12 @@
 
 Development uses `main` directly, consistently with OSCAR backend and frontend.
 
+The local main app now searches all permitted library sources together with
+project context through one enabled **Knowledge** toggle. Collection boundaries
+still enforce access and preserve citations. Large local installations can set
+`KNOWLEDGE_DATABASE_STATEMENT_TIMEOUT_MS=10000` (validated maximum 30000) and an
+app request budget of 25000 ms; the tracked SQL default remains 5000 ms.
+
 Full page-content cleaning is deferred for later work; see the
 [saved handoff and next batch](docs/NEXT_PDF_CLEANING_PASS.md).
 
