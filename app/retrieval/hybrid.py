@@ -455,6 +455,8 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                 revision=chunk.revision,
                 text=chunk.text,
                 snippet=chunk.text[:240],
+                full_text_length=len(chunk.text),
+                is_truncated=len(chunk.text) > len(chunk.text[:240]),
                 rank=len(results) + 1,
                 score=score_value,
             )

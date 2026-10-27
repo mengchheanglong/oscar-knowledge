@@ -58,6 +58,8 @@ class Evidence(BaseModel):
     revision: int
     text: str
     snippet: str
+    full_text_length: int | None = None
+    is_truncated: bool = False
     rank: int
     score: float
 
@@ -67,3 +69,34 @@ class RetrievalResponse(BaseModel):
     retrieval_mode_used: Literal["keyword", "semantic", "hybrid"]
     score_semantics: str
     results: list[Evidence]
+
+
+class PassageInspectRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    chunk_id: UUID
+    document_id: UUID
+    revision: int
+
+
+class PassageInspectResponse(BaseModel):
+    chunk_id: UUID
+    document_id: UUID
+    collection_id: str
+    title: str
+    book_id: UUID | None = None
+    author: str | None = None
+    edition: str | None = None
+    chapter: str | None = None
+    locator: str | None = None
+    page_start: int | None = None
+    page_end: int | None = None
+    start_ms: int | None = None
+    end_ms: int | None = None
+    revision: int
+    text: str
+    char_count: int
+    extraction: str | None = None
+    review_required: bool = False
+    coverage_note: str | None = None
+    source_url: str | None = None
+    is_truncated: bool = False

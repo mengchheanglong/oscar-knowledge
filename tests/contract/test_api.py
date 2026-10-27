@@ -79,3 +79,43 @@ def test_service_token_alone_cannot_access_private_metadata_or_evidence(client):
         ).status_code
         == 422
     )
+
+
+def test_passage_inspection_contract_and_auth(client):
+    body = {
+        "chunk_id": "00000000-0000-0000-0000-000000000001",
+        "document_id": "00000000-0000-0000-0000-000000000002",
+        "revision": 1,
+    }
+    # Unauthenticated
+    assert client.post("/internal/v1/passage", json=body).status_code == 401
+
+    # Invalid auth
+    assert (
+        client.post(
+            "/internal/v1/passage",
+            json=body,
+            headers={"Authorization": "Bearer wrong-token"},
+        ).status_code
+        == 401
+    )
+
+    # Invalid body schema
+    headers = {"Authorization": "Bearer test-token"}
+    assert (
+        client.post(
+            "/internal/v1/passage",
+            json={"chunk_id": "not-a-uuid"},
+            headers=headers,
+        ).status_code
+        == 422
+    )
+    # Extra fields forbidden
+    assert (
+        client.post(
+            "/internal/v1/passage",
+            json={**body, "extra": "forbidden"},
+            headers=headers,
+        ).status_code
+        == 422
+    )

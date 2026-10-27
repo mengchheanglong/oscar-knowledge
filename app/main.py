@@ -7,13 +7,20 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy import func, select, text
 from starlette.concurrency import run_in_threadpool
 
-from app.api.schemas import RetrievalRequest, RetrievalResponse
+import re
+
+from app.api.schemas import (
+    PassageInspectRequest,
+    PassageInspectResponse,
+    RetrievalRequest,
+    RetrievalResponse,
+)
 from app.config import get_settings
 from app.db.models import Chunk, Collection, Document, LibraryBook
 from app.db.session import session
-from app.library.access import private_book_access
+from app.library.access import can_read_private_book, private_book_access
 from app.retrieval.hybrid import retrieve
-from app.security import private_subject
+from app.security import private_subject, public_source_url
 
 app = FastAPI(title="OSCAR Knowledge", version="0.1.0")
 bearer = HTTPBearer(auto_error=False)
@@ -153,3 +160,152 @@ async def library_collections(request: Request):
             return result
 
     return await run_in_threadpool(scoped_counts)
+
+
+@app.post(
+    "/internal/v1/passage",
+    response_model=PassageInspectResponse,
+    dependencies=[Depends(auth)],
+)
+async def inspect_passage(body: PassageInspectRequest, request: Request):
+    settings = get_settings()
+    raw_body = await request.body()
+    scope_header = request.headers.get("X-OSCAR-Private-Scope")
+
+    def perform_inspection():
+        with session() as db:
+            chunk = (
+                db.query(Chunk)
+                .filter(
+                    Chunk.id == body.chunk_id,
+                    Chunk.document_id == body.document_id,
+                )
+                .first()
+            )
+            if not chunk:
+                raise HTTPException(404, "CHUNK_NOT_FOUND")
+
+            if chunk.id in settings.quality_excluded_chunk_ids:
+                raise HTTPException(410, "CHUNK_EXCLUDED")
+
+            doc = db.query(Document).filter(Document.id == body.document_id).first()
+            if not doc:
+                raise HTTPException(404, "DOCUMENT_NOT_FOUND")
+
+            if doc.status == "DELETED":
+                raise HTTPException(410, "DOCUMENT_DELETED")
+
+            if not doc.approved:
+                raise HTTPException(403, "DOCUMENT_NOT_APPROVED")
+
+            # Revision check: must match both chunk revision and document active revision
+            if body.revision != chunk.revision or chunk.revision != doc.active_revision:
+                raise HTTPException(409, "STALE_REVISION")
+
+            coll = db.query(Collection).filter(Collection.id == doc.collection_id).first()
+            if not coll:
+                raise HTTPException(404, "COLLECTION_NOT_FOUND")
+
+            book_record = None
+            if doc.book_id:
+                book_record = db.query(LibraryBook).filter(LibraryBook.id == doc.book_id).first()
+                if (
+                    not book_record
+                    or not book_record.approved
+                    or book_record.status not in ["INDEXED", "PARTIALLY_INDEXED"]
+                ):
+                    raise HTTPException(403, "BOOK_NOT_APPROVED")
+                if (
+                    book_record.active_generation <= 0
+                    or doc.book_generation != book_record.active_generation
+                ):
+                    raise HTTPException(409, "STALE_BOOK_GENERATION")
+
+            if coll.visibility == "CURATED_SHARED":
+                if coll.slug not in settings.allowed_collections:
+                    raise HTTPException(403, "COLLECTION_NOT_ALLOWED")
+            elif coll.visibility == "PRIVATE":
+                try:
+                    subject = private_subject(
+                        scope_header,
+                        raw_body,
+                        settings.private_scope_secret.get_secret_value(),
+                    )
+                except PermissionError:
+                    raise HTTPException(403, "PRIVATE_SCOPE_REQUIRED") from None
+
+                if book_record:
+                    if not can_read_private_book(book_record, coll.slug, subject, settings):
+                        raise HTTPException(403, "PRIVATE_BOOK_NOT_PERMITTED")
+                else:
+                    raise HTTPException(403, "PRIVATE_ACCESS_REQUIRES_BOOK")
+            else:
+                raise HTTPException(403, "COLLECTION_VISIBILITY_UNKNOWN")
+
+            locators = []
+            if chunk.page_start is not None:
+                locators.append(
+                    f"{'PDF page' if doc.book_id and doc.content_type == '.pdf' else 'Page'} {chunk.page_start}"
+                    + (f"–{chunk.page_end}" if chunk.page_end != chunk.page_start else "")
+                )
+            if chunk.heading_path:
+                locators.append(chunk.heading_path)
+            if chunk.start_ms is not None:
+                locators.append(f"{chunk.start_ms}–{chunk.end_ms} ms")
+
+            meta = chunk.source_metadata or {}
+            extraction = meta.get("extraction")
+            formula_review = meta.get("formula_review_required")
+            is_quant_or_math = bool(
+                re.search(
+                    r"\b(quant|quantitative|statistics|mathematics|accounting|calculus|physics|compilation)\b",
+                    doc.title,
+                    re.I,
+                )
+            )
+            review_required = bool(
+                extraction
+                in {"LOCAL_TESSERACT_OCR", "VISUAL_DESCRIPTION", "VISUALLY_REVIEWED_TRANSCRIPTION"}
+                or (formula_review and is_quant_or_math)
+            )
+
+            coverage_note = (
+                " ".join(
+                    filter(
+                        None,
+                        [
+                            "Some image-only pages remain unindexed; consult original PDF."
+                            if book_record and book_record.status == "PARTIALLY_INDEXED"
+                            else None,
+                            meta.get("source_notice"),
+                        ],
+                    )
+                )
+                or None
+            )
+
+            return PassageInspectResponse(
+                chunk_id=chunk.id,
+                document_id=doc.id,
+                collection_id=coll.slug,
+                title=doc.title,
+                book_id=doc.book_id,
+                author=doc.author,
+                edition=meta.get("edition"),
+                chapter=chunk.heading_path if doc.book_id else None,
+                locator=" / ".join(locators) or None,
+                page_start=chunk.page_start,
+                page_end=chunk.page_end,
+                start_ms=chunk.start_ms,
+                end_ms=chunk.end_ms,
+                revision=chunk.revision,
+                text=chunk.text,
+                char_count=len(chunk.text),
+                extraction=extraction,
+                review_required=review_required,
+                coverage_note=coverage_note,
+                source_url=public_source_url(doc.source_url),
+                is_truncated=len(chunk.text) > 240,
+            )
+
+    return await run_in_threadpool(perform_inspection)
