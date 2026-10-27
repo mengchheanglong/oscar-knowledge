@@ -207,6 +207,9 @@ and cross-service checks have separate prerequisites. Evaluate source identity,
 reviewed relevance labels, and answer grounding separately; retrieval scores and
 valid citations are not factual-accuracy percentages.
 
+See [focused source retrieval](docs/FOCUSED_SOURCE_RETRIEVAL.md) for the current
+named-book recovery behavior, access boundaries and bounded app-evaluation results.
+
 ## Quality, access, and deployment boundaries
 
 PDF processing does not guarantee complete understanding of diagrams, equations,

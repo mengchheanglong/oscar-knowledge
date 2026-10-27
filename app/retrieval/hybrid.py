@@ -1,7 +1,8 @@
 from collections import Counter
+from math import log
 import re
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Evidence, RetrievalRequest, RetrievalResponse
@@ -155,6 +156,57 @@ def rrf(pools, k=60, weights=None, bonus_by_id=None):
             if key in scores:
                 scores[key] += bonus
     return sorted(scores.items(), key=lambda pair: (-pair[1], pair[0]))
+
+
+def named_source_topic(query: str, titles: list[str]) -> tuple[list[str], str]:
+    """Discover named titles from eligible candidates, never from a global catalog.
+
+    Remove a matched title from the lexical topic so its repeated words do not
+    drown out the requested concept. This is a soft additional search, not an
+    authorization rule or a claim that the remaining library is irrelevant.
+    """
+    normalized = " ".join(re.findall(r"[^\W_]+", query.lower()))
+    matched = []
+    topic = f" {normalized} "
+    for title in sorted(set(titles)):
+        name = re.split(r"[:—]", title.lower(), maxsplit=1)[0]
+        words = re.findall(r"[^\W_]+", name)[:12]
+        for count in range(len(words), 1, -1):
+            prefix = " ".join(words[:count])
+            meaningful = [w for w in words[:count] if w not in ENGLISH_STOP_WORDS]
+            if count < min(3, len(words)) or len(meaningful) < 2 or len(prefix) < 7:
+                continue
+            if f" {prefix} " in f" {normalized} ":
+                matched.append(title)
+                topic = topic.replace(f" {prefix} ", " ")
+                break
+    noise = {"according", "book", "books", "example", "explain", "defined", "describe", "mean"}
+    terms = [w for w in topic.split() if w not in ENGLISH_STOP_WORDS | noise]
+    return matched, " OR ".join(dict.fromkeys(terms[:32]))
+
+
+def focused_concept_order(rows, topic: str):
+    """Prefer rare concept coverage/co-occurrence over repeated generic words.
+
+    Rarity is estimated only within this bounded eligible source pool; it is not
+    a relevance probability or a corpus-wide inverse-document-frequency score.
+    """
+    terms = [t.lower() for t in topic.split(" OR ")]
+    texts = [" " + " ".join(re.findall(r"[^\W_]+", row[0].text.lower())) + " " for row in rows]
+    frequencies = {term: sum(f" {term} " in text for text in texts) for term in terms}
+    weights = {term: 1 + log((len(rows) + 1) / (frequencies[term] + 1)) for term in terms}
+    scored = []
+    for row, text in zip(rows, texts, strict=True):
+        coverage = sum(weights[term] for term in terms if f" {term} " in text)
+        phrases = sum(
+            2 * (weights[left] + weights[right])
+            for left, right in zip(terms, terms[1:])
+            if f" {left} {right} " in text
+        )
+        scored.append((coverage + phrases, row))
+    return [
+        row for _, row in sorted(scored, key=lambda x: (-x[0], -float(x[1][3]), str(x[1][0].id)))
+    ]
 
 
 def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subject=None):
@@ -324,6 +376,46 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             # SET LOCAL. Do not mask that error by trying another SQL statement.
             db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
             add_pool(hydrate(ranks))
+    # A named-source question needs concept-bearing pages from that source,
+    # rather than introductory pages matching the title itself. All rows still
+    # pass the original source/reader/revision/filter predicate via `base`.
+    focused = False
+    focused_lead: list[str] = []
+    titles, topic = named_source_topic(request.query, [row[1].title for row in rows_by_id.values()])
+    if titles and topic:
+        sources = [row[1] for row in rows_by_id.values() if row[1].title in titles]
+        source_ids = {doc.id for doc in sources if not doc.book_id}
+        book_ids = {doc.book_id for doc in sources if doc.book_id}
+        focus_query = func.websearch_to_tsquery("english", topic)
+        focus_score = func.ts_rank_cd(Chunk.search_vector, focus_query, 32)
+        focus_base = (
+            base.with_only_columns(Chunk.id, focus_score.label("score"))
+            .where(or_(Document.id.in_(source_ids), Document.book_id.in_(book_ids)))
+            .order_by(focus_score.desc(), Chunk.id)
+            .limit(limit)
+        )
+        # Try all concept terms first. Otherwise repeated generic words can
+        # crowd a rare definition out of even the bounded source-only pool.
+        strict_focus = func.plainto_tsquery("english", topic.replace(" OR ", " "))
+        focus_rows = db.execute(focus_base.where(Chunk.search_vector.op("@@")(strict_focus))).all()
+        if not focus_rows:
+            focus_rows = db.execute(
+                focus_base.where(Chunk.search_vector.op("@@")(focus_query))
+            ).all()
+        if focus_rows:
+            concept_rows = focused_concept_order(hydrate(focus_rows), topic)
+            add_pool(concept_rows)
+            lead_counts: Counter = Counter()
+            for row in concept_rows:
+                key = row[1].book_id or row[1].id
+                if lead_counts[key] >= 2:
+                    continue
+                lead_counts[key] += 1
+                focused_lead.append(canonical_text[row[0].text])
+                if len(focused_lead) >= min(6, request.top_k):
+                    break
+            focused = True
+
     bonus_by_id: dict[str, float] = {}
     query_terms = {w.lower() for w in re.findall(r"[^\W_]{3,}", request.query, flags=re.UNICODE)}
     if query_terms and mode == "hybrid":
@@ -341,11 +433,20 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
 
     # An OR-broadened query has weaker lexical agreement than the original FTS
     # query. Keep those candidates but reduce their influence in hybrid fusion.
+    weights = [0.5 if broad_keyword else 1.0, 1.0] if mode == "hybrid" else [1.0]
+    if focused:
+        weights.append(3.0)
     ranked = (
-        rrf(pools, weights=[0.5, 1.0] if broad_keyword else None, bonus_by_id=bonus_by_id)
-        if mode == "hybrid"
+        rrf(pools, weights=weights, bonus_by_id=bonus_by_id)
+        if mode == "hybrid" or focused
         else [(key, scores_by_id[key]) for key in pools[0]]
     )
+    if focused_lead:
+        # Explicit source requests receive a small concept-bearing lead from
+        # each named book. Title-heavy intro pages cannot outvote that lead by
+        # agreeing across two otherwise broad retrieval channels.
+        lead_order = {key: i for i, key in enumerate(dict.fromkeys(focused_lead))}
+        ranked.sort(key=lambda pair: (0, lead_order[pair[0]]) if pair[0] in lead_order else (1, 0))
     results: list[Evidence] = []
     counts: Counter = Counter()
     for key, score_value in ranked:
@@ -439,10 +540,14 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
     return RetrievalResponse(
         retrieval_mode_used=mode,
         fallback_reason=fallback_reason,
-        score_semantics={
-            "keyword": "PostgreSQL ts_rank_cd; not a probability",
-            "semantic": "cosine similarity; not a probability",
-            "hybrid": "RRF sum(weight/(60+rank)); broadened keyword weight=0.5, otherwise weights=1; plus title/heading overlap bonus capped at 0.008; not a probability",
-        }[mode],
+        score_semantics=(
+            "Named-source concept lead (up to two passages per source), then weighted RRF with concept pool weight=3; bounded-pool rarity and phrase coverage; not a probability"
+            if focused
+            else {
+                "keyword": "PostgreSQL ts_rank_cd; not a probability",
+                "semantic": "cosine similarity; not a probability",
+                "hybrid": "RRF sum(weight/(60+rank)); broadened keyword weight=0.5, otherwise weights=1; plus title/heading overlap bonus capped at 0.008; not a probability",
+            }[mode]
+        ),
         results=results,
     )
