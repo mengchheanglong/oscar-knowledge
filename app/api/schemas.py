@@ -75,7 +75,7 @@ class PassageInspectRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     chunk_id: UUID
     document_id: UUID
-    revision: int
+    revision: int = Field(ge=1)
 
 
 class PassageInspectResponse(BaseModel):
@@ -93,7 +93,7 @@ class PassageInspectResponse(BaseModel):
     start_ms: int | None = None
     end_ms: int | None = None
     revision: int
-    text: str
+    text: str = Field(max_length=100000)
     char_count: int
     extraction: str | None = None
     review_required: bool = False

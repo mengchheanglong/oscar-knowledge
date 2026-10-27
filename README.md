@@ -236,6 +236,7 @@ storage or backups.
 - [Content-quality remediation](docs/CONTENT_QUALITY_REMEDIATION.md)
 - [Deferred page-content cleaning](docs/NEXT_PDF_CLEANING_PASS.md)
 - [Evaluation methodology](docs/EVALUATION.md)
+- [Corrective quality-pilot boundaries](docs/QUALITY_PILOT_CORRECTIONS.md)
 
 Active development uses `main`. Keep credentials, private manifests, source
 materials, model weights, backups, and installation-specific reports out of Git.

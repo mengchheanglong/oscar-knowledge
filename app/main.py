@@ -18,6 +18,7 @@ from app.api.schemas import (
 from app.config import get_settings
 from app.db.models import Chunk, Collection, Document, LibraryBook
 from app.db.session import session
+from app.library.eligibility import current_source_conditions
 from app.library.access import can_read_private_book, private_book_access
 from app.retrieval.hybrid import retrieve
 from app.security import private_subject, public_source_url
@@ -173,6 +174,7 @@ async def inspect_passage(body: PassageInspectRequest, request: Request):
     scope_header = request.headers.get("X-OSCAR-Private-Scope")
 
     def perform_inspection():
+        subject = None
         with session() as db:
             chunk = (
                 db.query(Chunk)
@@ -241,6 +243,18 @@ async def inspect_passage(body: PassageInspectRequest, request: Request):
                     raise HTTPException(403, "PRIVATE_ACCESS_REQUIRES_BOOK")
             else:
                 raise HTTPException(403, "COLLECTION_VISIBILITY_UNKNOWN")
+
+            # Reuse the exact search eligibility gates, including collection,
+            # visibility, approval, generation, revision, exclusions and reader grants.
+            permitted = db.scalar(
+                select(Chunk.id)
+                .join(Document, Chunk.document_id == Document.id)
+                .join(Collection, Document.collection_id == Collection.id)
+                .outerjoin(LibraryBook, Document.book_id == LibraryBook.id)
+                .where(Chunk.id == body.chunk_id, *current_source_conditions(settings, subject))
+            )
+            if permitted is None:
+                raise HTTPException(403, "PASSAGE_NOT_PERMITTED")
 
             locators = []
             if chunk.page_start is not None:

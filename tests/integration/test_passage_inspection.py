@@ -8,11 +8,98 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.config import Settings
-from app.db.models import Chunk, Document, LibraryBook
+from app.db.models import Chunk, Collection, Document, LibraryBook
 from app.library.books import _prepare_pages, ingest_parts
 from app.main import app
 
 pytestmark = pytest.mark.integration
+
+
+@pytest.mark.parametrize(
+    "state",
+    [
+        "chunk_collection",
+        "book_collection",
+        "book_visibility",
+        "private_disabled",
+        "shared_private_link",
+        "reader_revoked",
+        "deleted",
+        "unapproved",
+    ],
+)
+def test_inspection_uses_search_eligibility_for_adversarial_states(
+    db, tmp_path, monkeypatch, state
+):
+    from tests.integration.test_library_books import resource
+
+    row = resource(tmp_path, pages=1)
+    row["collection"] = "personal-library"
+    prepared = _prepare_pages(row, tmp_path / "prepared", 10)
+    ingest_parts(db, row, prepared, "personal-library", Settings(), limit=100)
+    book = db.get(LibraryBook, row["id"])
+    doc = db.query(Document).filter(Document.book_id == book.id).first()
+    chunk = db.query(Chunk).filter(Chunk.document_id == doc.id).first()
+    other = db.query(Collection).filter(Collection.slug == "mba-business").first()
+    if other is None:
+        other = Collection(
+            slug="mba-business", title="Synthetic shared", visibility="CURATED_SHARED"
+        )
+        db.add(other)
+        db.commit()
+    secret = "synthetic-private-scope-key-1234567890"
+    reader = str(uuid.uuid4())
+    grants = tmp_path / "grants.json"
+    grants.write_text(
+        json.dumps(
+            {
+                "version": 1,
+                "grants": [
+                    {
+                        "reader_id": reader,
+                        "owner_id": row["access"]["owner_id"],
+                        "book_ids": [row["id"]],
+                        "collections": ["personal-library"],
+                    }
+                ],
+            }
+        )
+    )
+    settings = Settings(
+        service_token="test-token",
+        private_scope_secret=secret,
+        private_reader_grants_path=str(grants),
+        private_collections=[]
+        if state == "private_disabled"
+        else ["personal-library", "social-systems"],
+    )
+    monkeypatch.setattr("app.main.get_settings", lambda: settings)
+    if state == "chunk_collection":
+        chunk.collection_id = other.id
+    if state == "book_collection":
+        book.collection_id = other.id
+    if state == "book_visibility":
+        book.visibility = "CURATED_SHARED"
+        book.owner_id = None
+    if state == "shared_private_link":
+        doc.collection_id = other.id
+        chunk.collection_id = other.id
+    if state == "reader_revoked":
+        grants.write_text(json.dumps({"version": 1, "grants": []}))
+    if state == "deleted":
+        doc.status = "DELETED"
+    if state == "unapproved":
+        doc.approved = False
+    db.commit()
+    body = json.dumps(
+        {"chunk_id": str(chunk.id), "document_id": str(doc.id), "revision": chunk.revision}
+    ).encode()
+    headers = {"Authorization": "Bearer test-token", "Content-Type": "application/json"}
+    if state != "shared_private_link":
+        headers["X-OSCAR-Private-Scope"] = make_scope(reader, body, secret)
+    response = TestClient(app).post("/internal/v1/passage", content=body, headers=headers)
+    assert response.status_code in {403, 410}
+    assert "systems feedback" not in response.text
 
 
 def make_scope(user_id: str, body_bytes: bytes, secret: str) -> str:

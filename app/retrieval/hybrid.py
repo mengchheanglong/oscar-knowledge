@@ -1,7 +1,7 @@
 from collections import Counter
 import re
 
-from sqlalchemy import and_, false, func, or_, select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.api.schemas import Evidence, RetrievalRequest, RetrievalResponse
@@ -9,7 +9,8 @@ from app.config import Settings
 from app.db.models import Chunk, ChunkEmbedding, Collection, Document, LibraryBook
 from app.embeddings.base import EmbeddingError
 from app.embeddings.provider import provider
-from app.library.access import can_read_private_book, private_book_access
+from app.library.access import can_read_private_book
+from app.library.eligibility import current_source_conditions
 from app.security import public_source_url
 
 ENGLISH_STOP_WORDS = {
@@ -169,37 +170,9 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         and request.mode != "keyword"
     ):
         raise PermissionError("PRIVATE_LOCAL_EMBEDDINGS_REQUIRED")
-    public_access = and_(Collection.slug.in_(shared), Collection.visibility == "CURATED_SHARED")
-    private_access = (
-        and_(
-            Collection.slug.in_(private),
-            Collection.visibility == "PRIVATE",
-            LibraryBook.visibility == "PRIVATE",
-            private_book_access(subject, settings),
-            Document.book_id.is_not(None),
-        )
-        if subject
-        else false()
-    )
     conditions = [
         Collection.slug.in_(request.collection_ids),
-        or_(public_access, private_access),
-        Document.approved.is_(True),
-        Document.status != "DELETED",
-        Chunk.revision == Document.active_revision,
-        Chunk.collection_id == Document.collection_id,
-        or_(
-            Document.book_id.is_(None),
-            and_(
-                LibraryBook.approved.is_(True),
-                LibraryBook.status.in_(["INDEXED", "PARTIALLY_INDEXED"]),
-                or_(
-                    and_(LibraryBook.visibility == "CURATED_SHARED", public_access), private_access
-                ),
-                LibraryBook.collection_id == Document.collection_id,
-                LibraryBook.active_generation == Document.book_generation,
-            ),
-        ),
+        *current_source_conditions(settings, subject),
     ]
     filters = request.filters
     if settings.quality_excluded_chunk_ids:
