@@ -209,6 +209,64 @@ def focused_concept_order(rows, topic: str):
     ]
 
 
+def source_role_intents(query: str, topic: str):
+    """English question cues, not book-specific rules or quality labels."""
+    noise = {"claim", "claims", "explain", "explanation", "according", "apparently", "might"}
+    terms = [term for term in topic.split(" OR ") if term not in noise]
+    core = " ".join(dict.fromkeys(terms[:2]))
+    roles = []
+    if re.search(r"\b(what|define|defined|definition|mean|means|differ)\b", query, re.I):
+        roles.append(("definition", r"\m(means|defined|definition|refers|places|called)\M"))
+    if re.search(
+        r"\b(does|always|every|never|prove|proves|limit|limits|guarantee|worse|risk)\b", query, re.I
+    ):
+        roles.append(
+            ("qualification", r"\m(cannot|impossible|not|never|unless|limits|risk|wrong|however)\M")
+        )
+    if re.search(r"\b(worse|backfire|opposite|wrong direction)\b", query, re.I):
+        roles = [(role, pattern) for role, pattern in roles if role != "qualification"]
+        roles.append(("direction", r"\m(wrong|opposite|reverse|backfire)\M"))
+    return core, roles
+
+
+def source_role_order(rows, role: str, core: str):
+    """Prefer explicit nearby definitions/caveats, never infer their truth."""
+    patterns = (
+        [
+            (r"\b(?:is|are|means|points)[\s—:,-]+(?:a |the )?places?\b", 5),
+            (r"\b(?:defined as|refers to|definition|means that)\b", 1),
+        ]
+        if role == "definition"
+        else [
+            (r"\b(?:impossible to|do not claim|don['’]t claim)\b", 8),
+            (r"\b(?:not necessarily|not a recipe|wrong direction)\b", 4),
+            (r"\b(?:cannot|can['’]t|not|never|however|limits|risk|unless)\b", 1),
+        ]
+    )
+    if role == "direction":
+        patterns = [(r"\b(?:wrong direction|opposite|backfire|reverse)\b", 8)]
+    terms = core.split()
+
+    def score(row):
+        text = re.sub(r"\s+", " ", row[0].text.lower())
+        positions = [
+            m.start() for t in terms for m in re.finditer(r"\b" + re.escape(t) + r"\w*\b", text)
+        ]
+        proximity = sum(
+            max(
+                (
+                    weight / (1 + min((abs(m.start() - p) for p in positions), default=10000) / 200)
+                    for m in re.finditer(pattern, text)
+                ),
+                default=0,
+            )
+            for pattern, weight in patterns
+        )
+        return (-proximity, -float(row[3]), str(row[0].id))
+
+    return sorted(rows, key=score)
+
+
 def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subject=None):
     shared = set(settings.allowed_collections) - set(settings.private_collections)
     private = set(settings.private_collections)
@@ -402,16 +460,38 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             focus_rows = db.execute(
                 focus_base.where(Chunk.search_vector.op("@@")(focus_query))
             ).all()
-        if focus_rows:
-            concept_rows = focused_concept_order(hydrate(focus_rows), topic)
+        concept_rows = focused_concept_order(hydrate(focus_rows), topic) if focus_rows else []
+        core, roles = source_role_intents(request.query, topic)
+        role_leads = []
+        if core:
+            core_query = func.plainto_tsquery("english", core)
+            for role, pattern in roles:
+                role_rows = hydrate(
+                    db.execute(
+                        focus_base.where(
+                            Chunk.search_vector.op("@@")(core_query), Chunk.text.op("~*")(pattern)
+                        )
+                    ).all()
+                )
+                ordered = source_role_order(role_rows, role, core)
+                # One candidate per eligible named source for each requested role.
+                seen_sources: Counter = Counter()
+                for row in ordered:
+                    key = row[1].book_id or row[1].id
+                    if seen_sources[key] < (2 if role == "direction" else 1):
+                        role_leads.append(row)
+                        seen_sources[key] += 1
+                concept_rows.extend(ordered)
+        if concept_rows:
             add_pool(concept_rows)
             lead_counts: Counter = Counter()
-            for row in concept_rows:
+            for row in role_leads + concept_rows:
                 key = row[1].book_id or row[1].id
-                if lead_counts[key] >= 2:
+                canonical = canonical_text[row[0].text]
+                if lead_counts[key] >= 3 or canonical in focused_lead:
                     continue
                 lead_counts[key] += 1
-                focused_lead.append(canonical_text[row[0].text])
+                focused_lead.append(canonical)
                 if len(focused_lead) >= min(6, request.top_k):
                     break
             focused = True
@@ -541,7 +621,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         retrieval_mode_used=mode,
         fallback_reason=fallback_reason,
         score_semantics=(
-            "Named-source concept lead (up to two passages per source), then weighted RRF with concept pool weight=3; bounded-pool rarity and phrase coverage; not a probability"
+            "Named-source definition/qualification/direction and concept lead (up to three passages per source), then weighted RRF with concept pool weight=3; bounded-pool lexical role cues, rarity and phrase coverage; not a probability"
             if focused
             else {
                 "keyword": "PostgreSQL ts_rank_cd; not a probability",

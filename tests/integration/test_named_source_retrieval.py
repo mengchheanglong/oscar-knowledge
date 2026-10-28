@@ -12,6 +12,56 @@ from app.retrieval.hybrid import retrieve
 pytestmark = pytest.mark.integration
 
 
+def test_definition_and_caveat_survive_example_saturation_and_reader_exclusions(db, tmp_path):
+    from tests.integration.test_library_books import resource
+
+    row = resource(tmp_path, pages=1)
+    row["title"] = "Aster Analytics: Measuring a Marketplace"
+    prepared = _prepare_pages(row, tmp_path / "roles", 10)
+    ingest_parts(db, row, prepared, "personal-library", Settings(), limit=100)
+    book = db.get(LibraryBook, row["id"])
+    doc = db.scalar(select(Document).where(Document.book_id == book.id))
+    texts = [
+        "Leverage points are places where a small change produces large effects.",
+        "Leverage points cannot guarantee improvement. The direction can be wrong.",
+    ]
+    texts += [
+        ("Leverage point improvement example always shows analytics. " * 20) + str(i)
+        for i in range(110)
+    ]
+    ids = []
+    for i, text in enumerate(texts):
+        chunk = Chunk(
+            id=uuid.uuid4(),
+            document_id=doc.id,
+            collection_id=doc.collection_id,
+            revision=doc.active_revision,
+            ordinal=100 + i,
+            text=text,
+            char_count=len(text),
+            token_estimate=100,
+            page_start=10 + i,
+            page_end=10 + i,
+        )
+        db.add(chunk)
+        ids.append(chunk.id)
+    db.commit()
+    request = RetrievalRequest(
+        query="What does Aster Analytics mean by a leverage point, and does it always guarantee improvement?",
+        collection_ids=["personal-library"],
+        top_k=2,
+        mode="keyword",
+    )
+    owner = row["access"]["owner_id"]
+    hits = retrieve(db, request, Settings(), subject=owner).results
+    assert {hit.chunk_id for hit in hits} == set(ids[:2])
+    assert not retrieve(db, request, Settings(), subject=str(uuid.uuid4())).results
+    hits = retrieve(
+        db, request, Settings(quality_excluded_chunk_ids=[ids[1]]), subject=owner
+    ).results
+    assert all(hit.chunk_id != ids[1] for hit in hits)
+
+
 def test_focus_recovers_other_book_parts_without_broadening_reader_grants(db, tmp_path):
     from tests.integration.test_library_books import resource
 
