@@ -14,6 +14,7 @@ from app.embeddings.provider import provider
 from app.library.access import can_read_private_book
 from app.library.eligibility import current_source_conditions
 from app.security import public_source_url
+from app.retrieval.query_terms import lexical_alternatives
 
 ENGLISH_STOP_WORDS = {
     "a",
@@ -268,6 +269,19 @@ def source_role_order(rows, role: str, core: str):
     return sorted(rows, key=score)
 
 
+def ranked_query(db, statement, timeout_ms):
+    """A failed optional search rolls back SQL state, not successful evidence."""
+    try:
+        with db.begin_nested():
+            previous = db.scalar(select(func.current_setting("statement_timeout")))
+            db.execute(select(func.set_config("statement_timeout", f"{timeout_ms}ms", True)))
+            rows = db.execute(statement).all()
+            db.execute(select(func.set_config("statement_timeout", previous, True)))
+            return rows
+    except SQLAlchemyError:
+        return None
+
+
 def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subject=None):
     shared = set(settings.allowed_collections) - set(settings.private_collections)
     private = set(settings.private_collections)
@@ -318,6 +332,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
     rows_by_id: dict[str, tuple[Chunk, Document, str, float]] = {}
     scores_by_id: dict[str, float] = {}
     broad_keyword = False
+    keyword_ok = False
     # Overfetch a bounded pool so repeated copies cannot fill the evidence list.
     # Score IDs first; fetching full text/metadata before the top-N sort makes
     # exact vector search unnecessarily expensive on a full-length library.
@@ -350,30 +365,36 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         db.execute(select(func.set_config("enable_nestloop", "off", True)))
         query = func.websearch_to_tsquery("english", request.query)
         score = func.ts_rank_cd(Chunk.search_vector, query)
-        rows = db.execute(
+        rows = ranked_query(
+            db,
             base.with_only_columns(Chunk.id, score.label("score"))
             .where(Chunk.search_vector.op("@@")(query))
             .order_by(score.desc(), Chunk.id)
-            .limit(limit)
-        ).all()
+            .limit(limit),
+            min(settings.database_statement_timeout_ms, 4000),
+        )
+        keyword_ok = rows is not None
         if not rows:
-            # Natural questions often contain words absent from a passage. Broaden
-            # only to a bounded indexed disjunction, never to unrelated documents.
-            all_terms = re.findall(r"[^\W_]{2,}", request.query, flags=re.UNICODE)
-            content_terms = [t for t in all_terms if t.lower() not in ENGLISH_STOP_WORDS]
-            terms = content_terms[:32] if content_terms else all_terms[:32]
-            if terms:
+            for alternative in lexical_alternatives(request.query, ENGLISH_STOP_WORDS):
                 broad_keyword = True
-                broad_query = func.websearch_to_tsquery("english", " OR ".join(terms))
+                broad_query = func.websearch_to_tsquery("english", alternative)
                 broad_score = func.ts_rank_cd(Chunk.search_vector, broad_query)
-                rows = db.execute(
+                candidate_rows = ranked_query(
+                    db,
                     base.with_only_columns(Chunk.id, broad_score.label("score"))
                     .where(Chunk.search_vector.op("@@")(broad_query))
                     .order_by(broad_score.desc(), Chunk.id)
-                    .limit(limit)
-                ).all()
+                    .limit(limit),
+                    min(settings.database_statement_timeout_ms, 4000),
+                )
+                keyword_ok = keyword_ok or candidate_rows is not None
+                if candidate_rows:
+                    rows = candidate_rows
+                    break
         db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
-        add_pool(hydrate(rows))
+        if not keyword_ok and mode == "keyword":
+            raise EmbeddingError("KEYWORD_RETRIEVAL_UNAVAILABLE")
+        add_pool(hydrate(rows or []))
     if mode in {"semantic", "hybrid"}:
         assert embedder is not None
         try:
@@ -386,6 +407,8 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             fallback_reason = (
                 str(exc) if isinstance(exc, EmbeddingError) else "EMBEDDING_UNAVAILABLE"
             )
+            if not keyword_ok:
+                raise EmbeddingError("RETRIEVAL_UNAVAILABLE") from None
         else:
             column = (
                 ChunkEmbedding.embedding_1024
@@ -399,19 +422,21 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             # restore the caller's setting before bounded metadata hydration.
             previous_nestloop = db.scalar(select(func.current_setting("enable_nestloop")))
             db.execute(select(func.set_config("enable_nestloop", "off", True)))
-            ranks = list(
-                db.execute(
-                    base.join(ChunkEmbedding, ChunkEmbedding.chunk_id == Chunk.id)
-                    .with_only_columns(Chunk.id, (1 - distance).label("score"))
-                    .where(
-                        column.is_not(None),
-                        ChunkEmbedding.identity == identity,
-                        ChunkEmbedding.dimensions == embedder.dimensions,
-                    )
-                    .order_by(distance, Chunk.id)
-                    .limit(limit)
-                ).all()
+            ranks = ranked_query(
+                db,
+                base.join(ChunkEmbedding, ChunkEmbedding.chunk_id == Chunk.id)
+                .with_only_columns(Chunk.id, (1 - distance).label("score"))
+                .where(
+                    column.is_not(None),
+                    ChunkEmbedding.identity == identity,
+                    ChunkEmbedding.dimensions == embedder.dimensions,
+                )
+                .order_by(distance, Chunk.id)
+                .limit(limit),
+                min(settings.database_statement_timeout_ms, 8000),
             )
+            vector_ok = ranks is not None
+            ranks = ranks or []
             if embedder.dimensions == 1536 and embedder.legacy_identity:
                 legacy_distance = Chunk.embedding.cosine_distance(vector)
                 # Legacy raw OpenAI vectors are usable only for their exact original
@@ -421,23 +446,36 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                     .where(ChunkEmbedding.chunk_id == Chunk.id, ChunkEmbedding.identity == identity)
                     .exists()
                 )
-                ranks += list(
-                    db.execute(
-                        base.with_only_columns(Chunk.id, (1 - legacy_distance).label("score"))
-                        .where(
-                            Chunk.embedding.is_not(None),
-                            Chunk.embedding_identity == embedder.legacy_identity,
-                            ~exists,
-                        )
-                        .order_by(legacy_distance, Chunk.id)
-                        .limit(limit)
-                    ).all()
+                legacy_ranks = ranked_query(
+                    db,
+                    base.with_only_columns(Chunk.id, (1 - legacy_distance).label("score"))
+                    .where(
+                        Chunk.embedding.is_not(None),
+                        Chunk.embedding_identity == embedder.legacy_identity,
+                        ~exists,
+                    )
+                    .order_by(legacy_distance, Chunk.id)
+                    .limit(limit),
+                    min(settings.database_statement_timeout_ms, 8000),
                 )
+                vector_ok = vector_ok or legacy_ranks is not None
+                ranks += legacy_ranks or []
                 ranks = sorted(ranks, key=lambda row: (-float(row[1]), str(row[0])))[:limit]
             # On a SQL error the transaction is aborted; rollback also resets
             # SET LOCAL. Do not mask that error by trying another SQL statement.
             db.execute(select(func.set_config("enable_nestloop", previous_nestloop, True)))
-            add_pool(hydrate(ranks))
+            if not vector_ok:
+                if mode != "hybrid" or not keyword_ok:
+                    raise EmbeddingError("VECTOR_RETRIEVAL_UNAVAILABLE")
+                mode = "keyword"
+                fallback_reason = "VECTOR_RETRIEVAL_UNAVAILABLE"
+            elif mode == "hybrid" and not keyword_ok:
+                mode = "semantic"
+                fallback_reason = "KEYWORD_RETRIEVAL_UNAVAILABLE"
+            if vector_ok:
+                add_pool(hydrate(ranks))
+            if mode == "semantic" and not keyword_ok and len(pools) > 1:
+                pools = pools[1:]
     # A named-source question needs concept-bearing pages from that source,
     # rather than introductory pages matching the title itself. All rows still
     # pass the original source/reader/revision/filter predicate via `base`.

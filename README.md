@@ -231,6 +231,8 @@ storage or backups.
 
 ## Documentation
 
+- [Bounded search and independent retrieval channels](docs/RETRIEVAL_RELIABILITY.md)
+
 - [Topic graph, build command, rollback, and evaluation limits](docs/KNOWLEDGE_GRAPH.md)
 
 - [Architecture](docs/architecture.md) and [OSCAR integration](docs/OSCAR_INTEGRATION.md)
