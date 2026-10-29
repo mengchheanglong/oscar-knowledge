@@ -52,7 +52,7 @@ def test_0002_preserves_an_actual_0001_vector(db, monkeypatch):
             assert before == after
             assert conn.scalar(text("SELECT vector_dims(embedding) FROM chunks")) == 1536
             assert conn.scalar(text("SELECT count(*) FROM chunk_embeddings")) == 0
-            assert conn.scalar(text("SELECT version_num FROM alembic_version")) == "0006"
+            assert conn.scalar(text("SELECT version_num FROM alembic_version")) == "0007"
             assert conn.scalar(text("SELECT count(*) FROM library_books")) == 0
     finally:
         engine.dispose()

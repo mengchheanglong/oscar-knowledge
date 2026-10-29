@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     private_collections: list[str] = ["personal-library", "social-systems"]
     allowed_collections: list[str] = ["mba-business"]
     quality_excluded_chunk_ids: list[UUID] = Field(default_factory=list, max_length=1000)
+    graph_enabled: bool = True
     embedding_provider: Literal["disabled", "openai", "ollama"] = "disabled"
     embedding_api_key: SecretStr = SecretStr("")
     embedding_base_url: str = "https://api.openai.com/v1"

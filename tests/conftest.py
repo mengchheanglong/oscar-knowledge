@@ -44,7 +44,7 @@ def db():
     engine = create_engine(url)
     with engine.begin() as connection:
         connection.execute(
-            text("TRUNCATE chunk_embeddings, ingestion_jobs, chunks, documents, library_books")
+            text("TRUNCATE graph_passage_topics, graph_state, chunk_embeddings, ingestion_jobs, chunks, documents, library_books")
         )
     with Session(engine, expire_on_commit=False) as session:
         yield session

@@ -10,6 +10,7 @@ from starlette.concurrency import run_in_threadpool
 import re
 
 from app.api.schemas import (
+    GraphBrowseRequest,
     PassageInspectRequest,
     PassageInspectResponse,
     RetrievalRequest,
@@ -66,7 +67,7 @@ def ready():
         with session() as db:
             version = db.scalar(text("SELECT version_num FROM alembic_version"))
             vector = db.scalar(text("SELECT 1 FROM pg_extension WHERE extname = 'vector'"))
-            if version != "0006" or not vector:
+            if version != "0007" or not vector:
                 raise ValueError("MIGRATION_REQUIRED")
     except Exception:
         raise HTTPException(503, "NOT_READY") from None
@@ -111,6 +112,34 @@ def collections():
             return [{"id": c.slug, "title": c.title, "description": c.description} for c in rows]
     except Exception:
         raise HTTPException(503, "CATALOG_UNAVAILABLE") from None
+
+
+@app.post("/internal/v1/graph", dependencies=[Depends(auth)])
+async def knowledge_graph(body: GraphBrowseRequest, request: Request):
+    from app.graph.service import browse
+
+    settings = get_settings()
+    try:
+        subject = None
+        if set(body.collection_ids) & set(settings.private_collections):
+            subject = private_subject(
+                request.headers.get("X-OSCAR-Private-Scope"),
+                await request.body(),
+                settings.private_scope_secret.get_secret_value(),
+            )
+
+        def run():
+            with session() as db:
+                return browse(db, settings, subject, body)
+
+        return await run_in_threadpool(run)
+    except PermissionError:
+        raise HTTPException(403, "GRAPH_SCOPE_DENIED") from None
+    except ValueError:
+        raise HTTPException(404, "GRAPH_TOPIC_NOT_FOUND") from None
+    except Exception as error:
+        logger.warning("GRAPH_UNAVAILABLE %s", type(error).__name__)
+        raise HTTPException(503, "GRAPH_UNAVAILABLE") from None
 
 
 @app.post("/internal/v1/library/collections", dependencies=[Depends(auth)])

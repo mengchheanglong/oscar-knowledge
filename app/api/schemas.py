@@ -23,6 +23,7 @@ class RetrievalRequest(BaseModel):
     )
     top_k: int = Field(default=6, ge=1, le=20)
     mode: Literal["keyword", "semantic", "hybrid"] = "hybrid"
+    graph_expand: bool = True
     filters: Filters = Field(default_factory=Filters)
 
     @field_validator("query")
@@ -34,6 +35,7 @@ class RetrievalRequest(BaseModel):
 
 
 class Evidence(BaseModel):
+    discovery_path: list[str] = Field(default_factory=list, max_length=5)
     extraction: str | None = None
     review_required: bool = False
     coverage_note: str | None = None
@@ -69,6 +71,18 @@ class RetrievalResponse(BaseModel):
     retrieval_mode_used: Literal["keyword", "semantic", "hybrid"]
     score_semantics: str
     results: list[Evidence]
+
+
+class GraphBrowseRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    collection_ids: list[str] = Field(
+        default_factory=lambda: ["mba-business"], min_length=1, max_length=10
+    )
+    query: str = Field(default="", max_length=200)
+    topic_id: str | None = Field(default=None, max_length=80)
+    source_id: UUID | None = None
+    limit: int = Field(default=20, ge=1, le=40)
+    offset: int = Field(default=0, ge=0, le=100000)
 
 
 class PassageInspectRequest(BaseModel):

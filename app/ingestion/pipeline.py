@@ -278,6 +278,16 @@ def process_job(db: Session, job_id: uuid.UUID, settings: Settings, *, force=Fal
         doc.status, doc.error_code, doc.updated_at = "INDEXED", None, now
         job.status, job.stage, job.progress, job.error_code = "SUCCEEDED", "active", 100, None
         job.completed_at = datetime.now(UTC)
+        if settings.graph_enabled:
+            # A derived graph must not prevent otherwise valid source activation.
+            try:
+                from app.graph.service import index_chunks, ready
+
+                with db.begin_nested():
+                    if ready(db):
+                        index_chunks(db, new_chunks)
+            except Exception:
+                job.checkpoint = {**job.checkpoint, "graph_update": "pending_rebuild"}
         db.commit()
         return "INDEXED"
     except Exception as exc:

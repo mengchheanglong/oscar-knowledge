@@ -22,6 +22,17 @@ cli = typer.Typer(no_args_is_help=True, pretty_exceptions_enable=False)
 cli.add_typer(library_cli, name="library")
 
 
+@cli.command("graph-build")
+def graph_build():
+    """Build the derived topic graph atomically; no source/vector changes."""
+    from app.graph.service import rebuild
+
+    with session() as db:
+        typer.echo(
+            json.dumps(rebuild(db, progress=lambda value: typer.echo(json.dumps(value), err=True)))
+        )
+
+
 @cli.command("create-collection")
 def create_collection(slug: str, title: str):
     """Create an explicitly allowlisted curated shared collection; no private ACL claim."""
@@ -52,7 +63,7 @@ def doctor():
 
     try:
         ready()
-        typer.echo("Database: ready (migration 0006)")
+        typer.echo("Database: ready (migration 0007)")
     except Exception:
         typer.echo(
             "NOT_READY: check DB, alembic upgrade head and KNOWLEDGE_SERVICE_TOKEN", err=True

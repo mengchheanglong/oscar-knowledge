@@ -120,6 +120,37 @@ class ChunkEmbedding(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class GraphTopic(Base):
+    __tablename__ = "graph_topics"
+    id: Mapped[str] = mapped_column(String(80), primary_key=True)
+    label: Mapped[str] = mapped_column(String(160))
+    domain: Mapped[str] = mapped_column(String(80))
+
+
+class GraphPassageTopic(Base):
+    __tablename__ = "graph_passage_topics"
+    chunk_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("chunks.id", ondelete="CASCADE"), primary_key=True
+    )
+    topic_id: Mapped[str] = mapped_column(ForeignKey("graph_topics.id"), primary_key=True)
+    extractor_version: Mapped[str] = mapped_column(String(40))
+    text_sha256: Mapped[str] = mapped_column(String(64))
+    anchor_start: Mapped[int] = mapped_column(Integer)
+    anchor_end: Mapped[int] = mapped_column(Integer)
+    anchor: Mapped[str] = mapped_column(Text)
+    __table_args__ = (Index("ix_graph_topic_chunk", "topic_id", "chunk_id"),)
+
+
+class GraphState(Base):
+    __tablename__ = "graph_state"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    extractor_version: Mapped[str] = mapped_column(String(40))
+    built_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    scanned_chunks: Mapped[int] = mapped_column(Integer)
+    mapped_chunks: Mapped[int] = mapped_column(Integer)
+    links: Mapped[int] = mapped_column(Integer)
+
+
 class LibraryBook(Base):
     __tablename__ = "library_books"
     id: Mapped[uuid.UUID] = mapped_column(UUID, primary_key=True)

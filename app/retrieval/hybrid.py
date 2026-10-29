@@ -2,8 +2,9 @@ from collections import Counter
 from math import log
 import re
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, text as sql_text
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.schemas import Evidence, RetrievalRequest, RetrievalResponse
 from app.config import Settings
@@ -280,6 +281,9 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         and request.mode != "keyword"
     ):
         raise PermissionError("PRIVATE_LOCAL_EMBEDDINGS_REQUIRED")
+    # Bounded API concurrency must not multiply parallel hash-query shared
+    # memory across the large local corpus (Docker's default /dev/shm is 64MB).
+    db.execute(sql_text("SET LOCAL max_parallel_workers_per_gather=0"))
     conditions = [
         Collection.slug.in_(request.collection_ids),
         *current_source_conditions(settings, subject),
@@ -529,7 +533,41 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
         ranked.sort(key=lambda pair: (0, lead_order[pair[0]]) if pair[0] in lead_order else (1, 0))
     results: list[Evidence] = []
     counts: Counter = Counter()
+    graph_paths = {}
+    if settings.graph_enabled and request.graph_expand and not focused and request.top_k >= 3:
+        from app.graph.service import neighbors
+
+        # Preserve the leading search evidence. Bounded graph neighbors add
+        # cross-source candidates, never authority or inferred author agreement.
+        try:
+            # An optional derived index must not invalidate ordinary retrieval
+            # when a graph query times out or fails. Roll back its SQL state.
+            with db.begin_nested():
+                expanded = neighbors(
+                    db,
+                    base,
+                    [rows_by_id[k][0].id for k, _ in ranked[: min(3, request.top_k)]],
+                    request.query,
+                    limit=2 if request.top_k >= 8 else 1,
+                    excluded_texts=[rows_by_id[k][0].text for k, _ in ranked[: request.top_k]],
+                )
+        except SQLAlchemyError:
+            expanded = []
+            fallback_reason = "GRAPH_EXPANSION_UNAVAILABLE"
+        graph_rank = []
+        for chunk, doc, slug, graph_score, path in expanded:
+            key = str(chunk.id)
+            rows_by_id[key] = (chunk, doc, slug, graph_score)
+            graph_paths[key] = path
+            graph_rank.append((key, graph_score))
+        if graph_rank:
+            keep = max(2, request.top_k - len(graph_rank))
+            ranked = ranked[:keep] + graph_rank + ranked[keep:]
+    emitted = set()
     for key, score_value in ranked:
+        if key in emitted:
+            continue
+        emitted.add(key)
         chunk, doc, slug, _ = rows_by_id[key]
         if chunk.id in settings.quality_excluded_chunk_ids:
             continue
@@ -566,6 +604,7 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
             locators.append(f"{chunk.start_ms}–{chunk.end_ms} ms")
         results.append(
             Evidence(
+                discovery_path=graph_paths.get(key, []),
                 chunk_id=chunk.id,
                 document_id=doc.id,
                 collection_id=slug,
@@ -628,6 +667,11 @@ def retrieve(db: Session, request: RetrievalRequest, settings: Settings, *, subj
                 "semantic": "cosine similarity; not a probability",
                 "hybrid": "RRF sum(weight/(60+rank)); broadened keyword weight=0.5, otherwise weights=1; plus title/heading overlap bonus capped at 0.008; not a probability",
             }[mode]
+        )
+        + (
+            "; bounded graph neighbors use lexical topic hints; their scores are not comparable to RRF or cosine scores"
+            if graph_paths
+            else ""
         ),
         results=results,
     )

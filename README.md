@@ -231,6 +231,8 @@ storage or backups.
 
 ## Documentation
 
+- [Topic graph, build command, rollback, and evaluation limits](docs/KNOWLEDGE_GRAPH.md)
+
 - [Architecture](docs/architecture.md) and [OSCAR integration](docs/OSCAR_INTEGRATION.md)
 - [Private library integration and reader grants](docs/LOCAL_KNOWLEDGE_LIBRARY_INTEGRATION.md)
 - [Local Qwen operation](docs/LOCAL_QWEN.md)
