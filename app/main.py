@@ -1,6 +1,8 @@
 import hmac
 import logging
 import uuid
+import asyncio
+import time
 
 from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -15,6 +17,8 @@ from app.api.schemas import (
     PassageInspectResponse,
     RetrievalRequest,
     RetrievalResponse,
+    PassageWindowRequest,
+    PassageWindowResponse,
 )
 from app.config import get_settings
 from app.db.models import Chunk, Collection, Document, LibraryBook
@@ -27,6 +31,7 @@ from app.security import private_subject, public_source_url
 app = FastAPI(title="OSCAR Knowledge", version="0.1.0")
 bearer = HTTPBearer(auto_error=False)
 logger = logging.getLogger("knowledge")
+WINDOW_TIMEOUT_SECONDS = 4
 
 
 def auth(credentials: HTTPAuthorizationCredentials | None = Depends(bearer)):
@@ -352,3 +357,93 @@ async def inspect_passage(body: PassageInspectRequest, request: Request):
             )
 
     return await run_in_threadpool(perform_inspection)
+
+
+@app.post(
+    "/internal/v1/passage/window",
+    response_model=PassageWindowResponse,
+    dependencies=[Depends(auth)],
+)
+async def passage_window(body: PassageWindowRequest, request: Request):
+    """Same-document, active-revision neighbors; each is independently authorized."""
+    from app.retrieval.passage_window import pack_window
+
+    async def run():
+        deadline = time.monotonic() + 3.5
+        anchor = await inspect_passage(body, request)
+        settings = get_settings()
+        subject = None
+        if anchor.collection_id in settings.private_collections:
+            subject = private_subject(
+                request.headers.get("X-OSCAR-Private-Scope"),
+                await request.body(),
+                settings.private_scope_secret.get_secret_value(),
+            )
+
+        def neighbors():
+            with session() as db:
+                ordinal = db.scalar(select(Chunk.ordinal).where(Chunk.id == body.chunk_id))
+                if ordinal is None:
+                    raise HTTPException(409, "WINDOW_ANCHOR_CHANGED")
+                rows = db.execute(
+                    select(Chunk.id, Chunk.ordinal)
+                    .join(Document, Chunk.document_id == Document.id)
+                    .join(Collection, Document.collection_id == Collection.id)
+                    .outerjoin(LibraryBook, Document.book_id == LibraryBook.id)
+                    .where(
+                        Chunk.document_id == body.document_id,
+                        Chunk.revision == body.revision,
+                        Chunk.ordinal.between(ordinal - body.radius, ordinal + body.radius),
+                        *current_source_conditions(settings, subject),
+                    )
+                    .order_by(Chunk.ordinal)
+                    .limit(5)
+                ).all()
+                if not any(row[0] == body.chunk_id for row in rows):
+                    raise HTTPException(409, "WINDOW_ANCHOR_CHANGED")
+                return sorted(
+                    [(key, position - ordinal) for key, position in rows],
+                    key=lambda row: (abs(row[1]), row[1]),
+                )
+
+        rows = await run_in_threadpool(neighbors)
+        passages = [(anchor, 0)]
+        limited = len(rows) < body.radius * 2 + 1
+        for chunk_id, offset in rows:
+            if offset == 0:
+                continue
+            if time.monotonic() >= deadline:
+                limited = True
+                break
+            try:
+                item = await inspect_passage(
+                    PassageInspectRequest(
+                        chunk_id=chunk_id, document_id=body.document_id, revision=body.revision
+                    ),
+                    request,
+                )
+                passages.append((item, offset))
+            except HTTPException as error:
+                if error.status_code not in {403, 404, 409, 410}:
+                    raise
+                limited = True
+        # Fail closed if approval, reader grants, revision or generation changed.
+        await inspect_passage(body, request)
+        try:
+            return pack_window(body, passages, limited)
+        except ValueError as error:
+            if str(error) == "WINDOW_ANCHOR_TOO_LARGE":
+                raise HTTPException(413, "WINDOW_ANCHOR_TOO_LARGE") from None
+            raise HTTPException(503, "WINDOW_SCOPE_MISMATCH") from None
+
+    try:
+        return await asyncio.wait_for(run(), timeout=WINDOW_TIMEOUT_SECONDS)
+    except TimeoutError:
+        raise HTTPException(503, "WINDOW_DEADLINE_EXCEEDED") from None
+    except HTTPException:
+        raise
+    except PermissionError:
+        raise HTTPException(403, "PRIVATE_SCOPE_REQUIRED") from None
+    except Exception as error:
+        logger.warning("WINDOW_UNAVAILABLE %s", type(error).__name__)
+        raise HTTPException(503, "WINDOW_UNAVAILABLE") from None

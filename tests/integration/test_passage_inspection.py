@@ -28,8 +28,9 @@ pytestmark = pytest.mark.integration
         "unapproved",
     ],
 )
+@pytest.mark.parametrize("route", ["/internal/v1/passage", "/internal/v1/passage/window"])
 def test_inspection_uses_search_eligibility_for_adversarial_states(
-    db, tmp_path, monkeypatch, state
+    db, tmp_path, monkeypatch, state, route
 ):
     from tests.integration.test_library_books import resource
 
@@ -97,7 +98,7 @@ def test_inspection_uses_search_eligibility_for_adversarial_states(
     headers = {"Authorization": "Bearer test-token", "Content-Type": "application/json"}
     if state != "shared_private_link":
         headers["X-OSCAR-Private-Scope"] = make_scope(reader, body, secret)
-    response = TestClient(app).post("/internal/v1/passage", content=body, headers=headers)
+    response = TestClient(app).post(route, content=body, headers=headers)
     assert response.status_code in {403, 410}
     assert "systems feedback" not in response.text
 

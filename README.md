@@ -231,6 +231,8 @@ storage or backups.
 
 ## Documentation
 
+- [Permissioned original passage windows (Phase 3)](docs/PASSAGE_WINDOWS.md)
+
 - [Bounded search and independent retrieval channels](docs/RETRIEVAL_RELIABILITY.md)
 
 - [Topic graph, build command, rollback, and evaluation limits](docs/KNOWLEDGE_GRAPH.md)

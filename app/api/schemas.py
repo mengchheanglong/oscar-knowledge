@@ -114,3 +114,25 @@ class PassageInspectResponse(BaseModel):
     coverage_note: str | None = None
     source_url: str | None = None
     is_truncated: bool = False
+
+
+class PassageWindowRequest(PassageInspectRequest):
+    radius: int = Field(default=1, ge=0, le=2)
+    max_chars: int = Field(default=12000, ge=1, le=16000)
+    max_bytes: int = Field(default=48000, ge=1, le=64000)
+
+
+class WindowPassage(PassageInspectResponse):
+    relative_offset: int = Field(ge=-2, le=2)
+    text_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    byte_count: int = Field(ge=0)
+
+
+class PassageWindowResponse(BaseModel):
+    anchor_chunk_id: UUID
+    document_id: UUID
+    revision: int
+    passages: list[WindowPassage] = Field(min_length=1, max_length=5)
+    total_chars: int
+    total_bytes: int
+    context_limited: bool
